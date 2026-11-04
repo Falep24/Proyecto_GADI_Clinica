@@ -71,26 +71,26 @@ END;
 GO
 
 -- 2. PROCEDIMIENTO: CARGA DATA MART
-CREATE OR ALTER PROCEDURE dw.usp_ETL_CargarDataMart
+CREATE OR ALTER PROCEDURE dm.usp_ETL_CargarDataMart
 AS
 BEGIN
     SET NOCOUNT ON;
     SET LANGUAGE Spanish; -- Para extraer días/meses en español
     
-    INSERT INTO dw.Dim_Paciente (IdPaciente, Genero, Edad, Barrio)
-    SELECT IdPaciente, Genero, Edad, Barrio FROM oltp.Pacientes WHERE IdPaciente NOT IN (SELECT IdPaciente FROM dw.Dim_Paciente);
+    INSERT INTO dm.Dim_Paciente (IdPaciente, Genero, Edad, Barrio)
+    SELECT IdPaciente, Genero, Edad, Barrio FROM oltp.Pacientes WHERE IdPaciente NOT IN (SELECT IdPaciente FROM dm.Dim_Paciente);
     
-    INSERT INTO dw.Dim_Medico (IdOdontologo, NombreCompleto, Especialidad)
-    SELECT IdOdontologo, Nombres + ' ' + Apellidos, Especialidad FROM oltp.Odontologos WHERE IdOdontologo NOT IN (SELECT IdOdontologo FROM dw.Dim_Medico);
+    INSERT INTO dm.Dim_Medico (IdOdontologo, NombreCompleto, Especialidad)
+    SELECT IdOdontologo, Nombres + ' ' + Apellidos, Especialidad FROM oltp.Odontologos WHERE IdOdontologo NOT IN (SELECT IdOdontologo FROM dm.Dim_Medico);
 
     -- Dim_Tratamiento actualizada
-    INSERT INTO dw.Dim_Tratamiento (IdTratamiento, Descripcion, Duracion_Meses, Costo_Total)
+    INSERT INTO dm.Dim_Tratamiento (IdTratamiento, Descripcion, Duracion_Meses, Costo_Total)
     SELECT IdTratamiento, Descripcion, DuracionMeses, Costo 
     FROM oltp.Tratamientos 
-    WHERE IdTratamiento NOT IN (SELECT IdTratamiento FROM dw.Dim_Tratamiento);
+    WHERE IdTratamiento NOT IN (SELECT IdTratamiento FROM dm.Dim_Tratamiento);
 
     -- Dim_Tiempo actualizada
-    INSERT INTO dw.Dim_Tiempo (SK_Tiempo, Fecha, Anio, Mes, NombreMes, Trimestre, Dia_Semana)
+    INSERT INTO dm.Dim_Tiempo (SK_Tiempo, Fecha, Anio, Mes, NombreMes, Trimestre, Dia_Semana)
     SELECT DISTINCT 
         CAST(CONVERT(VARCHAR(8), FechaCita, 112) AS INT), 
         FechaCita, 
@@ -100,10 +100,10 @@ BEGIN
         DATEPART(QUARTER, FechaCita),
         DATENAME(WEEKDAY, FechaCita)
     FROM oltp.Citas 
-    WHERE CAST(CONVERT(VARCHAR(8), FechaCita, 112) AS INT) NOT IN (SELECT SK_Tiempo FROM dw.Dim_Tiempo);
+    WHERE CAST(CONVERT(VARCHAR(8), FechaCita, 112) AS INT) NOT IN (SELECT SK_Tiempo FROM dm.Dim_Tiempo);
 
     -- Fact_Atenciones actualizada
-    INSERT INTO dw.Fact_Atenciones (
+    INSERT INTO dm.Fact_Atenciones (
         IdCita, SK_Paciente, SK_Medico, SK_Tratamiento, SK_Tiempo, 
         Estado_Cita, Tiempo_Espera_Min, Monto_Pagado, Es_Atendido, Es_Ausencia
     )
@@ -119,46 +119,52 @@ BEGIN
         CASE WHEN c.NoShow = 'Yes' THEN 0 ELSE 1 END AS Es_Atendido,
         CASE WHEN c.NoShow = 'Yes' THEN 1 ELSE 0 END AS Es_Ausencia
     FROM oltp.Citas c
-    JOIN dw.Dim_Paciente dp ON c.IdPaciente = dp.IdPaciente
-    JOIN dw.Dim_Medico dm ON c.IdOdontologo = dm.IdOdontologo
-    LEFT JOIN dw.Dim_Tratamiento dt ON c.IdTratamiento = dt.IdTratamiento
-    WHERE c.IdCita NOT IN (SELECT IdCita FROM dw.Fact_Atenciones);
+    JOIN dm.Dim_Paciente dp ON c.IdPaciente = dp.IdPaciente
+    JOIN dm.Dim_Medico dm ON c.IdOdontologo = dm.IdOdontologo
+    LEFT JOIN dm.Dim_Tratamiento dt ON c.IdTratamiento = dt.IdTratamiento
+    WHERE c.IdCita NOT IN (SELECT IdCita FROM dm.Fact_Atenciones);
 END;
 GO
 
 -- 3. VISTAS ANALÍTICAS ACTUALIZADAS
-CREATE OR ALTER VIEW dw.vw_KPI_TasaAbandono AS
+CREATE OR ALTER VIEW dm.vw_KPI_TasaAbandono AS
 SELECT 
     t.Anio, t.Mes, t.NombreMes, p.Barrio, 
     COUNT(*) AS TotalCitas, 
     SUM(f.Es_Ausencia) AS CitasAbandonadas,
     CAST(SUM(f.Es_Ausencia) * 100.0 / NULLIF(COUNT(*), 0) AS DECIMAL(5,2)) AS PorcentajeAbandono
-FROM dw.Fact_Atenciones f 
-JOIN dw.Dim_Tiempo t ON t.SK_Tiempo = f.SK_Tiempo 
-JOIN dw.Dim_Paciente p ON p.SK_Paciente = f.SK_Paciente
+FROM dm.Fact_Atenciones f 
+JOIN dm.Dim_Tiempo t ON t.SK_Tiempo = f.SK_Tiempo 
+JOIN dm.Dim_Paciente p ON p.SK_Paciente = f.SK_Paciente
 GROUP BY t.Anio, t.Mes, t.NombreMes, p.Barrio;
 GO
 
-CREATE OR ALTER VIEW dw.vw_KPI_IngresosEnRiesgo AS
+CREATE OR ALTER VIEW dm.vw_KPI_IngresosEnRiesgo AS
 SELECT 
     t.Anio, t.NombreMes, m.Especialidad, 
     SUM(f.Monto_Pagado) AS IngresoTotalEstimado,
     SUM(CASE WHEN f.Es_Ausencia = 1 THEN f.Monto_Pagado ELSE 0 END) AS IngresosEnRiesgoPerdidos
-FROM dw.Fact_Atenciones f 
-JOIN dw.Dim_Tiempo t ON t.SK_Tiempo = f.SK_Tiempo 
-JOIN dw.Dim_Medico m ON m.SK_Medico = f.SK_Medico
+FROM dm.Fact_Atenciones f 
+JOIN dm.Dim_Tiempo t ON t.SK_Tiempo = f.SK_Tiempo 
+JOIN dm.Dim_Medico m ON m.SK_Medico = f.SK_Medico
 GROUP BY t.Anio, t.NombreMes, m.Especialidad;
 GO
 
-CREATE OR ALTER VIEW dw.vw_Dataset_ML AS
+CREATE OR ALTER VIEW dm.vw_Dataset_ML AS
 SELECT 
-    f.ID_Hecho, 
-    p.Edad, 
-    f.Tiempo_Espera_Min, 
-    dt.Duracion_Meses,
-    f.Monto_Pagado, 
-    f.Es_Ausencia AS Target_Abandono
-FROM dw.Fact_Atenciones f 
-JOIN dw.Dim_Paciente p ON p.SK_Paciente = f.SK_Paciente
-JOIN dw.Dim_Tratamiento dt ON dt.SK_Tratamiento = f.SK_Tratamiento;
+    p.SK_Paciente, p.Edad, p.Genero, p.Barrio,
+    COUNT(f.ID_Hecho) AS Total_Citas, 
+    SUM(f.Es_Ausencia) AS Total_Ausencias,
+    AVG(f.Tiempo_Espera_Min) AS Prom_Tiempo_Espera,
+    SUM(f.Monto_Pagado) AS Total_Pagado,
+    MAX(t.Costo_Total) AS Costo_Tratamiento,
+    CASE 
+        WHEN (CAST(SUM(f.Es_Ausencia) AS FLOAT) / NULLIF(COUNT(f.ID_Hecho), 0)) >= 0.25 THEN 1
+        ELSE 0 
+    END AS Target_Abandono
+FROM dm.Dim_Paciente p
+JOIN dm.Fact_Atenciones f ON p.SK_Paciente = f.SK_Paciente
+JOIN dm.Dim_Tratamiento t ON f.SK_Tratamiento = t.SK_Tratamiento
+GROUP BY p.SK_Paciente, p.Edad, p.Genero, p.Barrio
 GO
+

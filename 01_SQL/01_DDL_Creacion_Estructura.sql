@@ -16,7 +16,7 @@ GO
 -- 1. ESQUEMAS
 IF SCHEMA_ID('stg')  IS NULL EXEC('CREATE SCHEMA stg');
 IF SCHEMA_ID('oltp') IS NULL EXEC('CREATE SCHEMA oltp');
-IF SCHEMA_ID('dw')   IS NULL EXEC('CREATE SCHEMA dw');
+IF SCHEMA_ID('dm')   IS NULL EXEC('CREATE SCHEMA dm');
 GO
 
 -- 2. TABLAS STAGING (Capa de aterrizaje cruda)
@@ -95,15 +95,15 @@ CREATE TABLE oltp.Citas (
 GO
 
 -- 4. TABLAS DATA MART (Modelo Dimensional Kimball)
-IF OBJECT_ID('dw.Fact_Atenciones', 'U') IS NOT NULL DROP TABLE dw.Fact_Atenciones;
-IF OBJECT_ID('dw.Dim_Paciente', 'U') IS NOT NULL DROP TABLE dw.Dim_Paciente;
-IF OBJECT_ID('dw.Dim_Medico', 'U') IS NOT NULL DROP TABLE dw.Dim_Medico;
-IF OBJECT_ID('dw.Dim_Tratamiento', 'U') IS NOT NULL DROP TABLE dw.Dim_Tratamiento;
-IF OBJECT_ID('dw.Dim_Tiempo', 'U') IS NOT NULL DROP TABLE dw.Dim_Tiempo;
-IF OBJECT_ID('dw.Resultados_Prediccion_IA', 'U') IS NOT NULL DROP TABLE dw.Resultados_Prediccion_IA;
+IF OBJECT_ID('dm.Fact_Atenciones', 'U') IS NOT NULL DROP TABLE dm.Fact_Atenciones;
+IF OBJECT_ID('dm.Dim_Paciente', 'U') IS NOT NULL DROP TABLE dm.Dim_Paciente;
+IF OBJECT_ID('dm.Dim_Medico', 'U') IS NOT NULL DROP TABLE dm.Dim_Medico;
+IF OBJECT_ID('dm.Dim_Tratamiento', 'U') IS NOT NULL DROP TABLE dm.Dim_Tratamiento;
+IF OBJECT_ID('dm.Dim_Tiempo', 'U') IS NOT NULL DROP TABLE dm.Dim_Tiempo;
+IF OBJECT_ID('dm.Resultados_Prediccion_IA', 'U') IS NOT NULL DROP TABLE dm.Resultados_Prediccion_IA;
 GO
 
-CREATE TABLE dw.Dim_Paciente (
+CREATE TABLE dm.Dim_Paciente (
     SK_Paciente  INT IDENTITY(1,1) NOT NULL PRIMARY KEY CLUSTERED,
     IdPaciente   BIGINT        NOT NULL UNIQUE,
     Genero       CHAR(1)       NOT NULL,
@@ -111,14 +111,14 @@ CREATE TABLE dw.Dim_Paciente (
     Barrio       NVARCHAR(100) NOT NULL
 );
 
-CREATE TABLE dw.Dim_Medico (
+CREATE TABLE dm.Dim_Medico (
     SK_Medico      INT IDENTITY(1,1) NOT NULL PRIMARY KEY CLUSTERED,
     IdOdontologo   INT           NOT NULL UNIQUE,
     NombreCompleto NVARCHAR(200) NOT NULL,
     Especialidad   NVARCHAR(100) NOT NULL
 );
 
-CREATE TABLE dw.Dim_Tratamiento (
+CREATE TABLE dm.Dim_Tratamiento (
     SK_Tratamiento INT IDENTITY(1,1) NOT NULL PRIMARY KEY CLUSTERED,
     IdTratamiento  INT           NOT NULL,
     Descripcion    NVARCHAR(500) NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE dw.Dim_Tratamiento (
     Costo_Total    DECIMAL(10,2) NOT NULL  -- Renombrado
 );
 
-CREATE TABLE dw.Dim_Tiempo (
+CREATE TABLE dm.Dim_Tiempo (
     SK_Tiempo  INT         NOT NULL PRIMARY KEY CLUSTERED,
     Fecha      DATE        NOT NULL,
     Anio       SMALLINT    NOT NULL,
@@ -136,13 +136,13 @@ CREATE TABLE dw.Dim_Tiempo (
     Dia_Semana VARCHAR(15) NOT NULL        -- Nuevo campo
 );
 
-CREATE TABLE dw.Fact_Atenciones (
+CREATE TABLE dm.Fact_Atenciones (
     ID_Hecho          INT IDENTITY(1,1) NOT NULL PRIMARY KEY CLUSTERED,
     IdCita            INT           NOT NULL UNIQUE, -- Necesario para el flujo ETL (no duplicar)
-    SK_Paciente       INT           NOT NULL FOREIGN KEY REFERENCES dw.Dim_Paciente(SK_Paciente),
-    SK_Medico         INT           NOT NULL FOREIGN KEY REFERENCES dw.Dim_Medico(SK_Medico),
-    SK_Tratamiento    INT           NOT NULL FOREIGN KEY REFERENCES dw.Dim_Tratamiento(SK_Tratamiento),
-    SK_Tiempo         INT           NOT NULL FOREIGN KEY REFERENCES dw.Dim_Tiempo(SK_Tiempo),
+    SK_Paciente       INT           NOT NULL FOREIGN KEY REFERENCES dm.Dim_Paciente(SK_Paciente),
+    SK_Medico         INT           NOT NULL FOREIGN KEY REFERENCES dm.Dim_Medico(SK_Medico),
+    SK_Tratamiento    INT           NOT NULL FOREIGN KEY REFERENCES dm.Dim_Tratamiento(SK_Tratamiento),
+    SK_Tiempo         INT           NOT NULL FOREIGN KEY REFERENCES dm.Dim_Tiempo(SK_Tiempo),
     
     -- Métricas / Medidas
     Estado_Cita       VARCHAR(20)   NOT NULL,
@@ -154,7 +154,7 @@ CREATE TABLE dw.Fact_Atenciones (
     Es_Ausencia       INT           NOT NULL
 );
 
-CREATE TABLE Resultados_Prediccion_IA (
+CREATE TABLE dm.Resultados_Prediccion_IA (
     SK_Paciente INT PRIMARY KEY,
     Probabilidad_Abandono DECIMAL(5,4) NOT NULL, -- Valor entre 0.0000 y 1.0000
     Nivel_Riesgo VARCHAR(20) NOT NULL,            -- 'Riesgo Alto', 'Riesgo Medio', 'Riesgo Bajo'
@@ -162,5 +162,3 @@ CREATE TABLE Resultados_Prediccion_IA (
     Fecha_Evaluacion DATETIME DEFAULT GETDATE()
 );
 GO
-
-SELECT * FROM Resultados_Prediccion_IA
