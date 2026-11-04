@@ -77,8 +77,18 @@ BEGIN
     SET NOCOUNT ON;
     SET LANGUAGE Spanish; -- Para extraer días/meses en español
     
-    INSERT INTO dm.Dim_Paciente (IdPaciente, Genero, Edad, Barrio)
-    SELECT IdPaciente, Genero, Edad, Barrio FROM oltp.Pacientes WHERE IdPaciente NOT IN (SELECT IdPaciente FROM dm.Dim_Paciente);
+    INSERT INTO dm.Dim_Paciente (IdPaciente, Genero, Edad, Rango_Etario, Barrio)
+    SELECT IdPaciente, Genero, Edad, 
+           CASE 
+               WHEN Edad BETWEEN 0 AND 17 THEN '0-17 años'
+               WHEN Edad BETWEEN 18 AND 29 THEN '18-29 años'
+               WHEN Edad BETWEEN 30 AND 44 THEN '30-44 años'
+               WHEN Edad BETWEEN 45 AND 59 THEN '45-59 años'
+               ELSE '60 años a más'
+           END AS Rango_Etario,
+           Barrio 
+    FROM oltp.Pacientes 
+    WHERE IdPaciente NOT IN (SELECT IdPaciente FROM dm.Dim_Paciente);
     
     INSERT INTO dm.Dim_Medico (IdOdontologo, NombreCompleto, Especialidad)
     SELECT IdOdontologo, Nombres + ' ' + Apellidos, Especialidad FROM oltp.Odontologos WHERE IdOdontologo NOT IN (SELECT IdOdontologo FROM dm.Dim_Medico);

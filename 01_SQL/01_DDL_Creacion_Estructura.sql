@@ -108,6 +108,7 @@ CREATE TABLE dm.Dim_Paciente (
     IdPaciente   BIGINT        NOT NULL UNIQUE,
     Genero       CHAR(1)       NOT NULL,
     Edad         SMALLINT      NOT NULL,
+    Rango_Etario VARCHAR(20) NOT NULL, 
     Barrio       NVARCHAR(100) NOT NULL
 );
 

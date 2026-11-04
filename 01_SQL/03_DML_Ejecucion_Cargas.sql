@@ -13,11 +13,11 @@ GO
 -- (Recuerda modificar la ruta a una pública como C:\Datasets\ si tienes problemas de permisos)
 BULK INSERT stg.Raw_NoShow 
 FROM 'C:\Users\fabri\Downloads\Proyecto_GADI_Clinica\05_Datasets\KaggleV2-May-2016.csv' 
-WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', CODEPAGE = '65001');
+WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', CODEPAGE = '65001'); -- UTF-8
 
 BULK INSERT stg.Raw_CPMS 
 FROM 'C:\Users\fabri\Downloads\Proyecto_GADI_Clinica\05_Datasets\cpms_odontologia.csv' 
-WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '\n'); -- UTF-8
+WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '\n'); 
 GO
 
 -- 3. INSERCIÓN DE DATOS ESTÁTICOS INICIALES (Personal base)
@@ -49,3 +49,4 @@ SELECT 'DM Dim_Paciente', COUNT(*) FROM dm.Dim_Paciente
 UNION ALL
 SELECT 'DM Fact_Atenciones', COUNT(*) FROM dm.Fact_Atenciones;
 GO
+
