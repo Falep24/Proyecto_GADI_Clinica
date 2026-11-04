@@ -1,0 +1,13 @@
+CodigoCPMS,Descripcion,Costo
+D0120,Examen estomatologico,30.00
+D1110,Profilaxis dental adulto,50.00
+D1120,Profilaxis dental nino,40.00
+D2140,Restauracion con amalgama - 1 superficie,60.00
+D2330,Restauracion con resina - 1 superficie anterior,80.00
+D2391,Restauracion con resina - 1 superficie posterior,90.00
+D3310,Tratamiento de conducto radicular (Endodoncia) - anterior,250.00
+D3320,Tratamiento de conducto radicular (Endodoncia) - premolar,300.00
+D7140,Extraccion dental simple,70.00
+D7210,Extraccion dental quirurgica,150.00
+D8080,Tratamiento ortodontico integral,3500.00
+D9223,Anestesia general intravenosa,200.00
