@@ -72,13 +72,7 @@ CREATE TABLE oltp.Pacientes (
     IdPaciente    BIGINT        NOT NULL PRIMARY KEY CLUSTERED,
     Genero        CHAR(1)       NOT NULL,
     Edad          SMALLINT      NOT NULL,
-    Barrio        NVARCHAR(100) NOT NULL,
-    -- Variables recuperadas para ML (Solución error ML 6)
-    Beca          BIT           NOT NULL DEFAULT 0,
-    Hipertension  BIT           NOT NULL DEFAULT 0,
-    Diabetes      BIT           NOT NULL DEFAULT 0,
-    Alcoholismo   BIT           NOT NULL DEFAULT 0,
-    Discapacidad  TINYINT       NOT NULL DEFAULT 0
+    Barrio        NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE oltp.Odontologos (
@@ -125,13 +119,7 @@ CREATE TABLE dm.Dim_Paciente (
     Genero       CHAR(1)       NOT NULL,
     Edad         SMALLINT      NOT NULL,
     Rango_Etario VARCHAR(20)   NOT NULL, 
-    Barrio       NVARCHAR(100) NOT NULL,
-    -- Variables predictivas añadidas
-    Beca         BIT           NOT NULL,
-    Hipertension BIT           NOT NULL,
-    Diabetes     BIT           NOT NULL,
-    Alcoholismo  BIT           NOT NULL,
-    Discapacidad TINYINT       NOT NULL
+    Barrio       NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE dm.Dim_Medico (

@@ -53,19 +53,14 @@ BEGIN
             UPPER(LEFT(Gender, 1)) AS Genero,
             TRY_CAST(Age AS SMALLINT) AS Edad,
             Neighbourhood AS Barrio,
-            TRY_CAST(Scholarship AS BIT) AS Beca,
-            TRY_CAST(Hipertension AS BIT) AS Hipertension,
-            TRY_CAST(Diabetes AS BIT) AS Diabetes,
-            TRY_CAST(Alcoholism AS BIT) AS Alcoholismo,
-            TRY_CAST(Handcap AS TINYINT) AS Discapacidad,
             ROW_NUMBER() OVER (PARTITION BY TRY_CAST(PatientId AS BIGINT) ORDER BY TRY_CAST(AppointmentID AS INT) DESC) AS FilaNum
         FROM stg.Raw_NoShow
         WHERE TRY_CAST(PatientId AS BIGINT) IS NOT NULL AND TRY_CAST(Age AS SMALLINT) BETWEEN 0 AND 100
     )
-    INSERT INTO oltp.Pacientes (IdPaciente, Genero, Edad, Barrio, Beca, Hipertension, Diabetes, Alcoholismo, Discapacidad)
-    SELECT IdPaciente, Genero, Edad, Barrio, ISNULL(Beca, 0), ISNULL(Hipertension, 0), ISNULL(Diabetes, 0), ISNULL(Alcoholismo, 0), ISNULL(Discapacidad, 0)
+    INSERT INTO oltp.Pacientes (IdPaciente, Genero, Edad, Barrio)
+    SELECT IdPaciente, Genero, Edad, Barrio
     FROM PacientesUnicos
-    WHERE FilaNum = 1 AND IdPaciente NOT IN (SELECT IdPaciente FROM oltp.Pacientes);
+    WHERE FilaNum = 1 AND NOT EXISTS (SELECT IdPaciente FROM oltp.Pacientes);
 
     -- D. CITAS 
     DECLARE @TotalTratamientos INT = (SELECT COUNT(*) FROM oltp.Tratamientos);
@@ -107,7 +102,7 @@ BEGIN
     SET LANGUAGE Spanish;
     
     -- Pacientes
-    INSERT INTO dm.Dim_Paciente (IdPaciente, Genero, Edad, Rango_Etario, Barrio, Beca, Hipertension, Diabetes, Alcoholismo, Discapacidad)
+    INSERT INTO dm.Dim_Paciente (IdPaciente, Genero, Edad, Rango_Etario, Barrio)
     SELECT IdPaciente, Genero, Edad, 
            CASE 
                WHEN Edad BETWEEN 0 AND 17 THEN '0-17 años'
@@ -116,7 +111,7 @@ BEGIN
                WHEN Edad BETWEEN 45 AND 59 THEN '45-59 años'
                ELSE '60 años a más'
            END AS Rango_Etario,
-           Barrio, Beca, Hipertension, Diabetes, Alcoholismo, Discapacidad
+           Barrio
     FROM oltp.Pacientes 
     WHERE IdPaciente NOT IN (SELECT IdPaciente FROM dm.Dim_Paciente);
     
@@ -187,11 +182,6 @@ SELECT
     p.SK_Paciente,
     p.Edad, 
     p.Genero,
-    p.Beca, 
-    p.Hipertension, 
-    p.Diabetes, 
-    p.Alcoholismo, 
-    p.Discapacidad,
     f.SMSRecibido,
     f.Tiempo_Espera_Dias,
     t.Costo_Total AS Costo_Tratamiento_Sugerido,

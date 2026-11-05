@@ -14,13 +14,13 @@ GO
 -- Modifica la ruta 'C:\Datasets\' según el disco del servidor donde alojes los archivos.
 
 BULK INSERT stg.Raw_NoShow 
-FROM 'C:\Users\MANFRED\Desktop\Proyecto_GADI_Clinica-main\05_Datasets\KaggleV2-May-2016.csv' 
+FROM 'C:\Users\fabri\Downloads\Proyecto_GADI_Clinica\05_Datasets\KaggleV2-May-2016.csv' 
 WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', CODEPAGE = '65001');
 
 BULK INSERT stg.Raw_CPMS 
-FROM 'C:\Users\MANFRED\Desktop\Proyecto_GADI_Clinica-main\05_Datasets\cpms_odontologia.csv' 
+FROM 'C:\Users\fabri\Downloads\Proyecto_GADI_Clinica\05_Datasets\cpms_odontologia.csv' 
 -- Removido FORMAT='CSV' y ajustado el ROWTERMINATOR a '0x0a' para que lea los registros sin fallar
-WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', CODEPAGE = '65001'); 
+WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '\n', CODEPAGE = '65001'); 
 GO
 
 -- 3. INSERCIÓN DE DATOS ESTÁTICOS INICIALES (Personal base)
