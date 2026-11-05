@@ -3,8 +3,13 @@
    ===================================================================== */
 USE master;
 GO
+
+-- 1. CIERRE DE CONEXIONES Y ELIMINACIÓN SEGURA (Solución error DDL 3)
 IF EXISTS (SELECT name FROM sys.databases WHERE name = 'DentalCenterDB')
+BEGIN
+    ALTER DATABASE DentalCenterDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
     DROP DATABASE DentalCenterDB;
+END
 GO
 
 CREATE DATABASE DentalCenterDB;
@@ -13,13 +18,13 @@ GO
 USE DentalCenterDB;
 GO
 
--- 1. ESQUEMAS
+-- 2. ESQUEMAS
 IF SCHEMA_ID('stg')  IS NULL EXEC('CREATE SCHEMA stg');
 IF SCHEMA_ID('oltp') IS NULL EXEC('CREATE SCHEMA oltp');
 IF SCHEMA_ID('dm')   IS NULL EXEC('CREATE SCHEMA dm');
 GO
 
--- 2. TABLAS STAGING (Capa de aterrizaje cruda)
+-- 3. TABLAS STAGING (Capa de aterrizaje cruda)
 IF OBJECT_ID('stg.Raw_NoShow', 'U') IS NOT NULL DROP TABLE stg.Raw_NoShow;
 CREATE TABLE stg.Raw_NoShow (
     PatientId       NVARCHAR(50)  NULL,
@@ -44,9 +49,19 @@ CREATE TABLE stg.Raw_CPMS (
     Descripcion  NVARCHAR(1000) NULL,
     Tarifa       NVARCHAR(50)   NULL
 );
+
+-- Tabla de rechazos (Solución error Integridad 6)
+IF OBJECT_ID('stg.Rechazos_Ingesta', 'U') IS NOT NULL DROP TABLE stg.Rechazos_Ingesta;
+CREATE TABLE stg.Rechazos_Ingesta (
+    IdRechazo INT IDENTITY(1,1) PRIMARY KEY,
+    PatientId NVARCHAR(50),
+    AppointmentID NVARCHAR(50),
+    Motivo NVARCHAR(255),
+    FechaRegistro DATETIME DEFAULT GETDATE()
+);
 GO
 
--- 3. TABLAS OLTP (Sistema Transaccional)
+-- 4. TABLAS OLTP (Sistema Transaccional)
 IF OBJECT_ID('oltp.Citas', 'U') IS NOT NULL DROP TABLE oltp.Citas;
 IF OBJECT_ID('oltp.Pacientes', 'U') IS NOT NULL DROP TABLE oltp.Pacientes;
 IF OBJECT_ID('oltp.Odontologos', 'U') IS NOT NULL DROP TABLE oltp.Odontologos;
@@ -58,6 +73,7 @@ CREATE TABLE oltp.Pacientes (
     Genero        CHAR(1)       NOT NULL,
     Edad          SMALLINT      NOT NULL,
     Barrio        NVARCHAR(100) NOT NULL,
+    -- Variables recuperadas para ML (Solución error ML 6)
     Beca          BIT           NOT NULL DEFAULT 0,
     Hipertension  BIT           NOT NULL DEFAULT 0,
     Diabetes      BIT           NOT NULL DEFAULT 0,
@@ -74,10 +90,10 @@ CREATE TABLE oltp.Odontologos (
 );
 
 CREATE TABLE oltp.Tratamientos (
-    IdTratamiento INT IDENTITY(1,1) NOT NULL PRIMARY KEY CLUSTERED,
+    IdTratamiento INT            NOT NULL PRIMARY KEY CLUSTERED, 
     CodigoCPMS    VARCHAR(50)    NOT NULL,
     Descripcion   NVARCHAR(500)  NOT NULL,
-    DuracionMeses INT            NOT NULL DEFAULT 1, -- Nuevo campo operativo
+    DuracionMeses INT            NOT NULL DEFAULT 1,
     Costo         DECIMAL(10,2)  NOT NULL
 );
 
@@ -85,7 +101,7 @@ CREATE TABLE oltp.Citas (
     IdCita            INT           NOT NULL PRIMARY KEY CLUSTERED,
     IdPaciente        BIGINT        NOT NULL FOREIGN KEY REFERENCES oltp.Pacientes(IdPaciente),
     IdOdontologo      INT           NOT NULL FOREIGN KEY REFERENCES oltp.Odontologos(IdOdontologo),
-    IdTratamiento     INT           NOT NULL,
+    IdTratamiento     INT           NOT NULL FOREIGN KEY REFERENCES oltp.Tratamientos(IdTratamiento),
     FechaProgramacion DATETIME2(0)  NOT NULL,
     FechaCita         DATE          NOT NULL,
     SMSRecibido       BIT           NOT NULL DEFAULT 0,
@@ -94,7 +110,7 @@ CREATE TABLE oltp.Citas (
 );
 GO
 
--- 4. TABLAS DATA MART (Modelo Dimensional Kimball)
+-- 5. TABLAS DATA MART (Modelo Dimensional Kimball)
 IF OBJECT_ID('dm.Fact_Atenciones', 'U') IS NOT NULL DROP TABLE dm.Fact_Atenciones;
 IF OBJECT_ID('dm.Dim_Paciente', 'U') IS NOT NULL DROP TABLE dm.Dim_Paciente;
 IF OBJECT_ID('dm.Dim_Medico', 'U') IS NOT NULL DROP TABLE dm.Dim_Medico;
@@ -108,8 +124,14 @@ CREATE TABLE dm.Dim_Paciente (
     IdPaciente   BIGINT        NOT NULL UNIQUE,
     Genero       CHAR(1)       NOT NULL,
     Edad         SMALLINT      NOT NULL,
-    Rango_Etario VARCHAR(20) NOT NULL, 
-    Barrio       NVARCHAR(100) NOT NULL
+    Rango_Etario VARCHAR(20)   NOT NULL, 
+    Barrio       NVARCHAR(100) NOT NULL,
+    -- Variables predictivas añadidas
+    Beca         BIT           NOT NULL,
+    Hipertension BIT           NOT NULL,
+    Diabetes     BIT           NOT NULL,
+    Alcoholismo  BIT           NOT NULL,
+    Discapacidad TINYINT       NOT NULL
 );
 
 CREATE TABLE dm.Dim_Medico (
@@ -121,10 +143,10 @@ CREATE TABLE dm.Dim_Medico (
 
 CREATE TABLE dm.Dim_Tratamiento (
     SK_Tratamiento INT IDENTITY(1,1) NOT NULL PRIMARY KEY CLUSTERED,
-    IdTratamiento  INT           NOT NULL,
+    IdTratamiento  INT           NOT NULL UNIQUE,
     Descripcion    NVARCHAR(500) NOT NULL,
-    Duracion_Meses INT           NOT NULL, -- Nuevo campo
-    Costo_Total    DECIMAL(10,2) NOT NULL  -- Renombrado
+    Duracion_Meses INT           NOT NULL,
+    Costo_Total    DECIMAL(10,2) NOT NULL
 );
 
 CREATE TABLE dm.Dim_Tiempo (
@@ -133,33 +155,34 @@ CREATE TABLE dm.Dim_Tiempo (
     Anio       SMALLINT    NOT NULL,
     Mes        TINYINT     NOT NULL,
     NombreMes  VARCHAR(12) NOT NULL,
-    Trimestre  TINYINT     NOT NULL,       -- Nuevo campo
-    Dia_Semana VARCHAR(15) NOT NULL        -- Nuevo campo
+    Trimestre  TINYINT     NOT NULL,
+    Dia_Semana VARCHAR(15) NOT NULL
 );
 
 CREATE TABLE dm.Fact_Atenciones (
     ID_Hecho          INT IDENTITY(1,1) NOT NULL PRIMARY KEY CLUSTERED,
-    IdCita            INT           NOT NULL UNIQUE, -- Necesario para el flujo ETL (no duplicar)
+    IdCita            INT           NOT NULL UNIQUE,
     SK_Paciente       INT           NOT NULL FOREIGN KEY REFERENCES dm.Dim_Paciente(SK_Paciente),
     SK_Medico         INT           NOT NULL FOREIGN KEY REFERENCES dm.Dim_Medico(SK_Medico),
     SK_Tratamiento    INT           NOT NULL FOREIGN KEY REFERENCES dm.Dim_Tratamiento(SK_Tratamiento),
     SK_Tiempo         INT           NOT NULL FOREIGN KEY REFERENCES dm.Dim_Tiempo(SK_Tiempo),
     
-    -- Métricas / Medidas
     Estado_Cita       VARCHAR(20)   NOT NULL,
-    Tiempo_Espera_Min INT           NOT NULL,
+    Tiempo_Espera_Dias INT          NOT NULL,
+    SMSRecibido       BIT           NOT NULL,
     Monto_Pagado      DECIMAL(10,2) NOT NULL,
     
-    -- Variables Calculadas para Análisis y Machine Learning
     Es_Atendido       INT           NOT NULL,
     Es_Ausencia       INT           NOT NULL
 );
 
 CREATE TABLE dm.Resultados_Prediccion_IA (
-    SK_Paciente INT PRIMARY KEY,
-    Probabilidad_Abandono DECIMAL(5,4) NOT NULL, -- Valor entre 0.0000 y 1.0000
-    Nivel_Riesgo VARCHAR(20) NOT NULL,            -- 'Riesgo Alto', 'Riesgo Medio', 'Riesgo Bajo'
-    Prediccion_Binary INT NOT NULL,              -- 1 = Abandonará, 0 = Continuará
+    ID_Prediccion INT IDENTITY(1,1) PRIMARY KEY,
+    IdCita INT NOT NULL, -- Predicción a nivel de cita, no de paciente histórico
+    SK_Paciente INT NOT NULL,
+    Probabilidad_Inasistencia DECIMAL(5,4) NOT NULL,
+    Nivel_Riesgo VARCHAR(20) NOT NULL,
+    Prediccion_Binary INT NOT NULL,
     Fecha_Evaluacion DATETIME DEFAULT GETDATE()
 );
 GO

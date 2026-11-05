@@ -10,14 +10,17 @@ TRUNCATE TABLE stg.Raw_CPMS;
 GO
 
 -- 2. CARGA DE ARCHIVOS CSV CRUDOS 
--- (Recuerda modificar la ruta a una pública como C:\Datasets\ si tienes problemas de permisos)
+-- NOTA: Las rutas deben ser relativas al servidor de SQL Server. 
+-- Modifica la ruta 'C:\Datasets\' según el disco del servidor donde alojes los archivos.
+
 BULK INSERT stg.Raw_NoShow 
-FROM 'C:\Users\fabri\Downloads\Proyecto_GADI_Clinica\05_Datasets\KaggleV2-May-2016.csv' 
-WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', CODEPAGE = '65001'); -- UTF-8
+FROM 'C:\Users\MANFRED\Desktop\Proyecto_GADI_Clinica-main\05_Datasets\KaggleV2-May-2016.csv' 
+WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', CODEPAGE = '65001');
 
 BULK INSERT stg.Raw_CPMS 
-FROM 'C:\Users\fabri\Downloads\Proyecto_GADI_Clinica\05_Datasets\cpms_odontologia.csv' 
-WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '\n'); 
+FROM 'C:\Users\MANFRED\Desktop\Proyecto_GADI_Clinica-main\05_Datasets\cpms_odontologia.csv' 
+-- Removido FORMAT='CSV' y ajustado el ROWTERMINATOR a '0x0a' para que lea los registros sin fallar
+WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', CODEPAGE = '65001'); 
 GO
 
 -- 3. INSERCIÓN DE DATOS ESTÁTICOS INICIALES (Personal base)
@@ -41,7 +44,11 @@ PRINT 'Carga Data Mart finalizada.';
 GO
 
 -- 5. VERIFICACIÓN FINAL (Validar que las tablas tienen datos)
-SELECT 'OLTP Pacientes' AS Tabla, COUNT(*) AS TotalRegistros FROM oltp.Pacientes
+SELECT 'Staging Rechazos' AS Tabla, COUNT(*) AS TotalRegistros FROM stg.Rechazos_Ingesta
+UNION ALL
+SELECT 'OLTP Tratamientos', COUNT(*) FROM oltp.Tratamientos
+UNION ALL
+SELECT 'OLTP Pacientes', COUNT(*) FROM oltp.Pacientes
 UNION ALL
 SELECT 'OLTP Citas', COUNT(*) FROM oltp.Citas
 UNION ALL
@@ -49,4 +56,3 @@ SELECT 'DM Dim_Paciente', COUNT(*) FROM dm.Dim_Paciente
 UNION ALL
 SELECT 'DM Fact_Atenciones', COUNT(*) FROM dm.Fact_Atenciones;
 GO
-
