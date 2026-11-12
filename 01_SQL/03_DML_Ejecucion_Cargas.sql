@@ -14,7 +14,7 @@ GO
 -- Modifica la ruta 'C:\Datasets\' según el disco del servidor donde alojes los archivos.
 
 BULK INSERT stg.Raw_NoShow 
-FROM 'C:\Users\fabri\Downloads\Proyecto_GADI_Clinica\05_Datasets\Registro_clinica_dental.csv' 
+FROM 'C:\Users\fabri\Downloads\Proyecto_GADI_Clinica\05_Datasets\consolidado_clinica_dental.csv' 
 WITH (FORMAT = 'CSV', FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', CODEPAGE = '65001');
 
 BULK INSERT stg.Raw_CPMS 

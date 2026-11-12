@@ -1,4 +1,4 @@
-PatientId,AppointmentID,Gender,ScheduledDay,AppointmentDay,Age,Neighbourhood,Scholarship,Hipertension,Diabetes,Alcoholism,Handcap,SMS_received,NoShow
+PatientId,AppointmentID,Gender,ScheduledDay,AppointmentDay,Age,Neighbourhood,Scholarship,Hipertension,Diabetes,Alcoholism,Handcap,SMS_received,No-Show
 10001175,5000001,F,2025-11-27T09:31:40Z,2025-11-30T00:00:00Z,7,Jesus Maria,0,0,0,0,0,0,Yes
 10018501,5000002,F,2025-07-08T19:22:29Z,2025-07-22T00:00:00Z,8,San Miguel,0,0,0,0,0,0,No
 10022544,5000003,M,2025-07-29T16:02:56Z,2025-07-29T00:00:00Z,14,Miraflores,0,0,0,0,0,0,No
