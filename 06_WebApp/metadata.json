@@ -1,0 +1,6 @@
+{
+  "name": "Sonrisa Integral — Centro de Comando BI & IA",
+  "description": "Plataforma clínica de gestión odontológica OLTP, analítica Power BI e inferencia predictiva Random Forest para retención de citas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
