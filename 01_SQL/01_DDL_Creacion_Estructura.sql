@@ -164,13 +164,17 @@ CREATE TABLE dm.Fact_Atenciones (
     Es_Ausencia       INT           NOT NULL
 );
 
+IF OBJECT_ID('dm.Resultados_Prediccion_IA', 'U') IS NOT NULL
+    DROP TABLE dm.Resultados_Prediccion_IA;
+GO
+
 CREATE TABLE dm.Resultados_Prediccion_IA (
-    ID_Prediccion INT IDENTITY(1,1) PRIMARY KEY,
-    IdCita INT NOT NULL, -- Predicción a nivel de cita, no de paciente histórico
-    SK_Paciente INT NOT NULL,
-    Probabilidad_Inasistencia DECIMAL(5,4) NOT NULL,
+    SK_Paciente INT NOT NULL PRIMARY KEY,
+    Probabilidad_Abandono DECIMAL(5,4) NOT NULL,
     Nivel_Riesgo VARCHAR(20) NOT NULL,
-    Prediccion_Binary INT NOT NULL,
-    Fecha_Evaluacion DATETIME DEFAULT GETDATE()
+    Prediccion_Binary BIT NOT NULL,
+    Fecha_Scoring DATETIME2(0) NOT NULL DEFAULT SYSDATETIME(),
+    CONSTRAINT FK_Prediccion_DimPaciente FOREIGN KEY (SK_Paciente) 
+        REFERENCES dm.Dim_Paciente(SK_Paciente)
 );
 GO

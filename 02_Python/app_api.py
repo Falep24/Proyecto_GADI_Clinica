@@ -250,15 +250,15 @@ def bandeja_retencion(riesgo: str = "Todos", limit: int = 100):
             m.NombreCompleto AS Medico, m.Especialidad,
             t.Descripcion AS Tratamiento, CAST(t.Costo_Total AS FLOAT) AS Costo_Total,
             f.Tiempo_Espera_Dias, f.SMSRecibido, f.Estado_Cita,
-            CAST(r.Probabilidad_Inasistencia AS FLOAT) AS Probabilidad_Inasistencia,
+            CAST(r.Probabilidad_Abandono AS FLOAT) AS Probabilidad_Inasistencia,
             r.Nivel_Riesgo, r.Prediccion_Binary
         FROM dm.Fact_Atenciones f
         JOIN dm.Dim_Paciente p ON f.SK_Paciente = p.SK_Paciente
         JOIN dm.Dim_Medico m ON f.SK_Medico = m.SK_Medico
         JOIN dm.Dim_Tratamiento t ON f.SK_Tratamiento = t.SK_Tratamiento
-        JOIN dm.Resultados_Prediccion_IA r ON f.IdCita = r.IdCita
+        JOIN dm.Resultados_Prediccion_IA r ON p.SK_Paciente = r.SK_Paciente
         {filtro}
-        ORDER BY r.Probabilidad_Inasistencia DESC
+        ORDER BY r.Probabilidad_Abandono DESC
     """
     params = (limit, riesgo) if riesgo != "Todos" else (limit,)
     cursor.execute(query, params)
