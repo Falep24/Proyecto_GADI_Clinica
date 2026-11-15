@@ -61,6 +61,10 @@ interface ClinicalContextValue {
   pendingDeltasCount: number;
   stgQueueCount: number;
   oltpTotalCount: number;
+  oltpPacientesCount: number;
+  oltpPacientesFCount: number;
+  oltpPacientesMCount: number;
+  oltpTopBarrio: string;
   dmFactCount: number;
   lastSyncTime: string;
   isSyncingEtl: boolean;
@@ -120,63 +124,32 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [apiConnected, setApiConnected] = useState<boolean>(false);
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
 
-  const [patients, setPatients] = useState<Patient[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed.patients)) return parsed.patients;
-      }
-    } catch {
-      // ignore storage read error
-    }
-    return INITIAL_PATIENTS;
-  });
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [oltpAppointments, setOltpAppointments] = useState<OltpAppointment[]>([]);
+  const [retentionRows, setRetentionRows] = useState<DataMartRetentionRow[]>([]);
 
-  const [oltpAppointments, setOltpAppointments] = useState<OltpAppointment[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed.oltpAppointments)) return parsed.oltpAppointments;
-      }
-    } catch {
-      // ignore
-    }
-    return INITIAL_OLTP_APPOINTMENTS;
-  });
-
-  const [retentionRows, setRetentionRows] = useState<DataMartRetentionRow[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed.retentionRows)) return parsed.retentionRows;
-      }
-    } catch {
-      // ignore
-    }
-    return INITIAL_RETENTION_ROWS;
-  });
-
-  const [stgQueueCount, setStgQueueCount] = useState<number>(2450);
-  const [oltpTotalCount, setOltpTotalCount] = useState<number>(84120);
-  const [dmFactCount, setDmFactCount] = useState<number>(126890);
-  const [lastSyncTime, setLastSyncTime] = useState<string>('10:42 PET');
+  const [stgQueueCount, setStgQueueCount] = useState<number>(0);
+  const [oltpTotalCount, setOltpTotalCount] = useState<number>(0);
+  const [oltpPacientesCount, setOltpPacientesCount] = useState<number>(0);
+  const [oltpPacientesFCount, setOltpPacientesFCount] = useState<number>(0);
+  const [oltpPacientesMCount, setOltpPacientesMCount] = useState<number>(0);
+  const [oltpTopBarrio, setOltpTopBarrio] = useState<string>('');
+  const [dmFactCount, setDmFactCount] = useState<number>(0);
+  const [lastSyncTime, setLastSyncTime] = useState<string>('Sincronizando...');
   const [isSyncingEtl, setIsSyncingEtl] = useState<boolean>(false);
   const [modelAuc, setModelAuc] = useState<string>('0.842');
 
   const [sqlLogs, setSqlLogs] = useState<SqlLogEntry[]>([
     {
       id: 'log-1',
-      timestamp: '2026-11-12 10:35:12.104',
+      timestamp: formatIsoNow(),
       prefix: 'SESSION: SPID-64',
-      message: "Connected to instance 'LIM-SRV-DATA01\\MSSQLSERVER'. Database context set to [DentalCenterDB].",
+      message: "Connected to instance 'localhost\\SQLEXPRESS'. Database context set to [DentalCenterDB].",
       tone: 'info',
     },
     {
       id: 'log-2',
-      timestamp: '2026-11-12 10:38:00.240',
+      timestamp: formatIsoNow(),
       prefix: 'FASTAPI',
       message: `Inicializando cliente REST hacia FastAPI (${FASTAPI_BASE_URL}/api/*)...`,
       tone: 'cmd',
@@ -188,14 +161,11 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ patients, oltpAppointments, retentionRows })
-      );
+      localStorage.removeItem(STORAGE_KEY);
     } catch {
-      // ignore storage quota errors
+      // ignore storage errors
     }
-  }, [patients, oltpAppointments, retentionRows]);
+  }, []);
 
   const appendSqlLog = useCallback(
     (prefix: string, message: string, tone: SqlLogEntry['tone'] = 'info') => {
@@ -229,24 +199,43 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const refreshAllFromApi = useCallback(async (silent = false) => {
     if (!silent) setIsLoadingData(true);
     try {
-      const [apiPatients, apiCitas, apiRetencion] = await Promise.all([
+      const [apiPatients, apiCitas, apiRetencion, apiKpis] = await Promise.all([
         clinicalApi.getPacientes(),
         clinicalApi.getCitas(),
         clinicalApi.getRetencion(),
+        clinicalApi.getKpisMonitor('30d', 'todas'),
       ]);
 
-      if (Array.isArray(apiPatients) && apiPatients.length > 0) setPatients(apiPatients);
-      if (Array.isArray(apiCitas) && apiCitas.length > 0) setOltpAppointments(apiCitas);
-      if (Array.isArray(apiRetencion) && apiRetencion.length > 0) setRetentionRows(apiRetencion);
+      if (Array.isArray(apiPatients)) setPatients(apiPatients);
+      if (Array.isArray(apiCitas)) setOltpAppointments(apiCitas);
+      if (Array.isArray(apiRetencion)) setRetentionRows(apiRetencion);
+
+      if (apiKpis?.monitor) {
+        setStgQueueCount(apiKpis.monitor.stg_rechazos ?? 0);
+        setOltpTotalCount(apiKpis.monitor.oltp_citas ?? 0);
+        setOltpPacientesCount(apiKpis.monitor.oltp_pacientes ?? 0);
+        setOltpPacientesFCount(apiKpis.monitor.oltp_pacientes_f ?? 0);
+        setOltpPacientesMCount(apiKpis.monitor.oltp_pacientes_m ?? 0);
+        setOltpTopBarrio(apiKpis.monitor.oltp_top_barrio ?? '');
+        setDmFactCount(apiKpis.monitor.dm_hechos ?? 0);
+      }
+      if (apiKpis?.ultimoSync) {
+        setLastSyncTime(apiKpis.ultimoSync);
+      } else {
+        setLastSyncTime(`${formatTimeNow().slice(0, 5)} PET`);
+      }
 
       setApiConnected(true);
       appendSqlLog(
         'FASTAPI_OK',
-        `GET ${FASTAPI_BASE_URL}/api/pacientes, /api/citas, /api/retencion sincronizados.`,
+        `GET ${FASTAPI_BASE_URL}/api/pacientes, /api/citas, /api/retencion, /api/kpis-monitor sincronizados desde SQL Server (SQLEXPRESS).`,
         'success'
       );
     } catch (err) {
       setApiConnected(false);
+      setPatients((prev) => (prev.length === 0 ? INITIAL_PATIENTS : prev));
+      setOltpAppointments((prev) => (prev.length === 0 ? INITIAL_OLTP_APPOINTMENTS : prev));
+      setRetentionRows((prev) => (prev.length === 0 ? INITIAL_RETENTION_ROWS : prev));
       const reason = err instanceof Error ? err.message : 'Error de red';
       appendSqlLog(
         'FASTAPI_OFFLINE',
@@ -274,8 +263,9 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const pendingDeltasCount = useMemo(() => {
     const unsynced = oltpAppointments.filter((a) => !a.sincronizadoDM).length;
-    return 11 + unsynced;
-  }, [oltpAppointments]);
+    const dbDelta = Math.max(0, oltpTotalCount - dmFactCount);
+    return Math.max(dbDelta, unsynced);
+  }, [oltpAppointments, oltpTotalCount, dmFactCount]);
 
   const clearSqlLogs = () => {
     setSqlLogs([
@@ -837,6 +827,10 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         pendingDeltasCount,
         stgQueueCount,
         oltpTotalCount,
+        oltpPacientesCount,
+        oltpPacientesFCount,
+        oltpPacientesMCount,
+        oltpTopBarrio,
         dmFactCount,
         lastSyncTime,
         isSyncingEtl,

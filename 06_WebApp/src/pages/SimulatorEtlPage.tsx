@@ -9,6 +9,7 @@ export const SimulatorEtlPage: React.FC = () => {
     patients,
     stgQueueCount,
     oltpTotalCount,
+    oltpPacientesCount,
     dmFactCount,
     modelAuc,
     isSyncingEtl,
@@ -704,11 +705,13 @@ export const SimulatorEtlPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-on-surface">
                   <span>oltp.Pacientes:</span>
-                  <span className="font-semibold">{(31439 + patients.length).toLocaleString()}</span>
+                  <span className="font-semibold">
+                    {(oltpPacientesCount || patients.length).toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex justify-between text-on-surface">
-                  <span>oltp.Medicos:</span>
-                  <span className="font-semibold">42 cirujanos</span>
+                  <span>oltp.Odontologos:</span>
+                  <span className="font-semibold">3 especialistas</span>
                 </div>
               </div>
             </div>

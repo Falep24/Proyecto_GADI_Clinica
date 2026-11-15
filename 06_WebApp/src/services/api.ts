@@ -19,6 +19,23 @@ export interface KpisMonitorResponse {
   asistenciaConSms?: number;
   asistenciaSinSms?: number;
   ultimoSync?: string;
+  kpis?: {
+    TotalCitas: number;
+    TotalAusencias: number;
+    TasaInasistencia: number;
+    EsperaPromedio: number;
+    IngresosEnRiesgo: number;
+  };
+  monitor?: {
+    stg_rechazos: number;
+    oltp_pacientes: number;
+    oltp_pacientes_f?: number;
+    oltp_pacientes_m?: number;
+    oltp_top_barrio?: string;
+    oltp_citas: number;
+    dm_hechos: number;
+    dm_predicciones: number;
+  };
 }
 
 export interface PredictNoShowPayload {
@@ -46,7 +63,7 @@ async function requestJson<T>(
 ): Promise<T> {
   const url = `${FASTAPI_BASE_URL}${path}`;
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
 
   try {
     const response = await fetch(url, {
