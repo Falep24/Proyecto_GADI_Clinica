@@ -9,6 +9,10 @@ type AgeFilter = 'all' | 'pediatric' | 'adult' | 'senior';
 export const PatientsCrudPage: React.FC = () => {
   const {
     patients,
+    oltpPacientesCount,
+    oltpPacientesFCount,
+    oltpPacientesMCount,
+    oltpTopBarrio,
     addPatient,
     updatePatient,
     deletePatient,
@@ -43,16 +47,22 @@ export const PatientsCrudPage: React.FC = () => {
   const isAgeInvalid = edad !== '' && (Number.isNaN(ageNumber) || ageNumber < 0 || ageNumber > 100);
 
   const stats = useMemo(() => {
-    const totalBase = 1237 + patients.length;
-    const femCount = 678 + patients.filter((p) => p.genero === 'F').length;
-    const mascCount = totalBase - femCount;
+    const totalBase = Math.max(oltpPacientesCount, patients.length, 1);
+    const femCount =
+      oltpPacientesFCount > 0
+        ? oltpPacientesFCount
+        : patients.filter((p) => p.genero === 'F').length;
+    const mascCount =
+      oltpPacientesMCount > 0 ? oltpPacientesMCount : Math.max(0, totalBase - femCount);
 
     const districtCounts: Record<string, number> = {};
     patients.forEach((p) => {
       districtCounts[p.barrio] = (districtCounts[p.barrio] || 0) + 1;
     });
     const topDistrict =
-      Object.entries(districtCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Surco';
+      oltpTopBarrio ||
+      Object.entries(districtCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+      'Surco';
 
     return {
       totalBase: totalBase.toLocaleString('es-PE'),
@@ -62,7 +72,7 @@ export const PatientsCrudPage: React.FC = () => {
       mascPct: ((mascCount / totalBase) * 100).toFixed(1),
       topDistrict: topDistrict.replace('Santiago de ', ''),
     };
-  }, [patients]);
+  }, [patients, oltpPacientesCount, oltpPacientesFCount, oltpPacientesMCount, oltpTopBarrio]);
 
   const filteredPatients = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -312,7 +322,7 @@ export const PatientsCrudPage: React.FC = () => {
                 </span>
                 <input
                   type="text"
-                  maxLength={8}
+                  maxLength={15}
                   required
                   readOnly={Boolean(editingPatientId)}
                   value={idPaciente}
@@ -410,6 +420,9 @@ export const PatientsCrudPage: React.FC = () => {
                   onChange={(e) => setBarrio(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low font-body-md text-on-surface focus:outline-none focus:bg-surface-container transition-colors"
                 >
+                  {!LIMA_DISTRICTS.includes(barrio) && barrio && (
+                    <option value={barrio}>{barrio}</option>
+                  )}
                   {LIMA_DISTRICTS.map((d) => (
                     <option key={d} value={d}>
                       {d}
