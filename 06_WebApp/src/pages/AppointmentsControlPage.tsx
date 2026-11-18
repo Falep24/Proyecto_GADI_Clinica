@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { SqlConsole } from '../components/SqlConsole';
-import { computeNoShowProbability, useClinical } from '../context/ClinicalContext';
-import { DENTISTS, TREATMENTS } from '../data/initialData';
+import {
+  addDaysToIsoDate,
+  computeNoShowProbability,
+  getTodayIsoDate,
+  useClinical,
+} from '../context/ClinicalContext';
 import { clinicalApi } from '../services/api';
 import { NoShowStatus, OltpAppointment } from '../types/clinical';
 
@@ -10,6 +14,9 @@ type TimeFilter = 'hoy' | 'manana' | 'semana' | 'todos';
 export const AppointmentsControlPage: React.FC = () => {
   const {
     patients,
+    treatments,
+    dentists,
+    searchPatientsFromApi,
     oltpAppointments,
     addOltpAppointment,
     toggleOltpSms,
@@ -24,12 +31,16 @@ export const AppointmentsControlPage: React.FC = () => {
     pushToast,
   } = useClinical();
 
+  const todayIso = useMemo(() => getTodayIsoDate(), []);
+  const defaultAppointmentDate = useMemo(() => addDaysToIsoDate(todayIso, 7), [todayIso]);
+
   // Form states
+  const [patientSearch, setPatientSearch] = useState<string>('');
   const [selectedPatientDni, setSelectedPatientDni] = useState<string>('');
   const [odontologoId, setOdontologoId] = useState<number>(2);
-  const [tratamientoCodigo, setTratamientoCodigo] = useState<string>('D3310');
-  const [costoAplicado, setCostoAplicado] = useState<string>('250.00');
-  const [fechaCita, setFechaCita] = useState<string>('2024-11-30');
+  const [tratamientoCodigo, setTratamientoCodigo] = useState<string>('CPMS-05');
+  const [costoAplicado, setCostoAplicado] = useState<string>('150.00');
+  const [fechaCita, setFechaCita] = useState<string>(defaultAppointmentDate);
   const [smsActivo, setSmsActivo] = useState<boolean>(false);
   const [noShowEstado, setNoShowEstado] = useState<NoShowStatus>('Pendiente');
 
@@ -40,7 +51,7 @@ export const AppointmentsControlPage: React.FC = () => {
 
   // Action modals (reschedule / delete)
   const [rescheduleTarget, setRescheduleTarget] = useState<OltpAppointment | null>(null);
-  const [rescheduleDate, setRescheduleDate] = useState<string>('2024-11-18');
+  const [rescheduleDate, setRescheduleDate] = useState<string>(addDaysToIsoDate(todayIso, 3));
   const [deleteTarget, setDeleteTarget] = useState<OltpAppointment | null>(null);
 
   useEffect(() => {
@@ -49,7 +60,29 @@ export const AppointmentsControlPage: React.FC = () => {
     }
   }, [preselectedPatientDni]);
 
-  const nextIdCita = `CT-2024-${1104 + oltpAppointments.length}`;
+  useEffect(() => {
+    if (treatments.length > 0 && !treatments.some((t) => t.codigo === tratamientoCodigo)) {
+      setTratamientoCodigo(treatments[0].codigo);
+      setCostoAplicado(treatments[0].costo.toFixed(2));
+    }
+  }, [treatments, tratamientoCodigo]);
+
+  // Búsqueda de pacientes en servidor desde el selector de citas
+  useEffect(() => {
+    if (!patientSearch.trim()) return;
+    const timer = setTimeout(() => {
+      searchPatientsFromApi(patientSearch, 100);
+    }, 280);
+    return () => clearTimeout(timer);
+  }, [patientSearch, searchPatientsFromApi]);
+
+  const nextIdCita = useMemo(() => {
+    const maxExisting = oltpAppointments.reduce((acc, a) => {
+      const n = Number(a.idCita);
+      return Number.isFinite(n) && n > acc ? n : acc;
+    }, 9000125);
+    return String(maxExisting + 1);
+  }, [oltpAppointments]);
 
   const [apiScore, setApiScore] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,11 +93,11 @@ export const AppointmentsControlPage: React.FC = () => {
   );
 
   const diasEspera = useMemo(() => {
-    const base = new Date('2024-11-12T00:00:00');
+    const base = new Date(`${todayIso}T00:00:00`);
     const target = new Date(`${fechaCita}T00:00:00`);
     const diff = Math.ceil((target.getTime() - base.getTime()) / (1000 * 60 * 60 * 24));
     return Number.isNaN(diff) ? 0 : diff;
-  }, [fechaCita]);
+  }, [todayIso, fechaCita]);
 
   useEffect(() => {
     const edad = selectedPatient?.edad ?? 29;
@@ -82,6 +115,8 @@ export const AppointmentsControlPage: React.FC = () => {
           diasEspera: clampedDays,
           distrito,
           smsRecibido: smsActivo,
+          fechaCita,
+          idPaciente: selectedPatientDni || undefined,
         });
         if (!cancelled && typeof res?.probabilidad === 'number') {
           setApiScore(res.probabilidad);
@@ -95,7 +130,7 @@ export const AppointmentsControlPage: React.FC = () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [selectedPatient, tratamientoCodigo, diasEspera, smsActivo]);
+  }, [selectedPatient, selectedPatientDni, tratamientoCodigo, diasEspera, smsActivo, fechaCita]);
 
   const riskModel = useMemo(() => {
     const edad = selectedPatient?.edad ?? 29;
@@ -119,7 +154,8 @@ export const AppointmentsControlPage: React.FC = () => {
       dashOffset,
       waitShap,
       ageShap,
-      level: score >= 45 ? 'high' : score >= 25 ? 'medium' : 'low',
+      // Umbrales unificados con backend y notebook: Alto >= 50%, Medio >= 35%
+      level: score >= 50 ? 'high' : score >= 35 ? 'medium' : 'low',
     };
   }, [selectedPatient, diasEspera, smsActivo, apiScore]);
 
@@ -128,7 +164,8 @@ export const AppointmentsControlPage: React.FC = () => {
       const matchTime =
         timeFilter === 'todos' ||
         a.bucketTiempo === timeFilter ||
-        (timeFilter === 'semana' && (a.bucketTiempo === 'hoy' || a.bucketTiempo === 'manana' || a.bucketTiempo === 'semana'));
+        (timeFilter === 'semana' &&
+          (a.bucketTiempo === 'hoy' || a.bucketTiempo === 'manana' || a.bucketTiempo === 'semana'));
       const matchDentist =
         dentistFilter === 'todos' || a.odontologoNombre.includes(dentistFilter);
       const matchStatus = statusFilter === 'todos' || a.noShow === statusFilter;
@@ -138,12 +175,12 @@ export const AppointmentsControlPage: React.FC = () => {
 
   const handleTreatmentChange = (code: string) => {
     setTratamientoCodigo(code);
-    const t = TREATMENTS.find((item) => item.codigo === code);
+    const t = treatments.find((item) => item.codigo === code);
     if (t) {
       setCostoAplicado(t.costo.toFixed(2));
       appendSqlLog(
         'CPMS_CATALOG',
-        `Catálogo CPMS seleccionado: ${t.codigo} -> Costo establecido a S/ ${t.costo.toFixed(2)}`,
+        `Catálogo oltp.Tratamientos seleccionado: ${t.codigo} (${t.nombre}) -> S/ ${t.costo.toFixed(2)}`,
         'info'
       );
     }
@@ -153,7 +190,7 @@ export const AppointmentsControlPage: React.FC = () => {
     e.preventDefault();
     if (isSubmitting) return;
     if (!selectedPatientDni) {
-      pushToast('Paciente Requerido', 'Seleccione un paciente de oltp.Pacientes o cargue el paciente demo.', 'warning');
+      pushToast('Paciente Requerido', 'Seleccione un paciente de oltp.Pacientes.', 'warning');
       return;
     }
     if (diasEspera < 0) {
@@ -163,28 +200,31 @@ export const AppointmentsControlPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      await addOltpAppointment({
+      const created = await addOltpAppointment({
         idPaciente: selectedPatientDni,
         odontologoId,
         tratamientoCodigo,
-        costo: parseFloat(costoAplicado) || 250,
+        costo: parseFloat(costoAplicado) || 50,
         fechaCita,
         smsRecibido: smsActivo ? 1 : 0,
         noShow: noShowEstado,
         probabilidad: riskModel.score,
       });
 
-      setSelectedPatientDni('');
-      setSmsActivo(false);
-      setNoShowEstado('Pendiente');
+      if (created) {
+        setSelectedPatientDni('');
+        setSmsActivo(false);
+        setNoShowEstado('Pendiente');
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleApplyPrescribedDate = () => {
-    setFechaCita('2024-11-14');
-    appendSqlLog('PRESCRIPTION', 'Prescripción IA aplicada: FechaCita adelantada a 2024-11-14.', 'info');
+    const recommendedDate = addDaysToIsoDate(todayIso, 2);
+    setFechaCita(recommendedDate);
+    appendSqlLog('PRESCRIPTION', `Prescripción IA aplicada: FechaCita adelantada a ${recommendedDate}.`, 'info');
   };
 
   const handleActivateRecommendedSms = () => {
@@ -193,12 +233,11 @@ export const AppointmentsControlPage: React.FC = () => {
   };
 
   const handleDirectSms = async (appt: OltpAppointment) => {
-    appendSqlLog('SMS_GATEWAY', `EXEC oltp.usp_EnviarConfirmacionSMS @IdCita = '${appt.idCita}';`, 'cmd');
-    appendSqlLog('SMS_OK', 'Notificación push/SMS transmitida a la pasarela de mensajería.', 'success');
+    appendSqlLog('SMS_GATEWAY', `UPDATE oltp.Citas SET SMSRecibido = 1 WHERE IdCita = ${appt.idCita};`, 'cmd');
     if (appt.smsRecibido === 0) {
       await toggleOltpSms(appt.idCita);
     } else {
-      pushToast('SMS Enviado', `Recordatorio reenviado al paciente para la cita ${appt.idCita}.`);
+      pushToast('SMS Confirmado', `La cita #${appt.idCita} ya tiene confirmación SMS activa.`);
     }
   };
 
@@ -210,7 +249,7 @@ export const AppointmentsControlPage: React.FC = () => {
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container text-primary font-label-sm uppercase tracking-wider font-semibold">
               <span className="material-symbols-outlined text-[14px]">bolt</span>
-              Inferencia Activa v2.4
+              Inferencia RF en Vivo
             </span>
             <span className="text-on-surface-variant font-code-sm">
               oltp.Citas → dm.Fact_Atenciones
@@ -275,52 +314,66 @@ export const AppointmentsControlPage: React.FC = () => {
             </div>
             <div className="flex flex-col items-end">
               <span className="font-label-sm text-on-surface-variant uppercase tracking-wider">
-                Identificador Cita
+                Siguiente IdCita
               </span>
               <span className="font-code-md text-primary font-bold px-2 py-0.5 bg-surface-container rounded-lg">
-                {nextIdCita}
+                #{nextIdCita}
               </span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               <label className="font-label-sm text-on-surface font-semibold flex items-center justify-between">
                 <span>Paciente (oltp.Pacientes)</span>
                 <button
                   type="button"
-                  onClick={() => setSelectedPatientDni(patients[4]?.idPaciente || patients[0]?.idPaciente || '')}
+                  onClick={() => setSelectedPatientDni(patients[0]?.idPaciente || '')}
                   className="text-primary font-code-sm font-normal hover:underline"
                 >
-                  Cargar Paciente Demo
+                  Seleccionar Primer Paciente
                 </button>
               </label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-on-surface-variant">
-                  person_search
-                </span>
-                <select
-                  value={selectedPatientDni}
-                  onChange={(e) => setSelectedPatientDni(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all"
-                >
-                  <option value="" disabled>
-                    Seleccione o busque por DNI / Apellidos...
-                  </option>
-                  {patients.map((p) => (
-                    <option key={p.idPaciente} value={p.idPaciente}>
-                      {p.idPaciente} — {p.nombre} ({p.edad} años, {p.barrio})
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-on-surface-variant">
+                    search
+                  </span>
+                  <input
+                    type="search"
+                    value={patientSearch}
+                    onChange={(e) => setPatientSearch(e.target.value)}
+                    placeholder="Buscar IdPaciente o Barrio en BD..."
+                    className="w-full pl-9 pr-3 py-2.5 bg-surface-container-low rounded-lg font-body-sm text-on-surface focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none"
+                  />
+                </div>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-on-surface-variant">
+                    badge
+                  </span>
+                  <select
+                    value={selectedPatientDni}
+                    onChange={(e) => setSelectedPatientDni(e.target.value)}
+                    required
+                    className="w-full pl-9 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-sm text-on-surface focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                  >
+                    <option value="" disabled>
+                      Seleccione IdPaciente...
                     </option>
-                  ))}
-                </select>
+                    {patients.map((p) => (
+                      <option key={p.idPaciente} value={p.idPaciente}>
+                        #{p.idPaciente} ({p.genero}, {p.edad} años — {p.barrio})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
                 <label className="font-label-sm text-on-surface font-semibold">
-                  Odontólogo Especialista
+                  Odontólogo Especialista (oltp.Odontologos)
                 </label>
                 <div className="relative">
                   <span className="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-on-surface-variant">
@@ -331,7 +384,7 @@ export const AppointmentsControlPage: React.FC = () => {
                     onChange={(e) => setOdontologoId(Number(e.target.value))}
                     className="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none"
                   >
-                    {DENTISTS.slice(0, 3).map((d) => (
+                    {dentists.map((d) => (
                       <option key={d.id} value={d.id}>
                         {d.id} — {d.nombre} ({d.especialidad})
                       </option>
@@ -353,7 +406,7 @@ export const AppointmentsControlPage: React.FC = () => {
                     onChange={(e) => handleTreatmentChange(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none"
                   >
-                    {TREATMENTS.slice(0, 5).map((t) => (
+                    {treatments.map((t) => (
                       <option key={t.codigo} value={t.codigo}>
                         {t.codigo} — {t.nombre} (S/ {t.costo.toFixed(2)})
                       </option>
@@ -381,7 +434,7 @@ export const AppointmentsControlPage: React.FC = () => {
                   />
                 </div>
                 <span className="font-label-sm text-[10px] text-on-surface-variant">
-                  Catálogo CPMS actualizado
+                  Catálogo oltp.Tratamientos sincronizado
                 </span>
               </div>
 
@@ -392,11 +445,11 @@ export const AppointmentsControlPage: React.FC = () => {
                 <input
                   type="text"
                   readOnly
-                  value="2024-11-12 10:30"
+                  value={todayIso}
                   className="w-full px-3 py-2 bg-surface-container-low font-code-sm text-on-surface-variant rounded-lg cursor-not-allowed"
                 />
                 <span className="font-label-sm text-[10px] text-on-surface-variant">
-                  DATETIME2 (Captura de sistema)
+                  DATETIME2 (Fecha actual de sistema)
                 </span>
               </div>
 
@@ -407,7 +460,7 @@ export const AppointmentsControlPage: React.FC = () => {
                 </label>
                 <input
                   type="date"
-                  min="2024-11-12"
+                  min={todayIso}
                   value={fechaCita}
                   onChange={(e) => setFechaCita(e.target.value)}
                   required
@@ -433,7 +486,7 @@ export const AppointmentsControlPage: React.FC = () => {
                     SMS Notificación (BIT)
                   </span>
                   <span className="font-body-sm text-on-surface-variant">
-                    Dispara recordatorio automatizado
+                    Registra confirmación SMSRecibido = 1
                   </span>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -456,7 +509,7 @@ export const AppointmentsControlPage: React.FC = () => {
                     Estado Inicial NoShow
                   </span>
                   <span className="font-body-sm text-on-surface-variant">
-                    Default: Pendiente de asistencia
+                    Default: Pendiente ('Pen')
                   </span>
                 </div>
                 <select
@@ -476,9 +529,9 @@ export const AppointmentsControlPage: React.FC = () => {
                 type="button"
                 onClick={() => {
                   setSelectedPatientDni('');
-                  setTratamientoCodigo('D3310');
-                  setCostoAplicado('250.00');
-                  setFechaCita('2024-11-30');
+                  setTratamientoCodigo('CPMS-05');
+                  setCostoAplicado('150.00');
+                  setFechaCita(defaultAppointmentDate);
                   setSmsActivo(false);
                   setNoShowEstado('Pendiente');
                 }}
@@ -511,12 +564,12 @@ export const AppointmentsControlPage: React.FC = () => {
                     Asistente Predictivo No-Show
                   </h3>
                   <p className="font-body-sm text-on-surface-variant">
-                    Random Forest v2.4 (F1: 0.84)
+                    modelo_rf_dental.pkl (Umbrales: 35% / 50%)
                   </p>
                 </div>
               </div>
               <span className="font-code-sm px-2 py-0.5 rounded-full bg-surface-container text-primary font-medium whitespace-nowrap">
-                Inferencia &lt;12ms
+                En Vivo
               </span>
             </div>
 
@@ -569,28 +622,28 @@ export const AppointmentsControlPage: React.FC = () => {
                     {riskModel.level === 'high'
                       ? 'RIESGO ALTO'
                       : riskModel.level === 'medium'
-                      ? 'RIESGO MODERADO'
+                      ? 'RIESGO MEDIO'
                       : 'RIESGO BAJO'}
                   </span>
                 </div>
               </div>
               <div className="w-full flex items-center justify-between px-4 pt-1 text-on-surface-variant font-label-sm text-[11px]">
-                <span>0% (Óptimo)</span>
-                <span>Umbral Crítico: 38%</span>
-                <span>100% (Abandono)</span>
+                <span>0% (Bajo &lt;35%)</span>
+                <span>Medio: 35-49%</span>
+                <span>Alto: ≥50%</span>
               </div>
             </div>
 
-            {riskModel.score >= 25 && (
+            {riskModel.score >= 35 && (
               <div className="p-4 rounded-xl bg-error-container/40 text-on-surface flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[20px] text-error">warning</span>
                   <span className="font-headline-sm text-label-md text-error font-bold">
-                    Alerta: Espera Crítica ({riskModel.clampedDays} días)
+                    Alerta Preventiva ({riskModel.clampedDays} días de espera)
                   </span>
                 </div>
                 <p className="font-body-sm text-on-surface-variant">
-                  La espera supera los 15 días calendario. Estadísticamente triplica la deserción sin confirmación multicanal previa.
+                  La probabilidad estimada alcanza el umbral de atención ({riskModel.score}%). Se sugiere reducir los días de espera o confirmar recordatorio SMS.
                 </p>
                 <div className="mt-1 flex flex-col gap-1.5">
                   <span className="font-label-sm font-semibold uppercase tracking-wider text-on-surface">
@@ -601,13 +654,13 @@ export const AppointmentsControlPage: React.FC = () => {
                       event_repeat
                     </span>
                     <div className="flex-1">
-                      <span>Adelantar fecha a cupo cancelado:</span>
+                      <span>Adelantar cita (+2 días):</span>
                       <button
                         type="button"
                         onClick={handleApplyPrescribedDate}
                         className="font-semibold text-primary underline ml-1 hover:text-primary-container"
                       >
-                        Jueves 14 Nov (11:00 AM)
+                        {addDaysToIsoDate(todayIso, 2)}
                       </button>
                     </div>
                   </div>
@@ -616,7 +669,7 @@ export const AppointmentsControlPage: React.FC = () => {
                       <span className="material-symbols-outlined text-[16px] text-emerald-600">
                         mark_chat_read
                       </span>
-                      <span>Activar SMS Inmediato (-15% riesgo)</span>
+                      <span>Activar SMS Inmediato (SMSRecibido = 1)</span>
                     </span>
                     <button
                       type="button"
@@ -634,9 +687,9 @@ export const AppointmentsControlPage: React.FC = () => {
             <div className="flex flex-col gap-2 pt-1">
               <div className="flex items-center justify-between">
                 <span className="font-label-sm uppercase tracking-wider font-semibold text-on-surface-variant">
-                  Explicabilidad SHAP (Aportes Locales)
+                  Factores de Inferencia Local
                 </span>
-                <span className="font-code-sm text-on-surface-variant">Base: 19.4%</span>
+                <span className="font-code-sm text-on-surface-variant">9 Features RF</span>
               </div>
               <div className="space-y-2">
                 <div>
@@ -674,7 +727,7 @@ export const AppointmentsControlPage: React.FC = () => {
                         smsActivo ? 'text-emerald-700' : 'text-error'
                       }`}
                     >
-                      {smsActivo ? '-15.0%' : '+18.8%'}
+                      {smsActivo ? 'Ratio_SMS = 1' : 'Ratio_SMS = 0'}
                     </span>
                   </div>
                   <div className="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
@@ -717,7 +770,7 @@ export const AppointmentsControlPage: React.FC = () => {
               </span>
             </div>
             <span className="font-body-sm text-on-surface-variant">
-              Gestión directa de estado de asistencia y despacho SMS en tiempo real
+              Gestión directa de estado de asistencia y confirmación SMS en SQL Server
             </span>
           </div>
 
@@ -775,7 +828,7 @@ export const AppointmentsControlPage: React.FC = () => {
             <thead>
               <tr className="bg-surface-container-low text-on-surface-variant font-label-sm uppercase tracking-wider">
                 <th className="py-3 px-3">IdCita</th>
-                <th className="py-3 px-3">Paciente (DNI &amp; Distrito)</th>
+                <th className="py-3 px-3">IdPaciente &amp; Barrio</th>
                 <th className="py-3 px-3">Odontólogo / Sillón</th>
                 <th className="py-3 px-3">Tratamiento CPMS</th>
                 <th className="py-3 px-3">Fecha &amp; Hora</th>
@@ -790,15 +843,17 @@ export const AppointmentsControlPage: React.FC = () => {
                 <tr key={a.idCita} className="hover:bg-surface-container-low/60 transition-colors">
                   <td className="py-2.5 px-3 whitespace-nowrap">
                     <span className="font-code-sm text-primary font-bold px-2 py-0.5 bg-surface-container rounded">
-                      {a.idCita}
+                      #{a.idCita}
                     </span>
                   </td>
 
                   <td className="py-2.5 px-3">
                     <div className="flex flex-col">
-                      <span className="font-semibold text-on-surface">{a.pacienteNombre}</span>
+                      <span className="font-code-sm font-semibold text-on-surface">
+                        IdPaciente: {a.idPaciente}
+                      </span>
                       <span className="font-code-sm text-on-surface-variant">
-                        {a.idPaciente} • {a.distrito} ({a.edad}a)
+                        {a.distrito} ({a.edad} años)
                       </span>
                     </div>
                   </td>
@@ -882,7 +937,7 @@ export const AppointmentsControlPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleDirectSms(a)}
-                        title="Enviar y Confirmar SMS"
+                        title="Confirmar SMS"
                         className="p-1.5 rounded hover:bg-surface-container text-primary"
                       >
                         <span className="material-symbols-outlined text-[18px]">send</span>
@@ -924,7 +979,7 @@ export const AppointmentsControlPage: React.FC = () => {
           <div className="w-full max-w-md bg-surface-container-lowest p-6 rounded-xl shadow-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h3 className="font-headline-sm text-on-surface">
-                Reprogramar Cita {rescheduleTarget.idCita}
+                Reprogramar Cita #{rescheduleTarget.idCita}
               </h3>
               <button
                 type="button"
@@ -935,7 +990,7 @@ export const AppointmentsControlPage: React.FC = () => {
               </button>
             </div>
             <p className="font-body-sm text-on-surface-variant">
-              Paciente: <strong className="text-on-surface">{rescheduleTarget.pacienteNombre}</strong>
+              IdPaciente: <strong className="text-on-surface">{rescheduleTarget.idPaciente}</strong> ({rescheduleTarget.distrito})
             </p>
             <div className="flex flex-col gap-1">
               <label className="font-label-sm font-semibold text-on-surface">
@@ -982,14 +1037,14 @@ export const AppointmentsControlPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-headline-sm text-on-surface">
-                  Cancelar Cita {deleteTarget.idCita}
+                  Cancelar Cita #{deleteTarget.idCita}
                 </h3>
                 <span className="font-code-sm text-on-surface-variant">DELETE FROM oltp.Citas</span>
               </div>
             </div>
             <p className="font-body-md text-on-surface-variant">
-              ¿Confirma la cancelación física de la cita de{' '}
-              <strong className="text-on-surface">{deleteTarget.pacienteNombre}</strong>?
+              ¿Confirma la cancelación física de la cita del paciente con IdPaciente{' '}
+              <strong className="text-on-surface">{deleteTarget.idPaciente}</strong>?
             </p>
             <div className="flex items-center justify-end gap-2">
               <button

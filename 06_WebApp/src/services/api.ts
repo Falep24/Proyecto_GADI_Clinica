@@ -1,12 +1,23 @@
 import {
   DataMartRetentionRow,
+  Dentist,
   NoShowStatus,
   OltpAppointment,
   Patient,
+  Treatment,
 } from '../types/clinical';
 
 export const FASTAPI_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+export class ApiError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
 
 export interface KpisMonitorResponse {
   tasaInasistencia?: number;
@@ -45,6 +56,8 @@ export interface PredictNoShowPayload {
   diasEspera: number;
   distrito: string;
   smsRecibido: boolean;
+  fechaCita?: string;
+  idPaciente?: string;
 }
 
 export interface PredictNoShowResponse {
@@ -80,11 +93,16 @@ async function requestJson<T>(
       let detail = `HTTP ${response.status}`;
       try {
         const errBody = await response.json();
-        if (errBody?.detail) detail = String(errBody.detail);
+        if (errBody?.detail) {
+          detail =
+            typeof errBody.detail === 'string'
+              ? errBody.detail
+              : JSON.stringify(errBody.detail);
+        }
       } catch {
         // ignore JSON parse errors on error response
       }
-      throw new Error(detail);
+      throw new ApiError(response.status, detail);
     }
 
     if (response.status === 204) {
@@ -98,14 +116,25 @@ async function requestJson<T>(
 }
 
 export const clinicalApi = {
+  // Catálogos oficiales desde SQL Server
+  getTratamientos: () => requestJson<Treatment[]>('/api/tratamientos'),
+  getOdontologos: () => requestJson<Dentist[]>('/api/odontologos'),
+
   // KPIs & Power BI Monitor
   getKpisMonitor: (period: string, sede: string) =>
     requestJson<KpisMonitorResponse>(
       `/api/kpis-monitor?period=${encodeURIComponent(period)}&sede=${encodeURIComponent(sede)}`
     ),
 
-  // Pacientes (oltp.Pacientes)
-  getPacientes: () => requestJson<Patient[]>('/api/pacientes'),
+  // Pacientes (oltp.Pacientes) con búsqueda y límite en servidor
+  getPacientes: (buscar = '', limit = 100) => {
+    const params = new URLSearchParams();
+    params.set('limit', String(Math.min(500, Math.max(1, limit))));
+    if (buscar.trim()) {
+      params.set('buscar', buscar.trim());
+    }
+    return requestJson<Patient[]>(`/api/pacientes?${params.toString()}`);
+  },
 
   createPaciente: (
     payload: Omit<Patient, 'citasCount' | 'ultimaCita' | 'estadoClinico' | 'etapaBadge'>
@@ -127,7 +156,8 @@ export const clinicalApi = {
     }),
 
   // Citas OLTP (oltp.Citas)
-  getCitas: () => requestJson<OltpAppointment[]>('/api/citas'),
+  getCitas: (limit = 100) =>
+    requestJson<OltpAppointment[]>(`/api/citas?limit=${Math.min(500, Math.max(1, limit))}`),
 
   createCita: (payload: {
     idPaciente: string;
@@ -170,10 +200,13 @@ export const clinicalApi = {
     }),
 
   // Matriz de Retención IA (dm.Fact_Atenciones + Scoring)
-  getRetencion: () => requestJson<DataMartRetentionRow[]>('/api/retencion'),
+  getRetencion: (riesgo = 'Todos', limit = 100) =>
+    requestJson<DataMartRetentionRow[]>(
+      `/api/retencion?riesgo=${encodeURIComponent(riesgo)}&limit=${Math.min(500, Math.max(1, limit))}`
+    ),
 
   confirmarSmsWriteBack: (idCita: string) =>
-    requestJson<{ idCita: string; smsRecibido: 1; probabilidad: number }>(
+    requestJson<{ idCita: string; smsRecibido: 1; probabilidad: number; nivelRiesgo?: string }>(
       `/api/retencion/${encodeURIComponent(idCita)}/confirmar-sms`,
       {
         method: 'POST',

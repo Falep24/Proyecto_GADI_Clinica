@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useClinical } from '../context/ClinicalContext';
 import { LIMA_DISTRICTS } from '../data/initialData';
 import { GenderCode, Patient } from '../types/clinical';
@@ -13,6 +13,7 @@ export const PatientsCrudPage: React.FC = () => {
     oltpPacientesFCount,
     oltpPacientesMCount,
     oltpTopBarrio,
+    searchPatientsFromApi,
     addPatient,
     updatePatient,
     deletePatient,
@@ -24,27 +25,33 @@ export const PatientsCrudPage: React.FC = () => {
   const [formOpen, setFormOpen] = useState(true);
   const [editingPatientId, setEditingPatientId] = useState<string | null>(null);
 
-  // Form fields
+  // Campos reales de oltp.Pacientes (IdPaciente, Genero, Edad, Barrio)
   const [idPaciente, setIdPaciente] = useState('');
-  const [nombre, setNombre] = useState('');
   const [genero, setGenero] = useState<GenderCode>('F');
   const [edad, setEdad] = useState<string>('32');
   const [barrio, setBarrio] = useState<string>('Santiago de Surco');
-  const [telefono, setTelefono] = useState<string>('+51 987 654 321');
 
-  // Filters
+  // Filtros y búsqueda conectada al servidor
   const [searchQuery, setSearchQuery] = useState('');
   const [genderFilter, setGenderFilter] = useState<GenderFilter>('all');
   const [ageFilter, setAgeFilter] = useState<AgeFilter>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
 
-  // Delete confirmation modal
+  // Modal de confirmación de borrado
   const [deleteTarget, setDeleteTarget] = useState<Patient | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const ageNumber = Number(edad);
   const isAgeInvalid = edad !== '' && (Number.isNaN(ageNumber) || ageNumber < 0 || ageNumber > 100);
+
+  // Búsqueda en vivo contra SQL Server (GET /api/pacientes?buscar=...)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchPatientsFromApi(searchQuery, 100);
+    }, 280);
+    return () => clearTimeout(timer);
+  }, [searchQuery, searchPatientsFromApi]);
 
   const stats = useMemo(() => {
     const totalBase = Math.max(oltpPacientesCount, patients.length, 1);
@@ -79,8 +86,7 @@ export const PatientsCrudPage: React.FC = () => {
     return patients.filter((p) => {
       const matchesQ =
         !q ||
-        p.idPaciente.includes(q) ||
-        p.nombre.toLowerCase().includes(q) ||
+        p.idPaciente.toLowerCase().includes(q) ||
         p.barrio.toLowerCase().includes(q);
       const matchesGender = genderFilter === 'all' || p.genero === genderFilter;
       let matchesAge = true;
@@ -100,11 +106,9 @@ export const PatientsCrudPage: React.FC = () => {
   const resetForm = () => {
     setEditingPatientId(null);
     setIdPaciente('');
-    setNombre('');
     setGenero('F');
     setEdad('32');
     setBarrio('Santiago de Surco');
-    setTelefono('+51 987 654 321');
   };
 
   const handleOpenNew = () => {
@@ -115,11 +119,9 @@ export const PatientsCrudPage: React.FC = () => {
   const handleEdit = (p: Patient) => {
     setEditingPatientId(p.idPaciente);
     setIdPaciente(p.idPaciente);
-    setNombre(p.nombre);
     setGenero(p.genero);
     setEdad(String(p.edad));
     setBarrio(p.barrio);
-    setTelefono(p.telefono);
     setFormOpen(true);
   };
 
@@ -130,24 +132,22 @@ export const PatientsCrudPage: React.FC = () => {
     if (editingPatientId) {
       const existing = patients.find((p) => p.idPaciente === editingPatientId);
       if (!existing) return;
-      await updatePatient({
+      const ok = await updatePatient({
         ...existing,
-        nombre: nombre.trim(),
         genero,
         edad: ageNumber,
         barrio,
-        telefono,
       });
-      resetForm();
-      setFormOpen(false);
+      if (ok) {
+        resetForm();
+        setFormOpen(false);
+      }
     } else {
       const ok = await addPatient({
         idPaciente: idPaciente.trim(),
-        nombre: nombre.trim(),
         genero,
         edad: ageNumber,
         barrio,
-        telefono,
       });
       if (ok) {
         resetForm();
@@ -168,11 +168,11 @@ export const PatientsCrudPage: React.FC = () => {
   };
 
   const handleExportCsv = () => {
-    const header = 'IdPaciente,Nombres,Genero,Edad,Barrio,EstadoClinico,Citas\n';
+    const header = 'IdPaciente,Genero,Edad,Barrio,EstadoClinico,Citas\n';
     const body = patients
       .map(
         (p) =>
-          `${p.idPaciente},"${p.nombre}",${p.genero},${p.edad},"${p.barrio}","${p.estadoClinico}",${p.citasCount}`
+          `${p.idPaciente},${p.genero},${p.edad},"${p.barrio}","${p.estadoClinico}",${p.citasCount}`
       )
       .join('\n');
     const blob = new Blob([header + body], { type: 'text/csv;charset=utf-8;' });
@@ -193,14 +193,14 @@ export const PatientsCrudPage: React.FC = () => {
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full bg-surface-container-high text-primary font-code-sm">
-                Esquema: oltp.Pacientes
+                Esquema: oltp.Pacientes (IdPaciente, Genero, Edad, Barrio)
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-code-sm flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                 FK Enforced: ON
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-code-sm">
-                CHECK (Edad BETWEEN 0 AND 100)
+                Edad: 0 a 100
               </span>
             </div>
             <h1 className="font-display-lg text-on-surface tracking-tight">
@@ -208,7 +208,9 @@ export const PatientsCrudPage: React.FC = () => {
             </h1>
             <p className="font-body-md text-on-surface-variant max-w-3xl">
               Padrón maestro clínico en{' '}
-              <span className="font-code-sm text-primary">DentalCenterDB</span> con validación directa de esquemas, auditoría relacional para citas de ortodoncia e implantes y conexión transaccional sin retraso ETL.
+              <span className="font-code-sm text-primary">DentalCenterDB</span> sincronizado directamente con{' '}
+              <span className="font-code-sm text-primary">oltp.Pacientes</span> y{' '}
+              <span className="font-code-sm text-primary">dm.Dim_Paciente</span>.
             </p>
           </div>
 
@@ -242,9 +244,9 @@ export const PatientsCrudPage: React.FC = () => {
             </span>
             <span className="font-body-sm text-on-surface-variant flex items-center gap-1">
               <span className="material-symbols-outlined text-[14px] text-emerald-600">
-                trending_up
+                database
               </span>
-              +18 registrados esta semana
+              Registros en oltp.Pacientes
             </span>
           </div>
 
@@ -270,17 +272,17 @@ export const PatientsCrudPage: React.FC = () => {
 
           <div className="bg-surface-container-low p-4 rounded-xl flex flex-col gap-1">
             <span className="font-label-sm text-on-surface-variant uppercase tracking-wider">
-              Distrito Prevalente
+              Barrio Prevalente
             </span>
-            <span className="font-display-lg text-secondary tracking-tight font-bold">
+            <span className="font-display-lg text-secondary tracking-tight font-bold truncate">
               {stats.topDistrict}
             </span>
-            <span className="font-body-sm text-on-surface-variant">214 expedientes clínicos</span>
+            <span className="font-body-sm text-on-surface-variant">Mayor concentración en BD</span>
           </div>
         </div>
       </section>
 
-      {/* FORMULARIO COLLAPSIBLE */}
+      {/* FORMULARIO COLLAPSIBLE (solo columnas reales de oltp.Pacientes) */}
       {formOpen && (
         <section className="bg-surface-container-lowest p-5 lg:p-6 rounded-xl shadow-sm">
           <div className="flex items-center justify-between pb-3 mb-4 border-b border-surface-container">
@@ -291,11 +293,11 @@ export const PatientsCrudPage: React.FC = () => {
               <div>
                 <h2 className="font-headline-sm text-on-surface">
                   {editingPatientId
-                    ? `Editar Registro Clínico: ${editingPatientId}`
+                    ? `Editar Registro en oltp.Pacientes: #${editingPatientId}`
                     : 'Registrar Paciente en oltp.Pacientes'}
                 </h2>
                 <p className="font-body-sm text-on-surface-variant">
-                  Inserción atómica con trigger de auditoría y validación de tipos SQL Server.
+                  Inserción directa sobre las 4 columnas de oltp.Pacientes: IdPaciente, Genero, Edad y Barrio.
                 </p>
               </div>
             </div>
@@ -308,7 +310,7 @@ export const PatientsCrudPage: React.FC = () => {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <label className="font-label-md text-on-surface font-semibold">
@@ -334,38 +336,13 @@ export const PatientsCrudPage: React.FC = () => {
                 />
                 <span
                   className="absolute right-2.5 top-2.5 material-symbols-outlined text-[18px] text-emerald-600"
-                  title="Verificado con RENIEC"
+                  title="Clave Primaria Numérica"
                 >
                   verified
                 </span>
               </div>
               <span className="font-body-sm text-on-surface-variant">
-                Documento nacional de 8 dígitos numéricos.
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center justify-between">
-                <label className="font-label-md text-on-surface font-semibold">
-                  Nombres y Apellidos *
-                </label>
-                <span className="font-code-sm text-on-surface-variant">NVARCHAR(150)</span>
-              </div>
-              <div className="relative">
-                <span className="absolute left-3 top-2.5 material-symbols-outlined text-[18px] text-on-surface-variant">
-                  person
-                </span>
-                <input
-                  type="text"
-                  required
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ej. Mariana Estela Céspedes"
-                  className="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low font-body-md text-on-surface focus:outline-none focus:bg-surface-container placeholder:text-on-surface-variant/50 transition-colors"
-                />
-              </div>
-              <span className="font-body-sm text-on-surface-variant">
-                Titular de la historia clínica digital.
+                Identificador entero único en oltp.Pacientes.
               </span>
             </div>
 
@@ -398,7 +375,7 @@ export const PatientsCrudPage: React.FC = () => {
                 />
                 {isAgeInvalid && (
                   <span className="font-code-sm text-error font-medium">
-                    CHECK Error: 0 a 100
+                    Rango válido: 0 a 100
                   </span>
                 )}
               </div>
@@ -407,9 +384,9 @@ export const PatientsCrudPage: React.FC = () => {
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <label className="font-label-md text-on-surface font-semibold">
-                  Barrio / Distrito Lima *
+                  Barrio / Distrito *
                 </label>
-                <span className="font-code-sm text-on-surface-variant">NVARCHAR(80)</span>
+                <span className="font-code-sm text-on-surface-variant">NVARCHAR(100)</span>
               </div>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 material-symbols-outlined text-[18px] text-on-surface-variant">
@@ -431,11 +408,11 @@ export const PatientsCrudPage: React.FC = () => {
                 </select>
               </div>
               <span className="font-body-sm text-on-surface-variant">
-                Utilizado para zonificación de clínicas periféricas.
+                Columna Barrio en oltp.Pacientes y dm.Dim_Paciente.
               </span>
             </div>
 
-            <div className="col-span-1 md:col-span-2 lg:col-span-4 flex items-center justify-end gap-2 pt-1">
+            <div className="col-span-1 md:col-span-3 flex items-center justify-end gap-2 pt-1">
               <button
                 type="button"
                 onClick={resetForm}
@@ -474,7 +451,7 @@ export const PatientsCrudPage: React.FC = () => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              placeholder="Buscar por IdPaciente, DNI o Barrio..."
+              placeholder="Buscar en SQL Server por IdPaciente o Barrio..."
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-surface-container-low font-body-md text-on-surface focus:outline-none focus:bg-surface-container placeholder:text-on-surface-variant/60 transition-colors"
             />
           </div>
@@ -531,13 +508,12 @@ export const PatientsCrudPage: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-low text-on-surface-variant font-label-sm uppercase tracking-wider">
-                <th className="py-3 px-4">IdPaciente / DNI</th>
-                <th className="py-3 px-4">Nombres y Apellidos</th>
+                <th className="py-3 px-4">IdPaciente (PK)</th>
                 <th className="py-3 px-4">Género</th>
                 <th className="py-3 px-4">Edad</th>
                 <th className="py-3 px-4">Barrio / Distrito</th>
                 <th className="py-3 px-4">Historial Citas</th>
-                <th className="py-3 px-4">Estado Clínico</th>
+                <th className="py-3 px-4">Último Tratamiento</th>
                 <th className="py-3 px-4 text-right">Acciones Operativas</th>
               </tr>
             </thead>
@@ -546,16 +522,14 @@ export const PatientsCrudPage: React.FC = () => {
                 const ageStage = p.edad <= 14 ? 'Pediátrico' : p.edad >= 60 ? 'Mayor' : 'Adulto';
                 return (
                   <tr key={p.idPaciente} className="hover:bg-surface-container-low/60 transition-colors">
-                    <td className="py-3 px-4 font-code-sm text-primary font-medium whitespace-nowrap">
+                    <td className="py-3 px-4 font-code-sm text-primary font-semibold whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
                         <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
-                          person
+                          badge
                         </span>
                         <span>{p.idPaciente}</span>
                       </div>
                     </td>
-
-                    <td className="py-3 px-4 font-semibold text-on-surface">{p.nombre}</td>
 
                     <td className="py-3 px-4 whitespace-nowrap">
                       <span
@@ -706,7 +680,7 @@ export const PatientsCrudPage: React.FC = () => {
             <h3 className="font-headline-sm text-on-surface">Reglas de Calidad ETL</h3>
           </div>
           <p className="font-body-sm text-on-surface-variant">
-            Validaciones activas durante el flujo de ingesta desde el Data Lake hacia la base relacional:
+            Validaciones activas en stg.usp_CargarOLTP hacia oltp.Pacientes:
           </p>
           <ul className="flex flex-col gap-2 font-body-sm text-on-surface">
             <li className="flex items-start gap-2 bg-surface-container-low p-2.5 rounded-lg">
@@ -714,7 +688,7 @@ export const PatientsCrudPage: React.FC = () => {
                 check
               </span>
               <span>
-                <strong>Control de Nulos:</strong> Barrio / Distrito sustituido por 'Desconocido' si viene null en staging.
+                <strong>Validación de IdPaciente:</strong> Registros en notación científica o inválidos se derivan a stg.Rechazos_Ingesta.
               </span>
             </li>
             <li className="flex items-start gap-2 bg-surface-container-low p-2.5 rounded-lg">
@@ -722,7 +696,7 @@ export const PatientsCrudPage: React.FC = () => {
                 check
               </span>
               <span>
-                <strong>Rango Etario:</strong> Registros con edad &lt; 0 o &gt; 100 son aislados a tabla de rechazos err.Pacientes.
+                <strong>Rango Etario:</strong> Registros con edad &lt; 0 o &gt; 100 son aislados en stg.Rechazos_Ingesta.
               </span>
             </li>
           </ul>
@@ -731,28 +705,28 @@ export const PatientsCrudPage: React.FC = () => {
         <div className="bg-surface-container-lowest p-4 rounded-xl shadow-sm flex flex-col gap-2">
           <div className="flex items-center gap-1.5 text-secondary">
             <span className="material-symbols-outlined text-[20px]">speed</span>
-            <h3 className="font-headline-sm text-on-surface">Índices &amp; Optimización</h3>
+            <h3 className="font-headline-sm text-on-surface">Estructura Relacional DDL</h3>
           </div>
           <p className="font-body-sm text-on-surface-variant">
-            Estructuras B-Tree configuradas en la instancia SQL Server para respuesta sub-milisegundo:
+            Definición física en 01_DDL_Creacion_Estructura.sql:
           </p>
           <div className="flex flex-col gap-2 font-code-sm">
             <div className="p-2.5 rounded-lg bg-surface-container-low text-on-surface flex items-center justify-between">
-              <span className="font-medium text-primary">PK_Pacientes_IdPaciente</span>
+              <span className="font-medium text-primary">oltp.Pacientes (IdPaciente)</span>
               <span className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px]">
-                Clustered
+                BIGINT PK
               </span>
             </div>
             <div className="p-2.5 rounded-lg bg-surface-container-low text-on-surface flex items-center justify-between">
-              <span className="font-medium text-secondary">IX_Pacientes_Barrio</span>
+              <span className="font-medium text-secondary">dm.Dim_Paciente (SK_Paciente)</span>
               <span className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px]">
-                Non-Clustered
+                INT IDENTITY PK
               </span>
             </div>
             <div className="p-2.5 rounded-lg bg-surface-container-low text-on-surface flex items-center justify-between">
-              <span className="font-medium text-tertiary">IX_Pacientes_Edad_Genero</span>
+              <span className="font-medium text-tertiary">FK_Citas_Pacientes</span>
               <span className="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px]">
-                Composite
+                oltp.Citas
               </span>
             </div>
           </div>
@@ -765,7 +739,7 @@ export const PatientsCrudPage: React.FC = () => {
               <h3 className="font-headline-sm text-on-surface">Auditoría en Tiempo Real</h3>
             </div>
             <span className="font-code-sm text-emerald-700 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> CDC Active
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Activo
             </span>
           </div>
           <div className="flex flex-col gap-2 font-code-sm">
@@ -809,26 +783,27 @@ export const PatientsCrudPage: React.FC = () => {
 
             <div className="bg-surface-container-low p-4 rounded-lg flex flex-col gap-1.5">
               <p className="font-body-md text-on-surface">
-                ¿Confirma la eliminación del paciente{' '}
-                <strong>{deleteTarget.nombre}</strong> con ID{' '}
-                <span className="font-code-sm font-bold text-primary">
+                ¿Confirma la eliminación del paciente con IdPaciente{' '}
+                <code className="font-code-sm text-primary font-bold">
                   {deleteTarget.idPaciente}
-                </span>
-                ?
+                </code>{' '}
+                ({deleteTarget.barrio}) de <code className="font-code-sm">oltp.Pacientes</code>?
               </p>
-              <p className="font-body-sm text-on-surface-variant">
-                Si el paciente registra citas históricas asociadas en{' '}
-                <span className="font-code-sm text-on-surface">oltp.Citas</span>, SQL Server impedirá la acción respetando la regla{' '}
-                <code className="font-code-sm">ON DELETE NO ACTION</code>.
-              </p>
-              {deleteError && (
-                <div className="mt-2 p-2.5 rounded bg-error-container text-on-error-container font-label-sm">
-                  {deleteError}
-                </div>
-              )}
+              <span className="font-body-sm text-on-surface-variant">
+                Citas vinculadas detectadas: <strong>{deleteTarget.citasCount}</strong>
+              </span>
             </div>
 
-            <div className="flex items-center justify-end gap-2">
+            {deleteError && (
+              <div className="p-3 rounded-lg bg-error-container text-on-error-container font-body-sm flex items-start gap-2">
+                <span className="material-symbols-outlined text-[18px] shrink-0 mt-0.5">
+                  block
+                </span>
+                <span>{deleteError}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => {
@@ -842,9 +817,10 @@ export const PatientsCrudPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleConfirmDelete}
-                className="px-4 py-2 rounded-lg bg-error text-on-error font-label-md hover:opacity-95 transition-opacity"
+                className="px-4 py-2 rounded-lg bg-error text-on-error font-label-md hover:opacity-90 transition-opacity flex items-center gap-1"
               >
-                Ejecutar DELETE
+                <span className="material-symbols-outlined text-[18px]">delete_forever</span>
+                <span>Ejecutar DELETE</span>
               </button>
             </div>
           </div>

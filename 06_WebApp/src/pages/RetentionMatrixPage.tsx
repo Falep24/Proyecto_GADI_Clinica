@@ -5,9 +5,10 @@ import { DataMartRetentionRow } from '../types/clinical';
 
 type RiskFilter = 'all' | 'high' | 'medium' | 'low';
 
+// Umbrales unificados con el modelo Random Forest y el backend FastAPI (Alto >= 50%, Medio >= 35%)
 function getRiskLevel(prob: number): 'high' | 'medium' | 'low' {
   if (prob >= 50) return 'high';
-  if (prob >= 25) return 'medium';
+  if (prob >= 35) return 'medium';
   return 'low';
 }
 
@@ -49,10 +50,10 @@ export const RetentionMatrixPage: React.FC = () => {
     return retentionRows.filter((c) => {
       const matchesQ =
         !q ||
-        c.paciente.toLowerCase().includes(q) ||
-        c.dni.includes(q) ||
+        c.dni.toLowerCase().includes(q) ||
         c.idCita.toLowerCase().includes(q) ||
-        c.skPaciente.toLowerCase().includes(q);
+        c.skPaciente.toLowerCase().includes(q) ||
+        c.distrito.toLowerCase().includes(q);
 
       const lvl = getRiskLevel(c.probabilidad);
       const matchesRisk = riskFilter === 'all' || lvl === riskFilter;
@@ -65,7 +66,7 @@ export const RetentionMatrixPage: React.FC = () => {
   const openModal = (row: DataMartRetentionRow) => {
     setModalRow(row);
     setModalBody(
-      `Estimado(a) ${row.paciente}, le saludamos de Sonrisa Integral (Sede Miraflores). Le recordamos su cita hoy a las ${row.hora} para ${row.tratamiento} con ${row.medico}. Por favor responda SI para confirmar su asistencia o comuníquese al (01) 640-2000.`
+      `Estimado(a) Paciente #${row.dni} (${row.skPaciente}), le saludamos de Sonrisa Integral. Le recordamos su cita #${row.idCita} a las ${row.hora} para ${row.tratamiento} (${row.cpms}) con ${row.medico}. Por favor responda SI para confirmar su asistencia.`
     );
   };
 
@@ -82,36 +83,20 @@ export const RetentionMatrixPage: React.FC = () => {
     pushToast('Copiado', 'Plantilla de recordatorio copiada al portapapeles.');
   };
 
-  const handleDispatchWhatsApp = async () => {
+  const handleConfirmFromModal = async () => {
     if (!modalRow) return;
     const targetRow = modalRow;
     setModalRow(null);
-    const cleanPhone = targetRow.telefono.replace(/[^0-9]/g, '');
     appendSqlLog(
-      'DISPATCH',
-      `Recordatorio WhatsApp despachado para Paciente ${targetRow.skPaciente} (+${cleanPhone}).`,
+      'WRITE_BACK_REQ',
+      `Confirmación de recordatorio registrada para ${targetRow.skPaciente} (IdPaciente: ${targetRow.dni}).`,
       'cmd'
     );
     if (targetRow.smsRecibido === 0) {
       await confirmRetentionSmsWriteBack(targetRow.idCita);
+    } else {
+      pushToast('Ya Confirmado', `La cita #${targetRow.idCita} ya cuenta con SMSRecibido = 1.`);
     }
-    pushToast('WhatsApp Despachado', `Mensaje en cola de salida hacia ${targetRow.telefono}.`);
-  };
-
-  const handleDispatchTwilio = async () => {
-    if (!modalRow) return;
-    const targetRow = modalRow;
-    setModalRow(null);
-    const sid = `SM_${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-    appendSqlLog(
-      'GATEWAY_TWILIO',
-      `SMS programado y despachado con éxito a ${targetRow.telefono} (SID: ${sid}).`,
-      'success'
-    );
-    if (targetRow.smsRecibido === 0) {
-      await confirmRetentionSmsWriteBack(targetRow.idCita);
-    }
-    pushToast('SMS Twilio Enviado', `SMS enviado correctamente al número ${targetRow.telefono}.`);
   };
 
   return (
@@ -121,19 +106,18 @@ export const RetentionMatrixPage: React.FC = () => {
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-3 flex-wrap">
             <span className="font-code-sm text-primary bg-primary-fixed px-2.5 py-0.5 rounded-full font-semibold">
-              dm.Fact_Atenciones + Scoring IA
+              dm.Fact_Atenciones + dm.Resultados_Prediccion_IA
             </span>
             <span className="font-label-sm text-on-surface-variant flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Modelo Random Forest v2.4 (AUC: 0.892)
+              Modelo Random Forest (Umbrales: Alto ≥50%, Medio ≥35%)
             </span>
           </div>
           <h1 className="font-headline-md text-on-surface font-bold tracking-tight">
             Agenda Inteligente &amp; Retención Clínica
           </h1>
           <p className="font-body-sm text-on-surface-variant max-w-3xl">
-            Monitor prescriptivo de no-show para la jornada actual en Sede Central Lima. Cruce multidimensional entre dimensiones del Data Mart y cálculo de riesgo en tiempo real con Write-Back a{' '}
-            <code className="font-code-sm text-primary font-bold">oltp.Citas</code>.
+            Monitor prescriptivo de abandono por paciente único (<code className="font-code-sm text-primary">SK_Paciente</code>) cruzando dimensiones del Data Mart y recalculando la inferencia con <code className="font-code-sm text-primary font-bold">modelo_rf_dental.pkl</code> al ejecutar Write-Back en <code className="font-code-sm text-primary font-bold">oltp.Citas</code>.
           </p>
         </div>
 
@@ -151,7 +135,7 @@ export const RetentionMatrixPage: React.FC = () => {
               </span>
               <span className="font-label-sm text-error font-bold flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-error" />
-                {summary.high} en Riesgo Crítico
+                {summary.high} en Riesgo Alto
               </span>
             </div>
           </div>
@@ -169,7 +153,7 @@ export const RetentionMatrixPage: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por Nombre de Paciente, DNI (ej. 45892110) o IdCita (#CT-1092)..."
+              placeholder="Buscar por IdPaciente (DNI), SK_Paciente, Barrio o IdCita..."
               className="w-full bg-surface-container-low pl-10 pr-4 py-2 rounded-lg font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
             />
           </div>
@@ -179,9 +163,9 @@ export const RetentionMatrixPage: React.FC = () => {
               {(
                 [
                   { id: 'all', label: 'Todos', count: summary.total, pillClass: 'opacity-80' },
-                  { id: 'high', label: 'Riesgo Alto', count: summary.high, pillClass: 'px-1.5 rounded-full bg-error/15 text-error font-bold' },
-                  { id: 'medium', label: 'Riesgo Medio', count: summary.medium, pillClass: 'px-1.5 rounded-full bg-amber-500/15 text-amber-800 font-bold' },
-                  { id: 'low', label: 'Riesgo Bajo', count: summary.low, pillClass: 'px-1.5 rounded-full bg-emerald-600/15 text-emerald-800 font-bold' },
+                  { id: 'high', label: 'Riesgo Alto (≥50%)', count: summary.high, pillClass: 'px-1.5 rounded-full bg-error/15 text-error font-bold' },
+                  { id: 'medium', label: 'Riesgo Medio (35-49%)', count: summary.medium, pillClass: 'px-1.5 rounded-full bg-amber-500/15 text-amber-800 font-bold' },
+                  { id: 'low', label: 'Riesgo Bajo (<35%)', count: summary.low, pillClass: 'px-1.5 rounded-full bg-emerald-600/15 text-emerald-800 font-bold' },
                 ] as const
               ).map((tab) => (
                 <button
@@ -209,7 +193,6 @@ export const RetentionMatrixPage: React.FC = () => {
               <option value="Odontología General">Odontología General</option>
               <option value="Endodoncia">Endodoncia</option>
               <option value="Ortodoncia">Ortodoncia</option>
-              <option value="Periodoncia">Periodoncia</option>
             </select>
 
             <select
@@ -237,16 +220,16 @@ export const RetentionMatrixPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-primary" />
-              Vista en vivo: Sede Lima Miraflores
+              Vista deduplicada por SK_Paciente (última atención)
             </span>
             <span className="text-outline-variant">|</span>
             <span>
-              Mostrando {filteredRows.length} de {retentionRows.length} citas registradas
+              Mostrando {filteredRows.length} de {retentionRows.length} pacientes evaluados
             </span>
           </div>
           <div className="hidden sm:flex items-center gap-1.5 text-on-surface font-medium">
             <span className="material-symbols-outlined text-[16px] text-primary">touch_app</span>
-            <span>Clic en "Confirmar SMS" ejecuta Write-Back SQL</span>
+            <span>Clic en "Confirmar SMS" ejecuta Write-Back SQL y re-scoring RF</span>
           </div>
         </div>
       </section>
@@ -258,7 +241,7 @@ export const RetentionMatrixPage: React.FC = () => {
             <thead>
               <tr className="bg-surface-container-low font-label-sm text-on-surface-variant uppercase tracking-wider">
                 <th className="py-3 px-4 font-semibold">IdCita</th>
-                <th className="py-3 px-4 font-semibold">Paciente (Data Mart)</th>
+                <th className="py-3 px-4 font-semibold">IdPaciente &amp; SK_Paciente (DM)</th>
                 <th className="py-3 px-4 font-semibold">Especialidad &amp; Médico</th>
                 <th className="py-3 px-4 font-semibold">Tratamiento &amp; Tarifa</th>
                 <th className="py-3 px-4 font-semibold text-center">Espera</th>
@@ -278,17 +261,17 @@ export const RetentionMatrixPage: React.FC = () => {
                   <tr key={c.idCita} className="hover:bg-primary-fixed/20 transition-colors">
                     <td className="py-3 px-4 whitespace-nowrap">
                       <span className="font-code-sm font-bold text-primary px-1.5 py-0.5 bg-surface-container-low rounded">
-                        {c.idCita}
+                        #{c.idCita}
                       </span>
                       <div className="font-code-sm text-outline mt-0.5">{c.hora}</div>
                     </td>
 
                     <td className="py-3 px-4">
-                      <div className="font-label-md font-bold text-on-surface leading-tight">
-                        {c.paciente}
+                      <div className="font-code-sm font-bold text-on-surface leading-tight">
+                        IdPaciente: {c.dni}
                       </div>
                       <div className="font-code-sm text-on-surface-variant flex items-center gap-1.5 mt-0.5 flex-wrap">
-                        <span>DNI: {c.dni}</span>
+                        <span>{c.skPaciente}</span>
                         <span className="text-outline-variant">&bull;</span>
                         <span>
                           {c.edad} años ({c.genero})
@@ -315,7 +298,7 @@ export const RetentionMatrixPage: React.FC = () => {
                     <td className="py-3 px-4 text-center whitespace-nowrap">
                       <span
                         className={`font-code-sm font-semibold ${
-                          c.tiempoEspera > 20 ? 'text-error font-bold' : 'text-on-surface'
+                          c.tiempoEspera > 15 ? 'text-error font-bold' : 'text-on-surface'
                         }`}
                       >
                         {c.tiempoEspera} d
@@ -344,7 +327,7 @@ export const RetentionMatrixPage: React.FC = () => {
                     <td className="py-3 px-4 whitespace-nowrap">
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <span className="font-code-sm font-bold text-on-surface">{c.probabilidad}%</span>
-                        <span className="font-label-sm text-outline text-[10px]">p(no-show)</span>
+                        <span className="font-label-sm text-outline text-[10px]">p(abandono)</span>
                       </div>
                       <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
                         <div
@@ -375,7 +358,7 @@ export const RetentionMatrixPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => openModal(c)}
-                          title="Contactar Paciente (WhatsApp/SMS)"
+                          title="Generar plantilla de recordatorio"
                           className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-colors"
                         >
                           <span className="material-symbols-outlined text-[19px]">maps_ugc</span>
@@ -404,7 +387,7 @@ export const RetentionMatrixPage: React.FC = () => {
                             {c.smsRecibido === 1
                               ? 'Confirmado'
                               : confirmingId === c.idCita
-                              ? 'Enviando...'
+                              ? 'Actualizando...'
                               : 'Confirmar SMS'}
                           </span>
                         </button>
@@ -421,7 +404,7 @@ export const RetentionMatrixPage: React.FC = () => {
           <div className="p-10 text-center flex flex-col items-center justify-center gap-2">
             <span className="material-symbols-outlined text-outline text-[44px]">search_off</span>
             <p className="font-headline-sm text-on-surface">
-              No se encontraron citas con los filtros seleccionados
+              No se encontraron pacientes con los filtros seleccionados
             </p>
             <p className="font-body-sm text-on-surface-variant">
               Pruebe ajustando los parámetros de búsqueda o restableciendo los selectores.
@@ -435,7 +418,7 @@ export const RetentionMatrixPage: React.FC = () => {
         <div className="lg:col-span-2">
           <SqlConsole
             title="Consola de Transacciones OLTP & Telemetría Write-Back"
-            subtitle="SQL Server Listener LIM-SRV-DATA01 • DB: DentalCenterDB"
+            subtitle="SQL Server Listener localhost\\SQLEXPRESS • DB: DentalCenterDB"
             variant="compact"
           />
         </div>
@@ -446,8 +429,8 @@ export const RetentionMatrixPage: React.FC = () => {
               <span className="material-symbols-outlined text-[20px]">psychology</span>
             </div>
             <div>
-              <h2 className="font-headline-sm font-bold text-on-surface">SHAP Explainer IA</h2>
-              <p className="font-label-sm text-on-surface-variant">Drivers de Riesgo en Ausentismo</p>
+              <h2 className="font-headline-sm font-bold text-on-surface">Importancia de Variables RF</h2>
+              <p className="font-label-sm text-on-surface-variant">Drivers del Modelo (modelo_rf_dental.pkl)</p>
             </div>
           </div>
 
@@ -455,9 +438,9 @@ export const RetentionMatrixPage: React.FC = () => {
             <div className="flex flex-col gap-1">
               <div className="flex justify-between font-label-sm">
                 <span className="text-on-surface font-medium">
-                  SMS No Confirmado (SMSRecibido = 0)
+                  Promedio / Máximo Días de Espera
                 </span>
-                <span className="text-error font-bold font-code-sm">+34.8% peso</span>
+                <span className="text-error font-bold font-code-sm">Factor Principal</span>
               </div>
               <div className="w-full h-2 rounded-full bg-surface-container-high overflow-hidden">
                 <div className="h-full bg-error rounded-full" style={{ width: '82%' }} />
@@ -466,8 +449,8 @@ export const RetentionMatrixPage: React.FC = () => {
 
             <div className="flex flex-col gap-1">
               <div className="flex justify-between font-label-sm">
-                <span className="text-on-surface font-medium">Tiempo de Espera &gt; 15 Días</span>
-                <span className="text-amber-700 font-bold font-code-sm">+26.4% peso</span>
+                <span className="text-on-surface font-medium">Ratio de Confirmación SMS</span>
+                <span className="text-amber-700 font-bold font-code-sm">Factor Protector</span>
               </div>
               <div className="w-full h-2 rounded-full bg-surface-container-high overflow-hidden">
                 <div className="h-full bg-amber-500 rounded-full" style={{ width: '65%' }} />
@@ -477,9 +460,9 @@ export const RetentionMatrixPage: React.FC = () => {
             <div className="flex flex-col gap-1">
               <div className="flex justify-between font-label-sm">
                 <span className="text-on-surface font-medium">
-                  Distrito periférico vs Sede Miraflores
+                  Edad y Costo del Tratamiento
                 </span>
-                <span className="text-secondary font-bold font-code-sm">+18.1% peso</span>
+                <span className="text-secondary font-bold font-code-sm">Variables Clínicas</span>
               </div>
               <div className="w-full h-2 rounded-full bg-surface-container-high overflow-hidden">
                 <div className="h-full bg-secondary rounded-full" style={{ width: '44%' }} />
@@ -491,7 +474,7 @@ export const RetentionMatrixPage: React.FC = () => {
                 verified_user
               </span>
               <p className="font-body-sm text-on-surface-variant">
-                Al registrar <strong className="text-on-surface">SMSRecibido = 1</strong> en base de datos, el algoritmo recalcula la inferencia restando entre un 25% y 35% de probabilidad de abandono.
+                Al registrar <strong className="text-on-surface">SMSRecibido = 1</strong> en base de datos, el backend actualiza el <strong className="text-on-surface">Ratio_SMS</strong> del paciente y recalcula su probabilidad con <strong className="text-on-surface">modelo_rf_dental.pkl</strong>.
               </p>
             </div>
           </div>
@@ -509,10 +492,10 @@ export const RetentionMatrixPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-headline-sm font-bold text-on-surface">
-                    Enviar Recordatorio Clínico
+                    Plantilla de Recordatorio Clínico (Simulación)
                   </h3>
                   <p className="font-label-sm text-on-surface-variant">
-                    Paciente: {modalRow.paciente} | Cita #{modalRow.idCita}
+                    IdPaciente: {modalRow.dni} ({modalRow.skPaciente}) | Cita #{modalRow.idCita}
                   </p>
                 </div>
               </div>
@@ -527,7 +510,7 @@ export const RetentionMatrixPage: React.FC = () => {
 
             <div className="flex flex-col gap-1.5">
               <label className="font-label-sm text-on-surface-variant font-semibold">
-                Plantilla generada (Optimizada con NLP preventivo):
+                Mensaje de recordatorio generado:
               </label>
               <div className="relative">
                 <textarea
@@ -547,46 +530,21 @@ export const RetentionMatrixPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 bg-surface-container-low rounded-xl flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-secondary text-[20px]">
-                  phone_iphone
-                </span>
-                <div className="flex flex-col">
-                  <span className="font-label-sm text-on-surface-variant">
-                    Teléfono móvil registrado:
-                  </span>
-                  <span className="font-code-sm font-bold text-on-surface">{modalRow.telefono}</span>
-                </div>
-              </div>
-              <span className="font-code-sm px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">
-                Opt-in Activo
-              </span>
-            </div>
-
             <div className="flex items-center justify-end gap-2 pt-1 flex-wrap">
               <button
                 type="button"
                 onClick={() => setModalRow(null)}
                 className="px-4 py-2 rounded-lg font-label-md text-on-surface-variant hover:bg-surface-container transition-colors"
               >
-                Cancelar
+                Cerrar
               </button>
               <button
                 type="button"
-                onClick={handleDispatchTwilio}
-                className="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md flex items-center gap-1.5 transition-colors"
-              >
-                <span className="material-symbols-outlined text-[18px]">sms</span>
-                SMS Twilio
-              </button>
-              <button
-                type="button"
-                onClick={handleDispatchWhatsApp}
+                onClick={handleConfirmFromModal}
                 className="px-4 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary/90 font-label-md flex items-center gap-1.5 shadow-sm transition-all"
               >
-                <span className="material-symbols-outlined text-[18px]">chat</span>
-                Enviar WhatsApp
+                <span className="material-symbols-outlined text-[18px]">sync</span>
+                Confirmar SMS (Write-Back SQL)
               </button>
             </div>
           </div>

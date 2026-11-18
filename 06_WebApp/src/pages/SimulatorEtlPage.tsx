@@ -1,12 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { SqlConsole } from '../components/SqlConsole';
-import { computeNoShowProbability, useClinical } from '../context/ClinicalContext';
-import { TREATMENTS } from '../data/initialData';
+import {
+  addDaysToIsoDate,
+  computeNoShowProbability,
+  getTodayIsoDate,
+  useClinical,
+} from '../context/ClinicalContext';
 import { clinicalApi, FASTAPI_BASE_URL } from '../services/api';
 
 export const SimulatorEtlPage: React.FC = () => {
   const {
     patients,
+    treatments,
+    dentists,
     stgQueueCount,
     oltpTotalCount,
     oltpPacientesCount,
@@ -21,11 +27,15 @@ export const SimulatorEtlPage: React.FC = () => {
     pushToast,
   } = useClinical();
 
+  const todayIso = useMemo(() => getTodayIsoDate(), []);
+
+  const [selectedPatientId, setSelectedPatientId] = useState<string>('');
+  const [selectedDentistId, setSelectedDentistId] = useState<number>(2);
   const [edad, setEdad] = useState<number>(29);
   const [genero, setGenero] = useState<'F' | 'M'>('F');
-  const [cpmsCode, setCpmsCode] = useState<string>('CPMS-8901');
-  const [fechaProgramacion, setFechaProgramacion] = useState<string>('2026-11-12');
-  const [fechaCita, setFechaCita] = useState<string>('2026-11-30');
+  const [cpmsCode, setCpmsCode] = useState<string>('CPMS-05');
+  const [fechaProgramacion, setFechaProgramacion] = useState<string>(todayIso);
+  const [fechaCita, setFechaCita] = useState<string>(addDaysToIsoDate(todayIso, 14));
   const [distrito, setDistrito] = useState<string>('centro');
   const [smsActivo, setSmsActivo] = useState<boolean>(true);
   const [pipelineMessage, setPipelineMessage] = useState<string | null>(null);
@@ -33,9 +43,31 @@ export const SimulatorEtlPage: React.FC = () => {
   const [apiPredictedRisk, setApiPredictedRisk] = useState<number | null>(null);
   const [isSavingSim, setIsSavingSim] = useState<boolean>(false);
 
+  // Al seleccionar un paciente de la BD, sincronizar su edad y género en el simulador
+  useEffect(() => {
+    if (!selectedPatientId && patients.length > 0) {
+      setSelectedPatientId(patients[0].idPaciente);
+    }
+  }, [patients, selectedPatientId]);
+
+  useEffect(() => {
+    if (treatments.length > 0 && !treatments.some((t) => t.codigo === cpmsCode)) {
+      setCpmsCode(treatments[0].codigo);
+    }
+  }, [treatments, cpmsCode]);
+
+  const handleSelectPatient = (idPac: string) => {
+    setSelectedPatientId(idPac);
+    const pt = patients.find((p) => p.idPaciente === idPac);
+    if (pt) {
+      setEdad(pt.edad);
+      setGenero(pt.genero);
+    }
+  };
+
   const selectedTreatment = useMemo(
-    () => TREATMENTS.find((t) => t.codigo === cpmsCode) || TREATMENTS[5],
-    [cpmsCode]
+    () => treatments.find((t) => t.codigo === cpmsCode) || treatments[0],
+    [treatments, cpmsCode]
   );
 
   const diasEspera = useMemo(() => {
@@ -56,6 +88,8 @@ export const SimulatorEtlPage: React.FC = () => {
           diasEspera,
           distrito,
           smsRecibido: smsActivo,
+          fechaCita,
+          idPaciente: selectedPatientId || undefined,
         });
         if (!cancelled && typeof res?.probabilidad === 'number') {
           setApiPredictedRisk(res.probabilidad);
@@ -68,7 +102,7 @@ export const SimulatorEtlPage: React.FC = () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [edad, genero, cpmsCode, diasEspera, distrito, smsActivo]);
+  }, [edad, genero, cpmsCode, diasEspera, distrito, smsActivo, fechaCita, selectedPatientId]);
 
   const inference = useMemo(() => {
     const waitScore = Math.min((diasEspera / 22) * 58, 68);
@@ -94,15 +128,16 @@ export const SimulatorEtlPage: React.FC = () => {
     let badgeClass = 'bg-emerald-50 text-emerald-800';
     let subClass = 'text-emerald-700';
 
-    if (totalRisk >= 65) {
+    // Umbrales unificados con backend y notebook: Alto >= 50%, Medio >= 35%
+    if (totalRisk >= 50) {
       riskLabel = 'RIESGO ALTO';
-      riskSub = 'Crítico ≥ 65%';
+      riskSub = 'Crítico ≥ 50%';
       strokeClass = 'text-error';
       badgeClass = 'bg-red-50 text-red-800';
       subClass = 'text-error';
     } else if (totalRisk >= 35) {
       riskLabel = 'RIESGO MEDIO';
-      riskSub = 'Precaución 35% - 64%';
+      riskSub = 'Precaución 35% - 49%';
       strokeClass = 'text-amber-500';
       badgeClass = 'bg-amber-50 text-amber-800';
       subClass = 'text-amber-700';
@@ -123,21 +158,21 @@ export const SimulatorEtlPage: React.FC = () => {
   }, [apiPredictedRisk, diasEspera, edad, smsActivo]);
 
   const handleLoadCriticalPreset = () => {
-    setFechaProgramacion('2026-11-12');
-    setFechaCita('2026-12-03'); // +21 days
+    setFechaProgramacion(todayIso);
+    setFechaCita(addDaysToIsoDate(todayIso, 21));
     setEdad(24);
     setSmsActivo(false);
-    setCpmsCode('CPMS-8901');
+    setCpmsCode('CPMS-05');
     appendSqlLog(
       'PRESET',
-      'Caso crítico inyectado: 21 días de espera, sin confirmación SMS, Endodoncia Molar.',
+      'Caso crítico inyectado: 21 días de espera, sin confirmación SMS, Endodoncia Unirradicular.',
       'warn'
     );
-    pushToast('Caso Crítico Cargado', 'Simulación configurada con >20 días de espera sin SMS.', 'warning');
+    pushToast('Caso Crítico Cargado', 'Simulación configurada con 21 días de espera sin SMS.', 'warning');
   };
 
   const handleApplySlotAdvance = () => {
-    setFechaCita('2026-11-15'); // 3 days wait
+    setFechaCita(addDaysToIsoDate(fechaProgramacion, 3));
     setSmsActivo(true);
     appendSqlLog(
       'PRESCRIPTION',
@@ -150,15 +185,19 @@ export const SimulatorEtlPage: React.FC = () => {
   const handleSaveSimulation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSavingSim) return;
+    const targetPatientId = selectedPatientId || patients[0]?.idPaciente;
+    if (!targetPatientId) {
+      pushToast('Paciente Requerido', 'Seleccione un paciente de oltp.Pacientes.', 'warning');
+      return;
+    }
     setIsSavingSim(true);
     try {
-      const defaultPatient = patients[0];
       await addOltpAppointment({
-        idPaciente: defaultPatient?.idPaciente || '47812903',
-        odontologoId: 2,
+        idPaciente: targetPatientId,
+        odontologoId: selectedDentistId,
         tratamientoCodigo: selectedTreatment.codigo,
         costo: selectedTreatment.costo,
-        fechaCita: '2024-11-30',
+        fechaCita,
         smsRecibido: smsActivo ? 1 : 0,
         noShow: 'Pendiente',
         probabilidad: inference.totalRisk,
@@ -195,7 +234,7 @@ export const SimulatorEtlPage: React.FC = () => {
             </span>
             <span className="inline-flex items-center gap-1.5 font-label-sm text-on-surface-variant">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              Inferencia RF en Memoria v2.4
+              modelo_rf_dental.pkl Activo
             </span>
           </div>
           <h1 className="font-display-lg text-on-surface tracking-tight">
@@ -216,7 +255,7 @@ export const SimulatorEtlPage: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <span className="font-label-sm text-on-surface-variant uppercase">Modelo Activo</span>
-              <span className="font-code-md font-semibold text-on-surface">RandomForest_v2.pkl</span>
+              <span className="font-code-md font-semibold text-on-surface">modelo_rf_dental.pkl</span>
             </div>
           </div>
           <div className="flex flex-col pr-4 sm:border-r border-outline-variant/30">
@@ -224,8 +263,8 @@ export const SimulatorEtlPage: React.FC = () => {
             <span className="font-headline-md font-bold text-emerald-700 tabular-nums">{modelAuc}</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-label-sm text-on-surface-variant uppercase">Latencia Inferencia</span>
-            <span className="font-code-md font-semibold text-primary">12.4 ms</span>
+            <span className="font-label-sm text-on-surface-variant uppercase">Umbrales RF</span>
+            <span className="font-code-md font-semibold text-primary">35% / 50%</span>
           </div>
         </div>
       </section>
@@ -260,6 +299,37 @@ export const SimulatorEtlPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleSaveSimulation} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Paciente y Odontólogo */}
+              <div className="flex flex-col gap-1.5">
+                <label className="font-label-md text-on-surface">Paciente (oltp.Pacientes)</label>
+                <select
+                  value={selectedPatientId}
+                  onChange={(e) => handleSelectPatient(e.target.value)}
+                  className="w-full bg-surface-container-low text-on-surface font-body-sm rounded-lg px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {patients.map((p) => (
+                    <option key={p.idPaciente} value={p.idPaciente}>
+                      #{p.idPaciente} ({p.genero}, {p.edad}a — {p.barrio})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-label-md text-on-surface">Odontólogo (oltp.Odontologos)</label>
+                <select
+                  value={selectedDentistId}
+                  onChange={(e) => setSelectedDentistId(Number(e.target.value))}
+                  className="w-full bg-surface-container-low text-on-surface font-body-sm rounded-lg px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {dentists.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.id} — {d.nombre} ({d.especialidad})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* Edad */}
               <div className="flex flex-col gap-1.5">
                 <label className="font-label-md text-on-surface flex items-center justify-between">
@@ -269,19 +339,16 @@ export const SimulatorEtlPage: React.FC = () => {
                 <div className="relative">
                   <input
                     type="number"
-                    min={4}
-                    max={95}
+                    min={0}
+                    max={100}
                     value={edad}
-                    onChange={(e) => setEdad(Math.max(4, Math.min(95, Number(e.target.value) || 29)))}
+                    onChange={(e) => setEdad(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
                     className="w-full bg-surface-container-low text-on-surface font-body-md rounded-lg px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-primary transition-all"
                   />
                   <span className="absolute right-3 top-2.5 font-label-sm text-on-surface-variant">
                     años
                   </span>
                 </div>
-                <span className="font-label-sm text-[10px] text-on-surface-variant">
-                  Ponderación IA: 15% del vector de decisión
-                </span>
               </div>
 
               {/* Género */}
@@ -313,15 +380,12 @@ export const SimulatorEtlPage: React.FC = () => {
                     <span>Masculino</span>
                   </button>
                 </div>
-                <span className="font-label-sm text-[10px] text-on-surface-variant">
-                  Control sociodemográfico poblacional
-                </span>
               </div>
 
               {/* Tratamiento CPMS */}
               <div className="md:col-span-2 flex flex-col gap-1.5">
                 <label className="font-label-md text-on-surface flex items-center justify-between">
-                  <span>Procedimiento Odontológico (CPMS Perú)</span>
+                  <span>Procedimiento Odontológico (oltp.Tratamientos)</span>
                   <span className="font-code-sm text-secondary font-semibold">
                     Arancel: S/ {selectedTreatment.costo.toFixed(2)}
                   </span>
@@ -332,7 +396,7 @@ export const SimulatorEtlPage: React.FC = () => {
                     onChange={(e) => setCpmsCode(e.target.value)}
                     className="w-full appearance-none bg-surface-container-low text-on-surface font-body-md rounded-lg pl-3.5 pr-10 py-2.5 outline-none focus:ring-2 focus:ring-primary cursor-pointer"
                   >
-                    {TREATMENTS.filter((t) => t.codigo.startsWith('CPMS')).map((t) => (
+                    {treatments.map((t) => (
                       <option key={t.codigo} value={t.codigo}>
                         {t.codigo}: {t.nombre} — S/ {t.costo.toFixed(2)}
                       </option>
@@ -342,25 +406,6 @@ export const SimulatorEtlPage: React.FC = () => {
                     unfold_more
                   </span>
                 </div>
-                <div className="flex items-center justify-between font-label-sm text-on-surface-variant">
-                  <span>Cód. Fonasa / SIS Mapeado a catálogo clínico Lima</span>
-                  <span
-                    className={`font-medium ${
-                      selectedTreatment.severidad === 'high'
-                        ? 'text-error'
-                        : selectedTreatment.severidad === 'medium'
-                        ? 'text-amber-700'
-                        : 'text-emerald-700'
-                    }`}
-                  >
-                    Severidad de Intervención:{' '}
-                    {selectedTreatment.severidad === 'high'
-                      ? 'Alta'
-                      : selectedTreatment.severidad === 'medium'
-                      ? 'Moderada'
-                      : 'Preventiva'}
-                  </span>
-                </div>
               </div>
 
               {/* Fecha Programación */}
@@ -368,7 +413,7 @@ export const SimulatorEtlPage: React.FC = () => {
                 <label className="font-label-md text-on-surface flex items-center justify-between">
                   <span>Fecha de Programación</span>
                   <span className="font-code-sm text-emerald-700 bg-emerald-50 px-1.5 rounded">
-                    Emisión Hoy
+                    Emisión
                   </span>
                 </label>
                 <input
@@ -377,9 +422,6 @@ export const SimulatorEtlPage: React.FC = () => {
                   onChange={(e) => setFechaProgramacion(e.target.value)}
                   className="w-full bg-surface-container-low text-on-surface font-code-md rounded-lg px-3.5 py-2 outline-none focus:ring-2 focus:ring-primary"
                 />
-                <span className="font-label-sm text-[10px] text-on-surface-variant">
-                  Momento exacto del contacto telefónico/físico
-                </span>
               </div>
 
               {/* Fecha Deseada */}
@@ -392,21 +434,16 @@ export const SimulatorEtlPage: React.FC = () => {
                 </label>
                 <input
                   type="date"
+                  min={fechaProgramacion}
                   value={fechaCita}
                   onChange={(e) => setFechaCita(e.target.value)}
                   className="w-full bg-surface-container-low text-on-surface font-code-md rounded-lg px-3.5 py-2 outline-none focus:ring-2 focus:ring-primary"
                 />
-                <div className="flex items-center gap-1 text-[11px] font-medium text-error">
-                  <span className="material-symbols-outlined text-[14px]">timer</span>
-                  <span>
-                    Variable Crítica: <strong className="font-mono">{diasEspera}</strong> días de holgura temporal
-                  </span>
-                </div>
               </div>
 
               {/* Distrito */}
               <div className="flex flex-col gap-1.5">
-                <label className="font-label-md text-on-surface">Distrito de Residencia</label>
+                <label className="font-label-md text-on-surface">Zonificación de Referencia</label>
                 <div className="relative">
                   <select
                     value={distrito}
@@ -423,9 +460,6 @@ export const SimulatorEtlPage: React.FC = () => {
                     location_on
                   </span>
                 </div>
-                <span className="font-label-sm text-[10px] text-on-surface-variant">
-                  Mapeo isócrono a Sede San Borja / Lima Central
-                </span>
               </div>
 
               {/* Switch SMS */}
@@ -449,10 +483,6 @@ export const SimulatorEtlPage: React.FC = () => {
                     <div className="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
                   </label>
                 </div>
-                <span className="font-label-sm text-[10px] text-emerald-800 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[14px]">shield</span>
-                  Factor Protector IA: Disminuye riesgo base en ~15%
-                </span>
               </div>
 
               {/* CTAs */}
@@ -463,7 +493,7 @@ export const SimulatorEtlPage: React.FC = () => {
                   className="w-full sm:w-auto px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md transition-colors flex items-center justify-center gap-1.5"
                 >
                   <span className="material-symbols-outlined text-[18px]">bolt</span>
-                  Cargar Caso Crítico (&gt;15 días)
+                  Cargar Caso Crítico (21 días)
                 </button>
                 <button
                   type="submit"
@@ -533,12 +563,12 @@ export const SimulatorEtlPage: React.FC = () => {
 
               <div className="w-full bg-surface-container-low rounded-lg p-3 flex flex-col gap-2 mt-1 text-on-surface-variant">
                 <div className="flex items-center justify-between text-on-surface font-label-sm font-semibold border-b border-outline-variant/20 pb-1">
-                  <span>Desglose Ponderado RF</span>
+                  <span>Desglose de Factores RF</span>
                   <span className="font-code-sm text-primary">Score F(x)</span>
                 </div>
                 <div className="flex items-center justify-between font-label-sm">
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-primary" /> Tiempo de Espera (70%)
+                    <span className="w-2 h-2 rounded-full bg-primary" /> Tiempo de Espera ({diasEspera}d)
                   </span>
                   <span className="font-code-sm font-semibold text-error">
                     +{inference.waitScore.toFixed(1)} pts
@@ -546,7 +576,7 @@ export const SimulatorEtlPage: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between font-label-sm">
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-secondary" /> Edad del Paciente (15%)
+                    <span className="w-2 h-2 rounded-full bg-secondary" /> Edad del Paciente ({edad}a)
                   </span>
                   <span className="font-code-sm text-on-surface">
                     +{inference.ageScore.toFixed(1)} pts
@@ -554,10 +584,10 @@ export const SimulatorEtlPage: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between font-label-sm">
                   <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600" /> Efecto SMS Confirmación (15%)
+                    <span className="w-2 h-2 rounded-full bg-emerald-600" /> Confirmación SMS
                   </span>
                   <span className="font-code-sm text-emerald-700 font-medium">
-                    {smsActivo ? '-15.0 pts' : '0.0 pts (Sin Protección)'}
+                    {smsActivo ? 'SMSRecibido = 1' : 'SMSRecibido = 0'}
                   </span>
                 </div>
               </div>
@@ -574,30 +604,8 @@ export const SimulatorEtlPage: React.FC = () => {
                       Alerta Preventiva: La cita excede los 15 días de espera
                     </h3>
                     <p className="font-body-sm text-red-800">
-                      La holgura calculada (<strong>{diasEspera} días</strong>) supera el umbral de deserción histórica (38% de abandono espontáneo).
+                      La holgura calculada (<strong>{diasEspera} días</strong>) incrementa significativamente la probabilidad de abandono.
                     </p>
-                  </div>
-                </div>
-
-                <div className="bg-surface-container-lowest/90 rounded-lg p-3 flex flex-col gap-1.5 text-on-surface">
-                  <span className="font-label-sm font-bold uppercase tracking-wider text-red-900">
-                    Recomendaciones de Retención Inmediata:
-                  </span>
-                  <div className="flex items-start gap-2 font-body-sm">
-                    <span className="material-symbols-outlined text-[16px] text-primary mt-0.5 shrink-0">
-                      event_upcoming
-                    </span>
-                    <span>
-                      <strong>1) Proponer adelanto de fecha con sobrecupo:</strong> Existen 2 cupos de contingencia este jueves en horario matutino.
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2 font-body-sm">
-                    <span className="material-symbols-outlined text-[16px] text-emerald-600 mt-0.5 shrink-0">
-                      sms
-                    </span>
-                    <span>
-                      <strong>2) Forzar envío de SMS y confirmación obligatoria 48h antes:</strong> Programado ticket en cola Twilio / WhatsApp Bot.
-                    </span>
                   </div>
                 </div>
 
@@ -608,7 +616,7 @@ export const SimulatorEtlPage: React.FC = () => {
                     className="px-3.5 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-on-primary font-label-sm transition-colors flex items-center gap-1.5 shadow-sm"
                   >
                     <span className="material-symbols-outlined text-[16px]">schedule_send</span>
-                    Aplicar Adelanto Sugerido
+                    Aplicar Adelanto (+3 días) y SMS
                   </button>
                 </div>
               </div>
@@ -630,7 +638,7 @@ export const SimulatorEtlPage: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-md bg-surface-container text-on-surface-variant font-code-sm">
-              SQL Server 2022 Enterprise
+              SQL Server (SQLEXPRESS)
             </span>
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
           </div>
@@ -646,26 +654,20 @@ export const SimulatorEtlPage: React.FC = () => {
                 </span>
                 <span className="material-symbols-outlined text-outline text-[20px]">upload_file</span>
               </div>
-              <h3 className="font-headline-sm text-on-surface">Archivos Crudos &amp; HC</h3>
+              <h3 className="font-headline-sm text-on-surface">Ingesta &amp; Rechazos</h3>
               <p className="font-body-sm text-on-surface-variant">
-                Ingesta polimórfica de fichas clínicas, hojas de citas diarias de recepcionistas en Excel y CSV de turnos.
+                Tablas de aterrizaje stg.Raw_NoShow, stg.Raw_CPMS y auditoría en stg.Rechazos_Ingesta.
               </p>
               <div className="mt-2 p-3 rounded-lg bg-surface-container-low flex flex-col gap-1 font-code-sm">
                 <div className="flex justify-between text-on-surface">
-                  <span>Registros en cola:</span>
+                  <span>stg.Rechazos_Ingesta:</span>
                   <span className="font-bold text-primary">
-                    {stgQueueCount === 0
-                      ? '0 en cola (Sincronizado)'
-                      : `${stgQueueCount.toLocaleString()} filas`}
+                    {stgQueueCount.toLocaleString()} filas
                   </span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant text-[11px]">
-                  <span>Esquema:</span>
-                  <span>stg.Raw_Citas_Turno</span>
-                </div>
-                <div className="flex justify-between text-on-surface-variant text-[11px]">
-                  <span>Formato origen:</span>
-                  <span>UTF-8 / ISO-8859-1</span>
+                  <span>Tablas origen:</span>
+                  <span>stg.Raw_NoShow / stg.Raw_CPMS</span>
                 </div>
               </div>
             </div>
@@ -680,7 +682,7 @@ export const SimulatorEtlPage: React.FC = () => {
                 <span>EXEC stg.usp_CargarOLTP</span>
               </button>
               <span className="font-label-sm text-[10px] text-center text-on-surface-variant">
-                Limpia tipos de datos y reconcilia duplicados
+                Limpia tipos de datos y carga nuevos registros en OLTP
               </span>
             </div>
           </div>
@@ -696,7 +698,7 @@ export const SimulatorEtlPage: React.FC = () => {
               </div>
               <h3 className="font-headline-sm text-on-surface">Base DentalCenterDB</h3>
               <p className="font-body-sm text-on-surface-variant">
-                Esquema relacional de tercera forma normal con integridad referencial, triggers de auditoría y bloqueos optimistas.
+                Esquema relacional transaccional con integridad referencial entre Pacientes, Odontologos, Tratamientos y Citas.
               </p>
               <div className="mt-2 p-3 rounded-lg bg-surface-container-low flex flex-col gap-1 font-code-sm">
                 <div className="flex justify-between text-on-surface">
@@ -711,7 +713,7 @@ export const SimulatorEtlPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-on-surface">
                   <span>oltp.Odontologos:</span>
-                  <span className="font-semibold">3 especialistas</span>
+                  <span className="font-semibold">{dentists.length} especialistas</span>
                 </div>
               </div>
             </div>
@@ -728,7 +730,7 @@ export const SimulatorEtlPage: React.FC = () => {
                 <span>EXEC dm.usp_ETL_CargarDataMart</span>
               </button>
               <span className="font-label-sm text-[10px] text-center text-on-surface-variant">
-                Genera dimensiones y hechos en copo de nieve
+                Sincroniza dimensiones, hechos y ejecuta scoring IA
               </span>
             </div>
           </div>
@@ -744,7 +746,7 @@ export const SimulatorEtlPage: React.FC = () => {
               </div>
               <h3 className="font-headline-sm text-on-surface">dm.Fact_Atenciones &amp; Scoring</h3>
               <p className="font-body-sm text-on-surface-variant">
-                Almacén analítico dimensional que nutre los tableros Power BI y almacena la salida probabilística del modelo RF.
+                Modelo Estrella Kimball que alimenta los KPIs y almacena la probabilidad en dm.Resultados_Prediccion_IA.
               </p>
               <div className="mt-2 p-3 rounded-lg bg-surface-container-low flex flex-col gap-1 font-code-sm">
                 <div className="flex justify-between text-on-surface">
@@ -753,7 +755,7 @@ export const SimulatorEtlPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-on-surface">
                   <span>dm.Resultados_Prediccion_IA:</span>
-                  <span className="font-semibold text-emerald-700">100% Sinc</span>
+                  <span className="font-semibold text-emerald-700">Sincronizado</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant text-[11px]">
                   <span>Métricas de Calidad:</span>
@@ -766,15 +768,15 @@ export const SimulatorEtlPage: React.FC = () => {
                 type="button"
                 disabled={isSyncingEtl}
                 onClick={() =>
-                  runWithProgress('Reentrenando RandomForestClassifier...', retrainAiModel)
+                  runWithProgress('Verificando modelo_rf_dental.pkl...', retrainAiModel)
                 }
                 className="w-full px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md transition-all flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-60"
               >
                 <span className="material-symbols-outlined text-[18px]">neurology</span>
-                <span>Reentrenar Modelo (Scikit-Learn)</span>
+                <span>Verificar Modelo RF (.pkl)</span>
               </button>
               <span className="font-label-sm text-[10px] text-center text-on-surface-variant">
-                Actualiza pipeline serializado en binario Pickle
+                Comprueba estado de modelo_rf_dental.pkl en memoria
               </span>
             </div>
           </div>

@@ -263,9 +263,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
                           className="text-left p-2 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex items-center justify-between gap-2"
                         >
                           <div className="min-w-0">
-                            <div className="font-label-sm text-on-surface truncate">{r.paciente}</div>
+                            <div className="font-label-sm text-on-surface truncate">
+                              IdPaciente: {r.dni}
+                            </div>
                             <div className="font-code-sm text-on-surface-variant">
-                              {r.idCita} · Espera {r.tiempoEspera}d
+                              Cita #{r.idCita} · Espera {r.tiempoEspera}d
                             </div>
                           </div>
                           <span className="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-code-sm font-bold shrink-0">

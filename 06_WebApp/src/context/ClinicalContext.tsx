@@ -7,18 +7,37 @@ import {
   INITIAL_RETENTION_ROWS,
   TREATMENTS,
 } from '../data/initialData';
-import { clinicalApi, FASTAPI_BASE_URL } from '../services/api';
+import { ApiError, clinicalApi, FASTAPI_BASE_URL } from '../services/api';
 import {
   AuditEvent,
   DataMartRetentionRow,
+  Dentist,
   ModuleId,
   NoShowStatus,
   OltpAppointment,
   Patient,
   SqlLogEntry,
   ToastNotice,
+  Treatment,
   WorkspaceMode,
 } from '../types/clinical';
+
+export function getTodayIsoDate(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+export function addDaysToIsoDate(baseIso: string, days: number): string {
+  const d = new Date(`${baseIso}T00:00:00`);
+  d.setDate(d.getDate() + days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 
 interface ClinicalContextValue {
   activeModule: ModuleId;
@@ -31,12 +50,16 @@ interface ClinicalContextValue {
   apiConnected: boolean;
   isLoadingData: boolean;
   refreshAllFromApi: (silent?: boolean) => Promise<void>;
+  searchPatientsFromApi: (buscar: string, limit?: number) => Promise<Patient[]>;
+
+  treatments: Treatment[];
+  dentists: Dentist[];
 
   patients: Patient[];
   addPatient: (
     patient: Omit<Patient, 'citasCount' | 'ultimaCita' | 'estadoClinico' | 'etapaBadge'>
   ) => Promise<boolean>;
-  updatePatient: (patient: Patient) => Promise<void>;
+  updatePatient: (patient: Patient) => Promise<boolean>;
   deletePatient: (idPaciente: string) => Promise<{ ok: boolean; reason?: string }>;
 
   oltpAppointments: OltpAppointment[];
@@ -124,6 +147,8 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [apiConnected, setApiConnected] = useState<boolean>(false);
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
 
+  const [treatments, setTreatments] = useState<Treatment[]>(TREATMENTS);
+  const [dentists, setDentists] = useState<Dentist[]>(DENTISTS);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [oltpAppointments, setOltpAppointments] = useState<OltpAppointment[]>([]);
   const [retentionRows, setRetentionRows] = useState<DataMartRetentionRow[]>([]);
@@ -199,16 +224,25 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const refreshAllFromApi = useCallback(async (silent = false) => {
     if (!silent) setIsLoadingData(true);
     try {
-      const [apiPatients, apiCitas, apiRetencion, apiKpis] = await Promise.all([
-        clinicalApi.getPacientes(),
-        clinicalApi.getCitas(),
-        clinicalApi.getRetencion(),
-        clinicalApi.getKpisMonitor('30d', 'todas'),
-      ]);
+      const [apiPatients, apiCitas, apiRetencion, apiKpis, apiTratamientos, apiOdontologos] =
+        await Promise.all([
+          clinicalApi.getPacientes('', 100),
+          clinicalApi.getCitas(100),
+          clinicalApi.getRetencion('Todos', 100),
+          clinicalApi.getKpisMonitor('30d', 'todas'),
+          clinicalApi.getTratamientos().catch(() => TREATMENTS),
+          clinicalApi.getOdontologos().catch(() => DENTISTS),
+        ]);
 
       if (Array.isArray(apiPatients)) setPatients(apiPatients);
       if (Array.isArray(apiCitas)) setOltpAppointments(apiCitas);
       if (Array.isArray(apiRetencion)) setRetentionRows(apiRetencion);
+      if (Array.isArray(apiTratamientos) && apiTratamientos.length > 0) {
+        setTreatments(apiTratamientos);
+      }
+      if (Array.isArray(apiOdontologos) && apiOdontologos.length > 0) {
+        setDentists(apiOdontologos);
+      }
 
       if (apiKpis?.monitor) {
         setStgQueueCount(apiKpis.monitor.stg_rechazos ?? 0);
@@ -239,13 +273,30 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const reason = err instanceof Error ? err.message : 'Error de red';
       appendSqlLog(
         'FASTAPI_OFFLINE',
-        `No se pudo conectar con ${FASTAPI_BASE_URL} (${reason}). Operando con datos de prueba (fallback).`,
+        `No se pudo conectar con ${FASTAPI_BASE_URL} (${reason}). Operando con datos de respaldo.`,
         'warn'
       );
     } finally {
       if (!silent) setIsLoadingData(false);
     }
   }, [appendSqlLog]);
+
+  const searchPatientsFromApi = useCallback(
+    async (buscar: string, limit = 100): Promise<Patient[]> => {
+      try {
+        const res = await clinicalApi.getPacientes(buscar, limit);
+        if (Array.isArray(res)) {
+          setPatients(res);
+          setApiConnected(true);
+          return res;
+        }
+      } catch {
+        // mantener lista actual si hay error de red
+      }
+      return [];
+    },
+    []
+  );
 
   useEffect(() => {
     refreshAllFromApi(false);
@@ -301,7 +352,7 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const navigateToAppointmentForPatient = (dni: string) => {
     setPreselectedPatientDni(dni);
     setActiveModule('agendamiento-y-control-de-citas');
-    pushToast('Paciente seleccionado', `Cargando ficha de DNI ${dni} en Agendamiento & Citas IA`, 'info');
+    pushToast('Paciente seleccionado', `Cargando IdPaciente ${dni} en Agendamiento & Citas IA`, 'info');
   };
 
   const addPatient = async (
@@ -310,7 +361,7 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (patients.some((p) => p.idPaciente === patientInput.idPaciente)) {
       pushToast(
         'Error de Clave Primaria',
-        `PK_Pacientes_IdPaciente duplicada: el DNI ${patientInput.idPaciente} ya existe en oltp.Pacientes.`,
+        `PK_Pacientes_IdPaciente duplicada: el IdPaciente ${patientInput.idPaciente} ya existe en oltp.Pacientes.`,
         'error'
       );
       appendSqlLog(
@@ -335,35 +386,45 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         createdPatient = apiCreated;
       }
       setApiConnected(true);
-      appendSqlLog('POST_API', `POST ${FASTAPI_BASE_URL}/api/pacientes -> 201 Created`, 'success');
+      appendSqlLog('POST_API', `POST ${FASTAPI_BASE_URL}/api/pacientes -> 200 OK`, 'success');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : '';
-      if (msg.startsWith('HTTP 4')) {
-        pushToast('Validación FastAPI', msg, 'error');
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error de Validación SQL / FastAPI', err.message, 'error');
+        appendSqlLog('SQL_REJECTED', `POST /api/pacientes rechazado (${err.status}): ${err.message}`, 'error');
         return false;
       }
-      appendSqlLog('API_FALLBACK', `POST /api/pacientes en caché local (${msg || 'offline'}).`, 'warn');
+      const msg = err instanceof Error ? err.message : 'offline';
+      appendSqlLog('API_FALLBACK', `POST /api/pacientes en caché local (${msg}).`, 'warn');
     }
 
     setPatients((prev) => [createdPatient, ...prev]);
+    setOltpPacientesCount((c) => c + 1);
+    if (createdPatient.genero === 'F') setOltpPacientesFCount((c) => c + 1);
+    else setOltpPacientesMCount((c) => c + 1);
+
     appendSqlLog(
       'INSERT_PACIENTE',
-      `INSERT INTO oltp.Pacientes (IdPaciente, Nombres, Genero, Edad, Barrio) VALUES ('${createdPatient.idPaciente}', N'${createdPatient.nombre}', '${createdPatient.genero}', ${createdPatient.edad}, N'${createdPatient.barrio}');`,
+      `INSERT INTO oltp.Pacientes (IdPaciente, Genero, Edad, Barrio) VALUES (${createdPatient.idPaciente}, '${createdPatient.genero}', ${createdPatient.edad}, N'${createdPatient.barrio}');`,
       'cmd'
     );
-    pushAudit('INSERT', 'sp_RegistrarPaciente', `Id: ${createdPatient.idPaciente} — ${createdPatient.barrio} (OK)`);
-    pushToast('Paciente Registrado', `${createdPatient.nombre} (${createdPatient.idPaciente}) guardado en oltp.Pacientes.`);
+    pushAudit('INSERT', 'oltp.Pacientes', `Id: ${createdPatient.idPaciente} — ${createdPatient.barrio} (OK)`);
+    pushToast('Paciente Registrado', `IdPaciente ${createdPatient.idPaciente} guardado en oltp.Pacientes.`);
     return true;
   };
 
-  const updatePatient = async (updated: Patient) => {
+  const updatePatient = async (updated: Patient): Promise<boolean> => {
     let finalPatient = updated;
     try {
       const apiRes = await clinicalApi.updatePaciente(updated.idPaciente, updated);
       if (apiRes?.idPaciente) finalPatient = apiRes;
       setApiConnected(true);
       appendSqlLog('PUT_API', `PUT ${FASTAPI_BASE_URL}/api/pacientes/${updated.idPaciente} -> 200 OK`, 'success');
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error al Actualizar Paciente', err.message, 'error');
+        appendSqlLog('SQL_REJECTED', `PUT /api/pacientes/${updated.idPaciente} rechazado (${err.status}): ${err.message}`, 'error');
+        return false;
+      }
       appendSqlLog('API_FALLBACK', `PUT /api/pacientes/${updated.idPaciente} aplicado localmente.`, 'warn');
     }
 
@@ -372,20 +433,24 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     );
     appendSqlLog(
       'UPDATE_PACIENTE',
-      `UPDATE oltp.Pacientes SET Nombres = N'${finalPatient.nombre}', Genero = '${finalPatient.genero}', Edad = ${finalPatient.edad}, Barrio = N'${finalPatient.barrio}' WHERE IdPaciente = '${finalPatient.idPaciente}';`,
+      `UPDATE oltp.Pacientes SET Genero = '${finalPatient.genero}', Edad = ${finalPatient.edad}, Barrio = N'${finalPatient.barrio}' WHERE IdPaciente = ${finalPatient.idPaciente};`,
       'cmd'
     );
-    pushAudit('UPDATE', 'sp_ActualizarPaciente', `Id: ${finalPatient.idPaciente} — ${finalPatient.barrio}`);
+    pushAudit('UPDATE', 'oltp.Pacientes', `Id: ${finalPatient.idPaciente} — ${finalPatient.barrio}`);
     pushToast('Registro Actualizado', `Expediente ${finalPatient.idPaciente} actualizado en DentalCenterDB.`);
+    return true;
   };
 
   const deletePatient = async (idPaciente: string): Promise<{ ok: boolean; reason?: string }> => {
-    const hasOltp = oltpAppointments.some((a) => a.idPaciente === idPaciente);
+    const targetPt = patients.find((p) => p.idPaciente === idPaciente);
+    const hasOltp =
+      (targetPt && targetPt.citasCount > 0) ||
+      oltpAppointments.some((a) => a.idPaciente === idPaciente);
     const hasDm = retentionRows.some((r) => r.dni === idPaciente);
     if (hasOltp || hasDm) {
       appendSqlLog(
         'FK_CONFLICT',
-        `DELETE statement conflicted with the REFERENCE constraint "FK_Citas_Pacientes" for IdPaciente = '${idPaciente}'.`,
+        `DELETE statement conflicted with the REFERENCE constraint "FK_Citas_Pacientes" for IdPaciente = ${idPaciente}.`,
         'error'
       );
       pushAudit('VERIFY CHECK', 'FK_Citas_Pacientes', `Blocked DELETE on Id: ${idPaciente} (citas activas)`, 'warn');
@@ -403,23 +468,24 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       await clinicalApi.deletePaciente(idPaciente);
       setApiConnected(true);
-      appendSqlLog('DELETE_API', `DELETE ${FASTAPI_BASE_URL}/api/pacientes/${idPaciente} -> 204`, 'success');
+      appendSqlLog('DELETE_API', `DELETE ${FASTAPI_BASE_URL}/api/pacientes/${idPaciente} -> 200 OK`, 'success');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : '';
-      if (msg.startsWith('HTTP 4')) {
-        pushToast('Restricción Backend', msg, 'error');
-        return { ok: false, reason: msg };
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Restricción SQL Server', err.message, 'error');
+        appendSqlLog('FK_CONFLICT', `DELETE /api/pacientes/${idPaciente} rechazado: ${err.message}`, 'error');
+        return { ok: false, reason: err.message };
       }
       appendSqlLog('API_FALLBACK', `DELETE /api/pacientes/${idPaciente} aplicado localmente.`, 'warn');
     }
 
     setPatients((prev) => prev.filter((p) => p.idPaciente !== idPaciente));
+    setOltpPacientesCount((c) => Math.max(0, c - 1));
     appendSqlLog(
       'DELETE_PACIENTE',
-      `DELETE FROM oltp.Pacientes WHERE IdPaciente = '${idPaciente}'; -- 1 row affected`,
+      `DELETE FROM oltp.Pacientes WHERE IdPaciente = ${idPaciente}; -- 1 row affected`,
       'warn'
     );
-    pushAudit('DELETE', 'sp_EliminarPaciente', `Id: ${idPaciente} — Eliminado`);
+    pushAudit('DELETE', 'oltp.Pacientes', `Id: ${idPaciente} — Eliminado`);
     pushToast('Registro Eliminado', `Paciente ${idPaciente} eliminado de oltp.Pacientes.`);
     return { ok: true };
   };
@@ -435,33 +501,30 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     probabilidad?: number;
   }): Promise<OltpAppointment | null> => {
     const patient = patients.find((p) => p.idPaciente === input.idPaciente) || {
-      idPaciente: input.idPaciente || '47812903',
-      nombre: 'Paciente Registrado',
+      idPaciente: input.idPaciente,
       genero: 'F' as const,
       edad: 30,
       barrio: 'Miraflores',
-      telefono: '+51 987 000 111',
     };
-    const dentist = DENTISTS.find((d) => d.id === input.odontologoId) || DENTISTS[0];
+    const dentist = dentists.find((d) => d.id === input.odontologoId) || dentists[0] || DENTISTS[0];
     const treatment =
-      TREATMENTS.find((t) => t.codigo === input.tratamientoCodigo) || TREATMENTS[0];
+      treatments.find((t) => t.codigo === input.tratamientoCodigo) || treatments[0] || TREATMENTS[0];
 
-    const today = new Date('2024-11-12T00:00:00');
+    const todayIso = getTodayIsoDate();
+    const todayDate = new Date(`${todayIso}T00:00:00`);
     const targetDate = new Date(`${input.fechaCita}T00:00:00`);
-    const diffDays = Math.max(
-      0,
-      Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-    );
+    const diffDays = Math.ceil((targetDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) {
+      pushToast('Fecha Inválida', 'La fecha de la cita no puede ser anterior a la fecha de programación.', 'error');
+      return null;
+    }
 
-    const nextNumber = 1104 + oltpAppointments.length;
-    const idCita = `CT-2024-${nextNumber}`;
     const bucket: OltpAppointment['bucketTiempo'] =
       diffDays === 0 ? 'hoy' : diffDays === 1 ? 'manana' : 'semana';
 
     let newAppt: OltpAppointment = {
-      idCita,
+      idCita: String(9000126 + oltpAppointments.length),
       idPaciente: patient.idPaciente,
-      pacienteNombre: patient.nombre,
       distrito: patient.barrio,
       edad: patient.edad,
       odontologoId: dentist.id,
@@ -471,9 +534,9 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       tratamientoCodigo: treatment.codigo,
       tratamientoNombre: treatment.nombre,
       costo: input.costo,
-      fechaProgramacion: '2024-11-12 10:42',
+      fechaProgramacion: `${todayIso} ${formatTimeNow()}`,
       fechaCita: input.fechaCita,
-      hora: '10:30',
+      hora: formatTimeNow().slice(0, 5),
       tiempoEspera: diffDays,
       smsRecibido: input.smsRecibido,
       noShow: input.noShow,
@@ -485,7 +548,7 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const apiCreated = await clinicalApi.createCita({
         idPaciente: input.idPaciente,
         odontologoId: input.odontologoId,
-        tratamientoCodigo: input.tratamientoCodigo,
+        tratamientoCodigo: treatment.codigo,
         costo: input.costo,
         fechaCita: input.fechaCita,
         smsRecibido: input.smsRecibido,
@@ -493,8 +556,13 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       });
       if (apiCreated?.idCita) newAppt = apiCreated;
       setApiConnected(true);
-      appendSqlLog('POST_API', `POST ${FASTAPI_BASE_URL}/api/citas -> ${newAppt.idCita}`, 'success');
-    } catch {
+      appendSqlLog('POST_API', `POST ${FASTAPI_BASE_URL}/api/citas -> IdCita ${newAppt.idCita}`, 'success');
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error al Registrar Cita', err.message, 'error');
+        appendSqlLog('SQL_REJECTED', `POST /api/citas rechazado (${err.status}): ${err.message}`, 'error');
+        return null;
+      }
       appendSqlLog('API_FALLBACK', 'POST /api/citas aplicado en caché local.', 'warn');
     }
 
@@ -511,7 +579,7 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     appendSqlLog(
       'INSERT_OLTP',
-      `INSERT INTO oltp.Citas (IdCita, IdPaciente, IdOdontologo, IdTratamiento, FechaCita, CostoAplicado, SMSRecibido, NoShow) VALUES ('${newAppt.idCita}', '${patient.idPaciente}', ${dentist.id}, '${treatment.codigo}', '${input.fechaCita}', ${input.costo.toFixed(2)}, ${input.smsRecibido}, '${input.noShow}');`,
+      `INSERT INTO oltp.Citas (IdCita, IdPaciente, IdOdontologo, IdTratamiento, FechaCita, CostoAplicado, SMSRecibido, NoShow) VALUES (${newAppt.idCita}, ${patient.idPaciente}, ${dentist.id}, ${treatment.idTratamiento ?? 1}, '${input.fechaCita}', ${input.costo.toFixed(2)}, ${input.smsRecibido}, '${input.noShow === 'Pendiente' ? 'Pen' : input.noShow}');`,
       'cmd'
     );
     appendSqlLog(
@@ -520,7 +588,7 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       'success'
     );
 
-    pushToast('Cita Registrada', `Cita ${newAppt.idCita} insertada atómicamente en oltp.Citas.`);
+    pushToast('Cita Registrada', `Cita #${newAppt.idCita} insertada atómicamente en oltp.Citas.`);
     return newAppt;
   };
 
@@ -533,21 +601,25 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       await clinicalApi.toggleCitaSms(idCita, nextSms);
       setApiConnected(true);
       appendSqlLog('PATCH_API', `PATCH ${FASTAPI_BASE_URL}/api/citas/${idCita}/sms -> ${nextSms}`, 'success');
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error al Actualizar SMS', err.message, 'error');
+        return;
+      }
       appendSqlLog('API_FALLBACK', `PATCH /api/citas/${idCita}/sms aplicado localmente.`, 'warn');
     }
 
     setOltpAppointments((prev) =>
-      prev.map((a) => (a.idCita === idCita ? { ...a, smsRecibido: nextSms, sincronizadoDM: false } : a))
+      prev.map((a) => (a.idCita === idCita ? { ...a, smsRecibido: nextSms } : a))
     );
     appendSqlLog(
       'UPDATE_OLTP',
-      `UPDATE oltp.Citas SET SMSRecibido = ${nextSms} WHERE IdCita = '${idCita}';`,
+      `UPDATE oltp.Citas SET SMSRecibido = ${nextSms} WHERE IdCita = ${idCita};`,
       'cmd'
     );
     pushToast(
       nextSms === 1 ? 'SMS Confirmado' : 'SMS Marcado Pendiente',
-      `Estado SMS de ${idCita} actualizado a ${nextSms}.`
+      `Estado SMS de Cita #${idCita} actualizado a ${nextSms}.`
     );
   };
 
@@ -556,36 +628,47 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       await clinicalApi.updateCitaNoShow(idCita, status);
       setApiConnected(true);
       appendSqlLog('PATCH_API', `PATCH ${FASTAPI_BASE_URL}/api/citas/${idCita}/noshow -> ${status}`, 'success');
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error al Actualizar Asistencia', err.message, 'error');
+        return;
+      }
       appendSqlLog('API_FALLBACK', `PATCH /api/citas/${idCita}/noshow aplicado localmente.`, 'warn');
     }
 
     setOltpAppointments((prev) =>
-      prev.map((a) => (a.idCita === idCita ? { ...a, noShow: status, sincronizadoDM: false } : a))
+      prev.map((a) => (a.idCita === idCita ? { ...a, noShow: status } : a))
     );
+    const dbVal = status === 'Pendiente' ? 'Pen' : status;
     appendSqlLog(
       'UPDATE_OLTP',
-      `UPDATE oltp.Citas SET NoShow = '${status}' WHERE IdCita = '${idCita}';`,
+      `UPDATE oltp.Citas SET NoShow = '${dbVal}' WHERE IdCita = ${idCita};`,
       'cmd'
     );
-    pushToast('Asistencia Actualizada', `Cita ${idCita} marcada como '${status}'.`);
+    pushToast('Asistencia Actualizada', `Cita #${idCita} marcada como '${status}'.`);
   };
 
   const rescheduleOltpAppointment = async (idCita: string, newDate: string) => {
+    let updatedWait: number | undefined;
     try {
-      await clinicalApi.rescheduleCita(idCita, newDate);
+      const res = await clinicalApi.rescheduleCita(idCita, newDate);
+      if (typeof res?.tiempoEspera === 'number') updatedWait = res.tiempoEspera;
       setApiConnected(true);
       appendSqlLog('PATCH_API', `PATCH ${FASTAPI_BASE_URL}/api/citas/${idCita}/reprogramar -> ${newDate}`, 'success');
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error al Reprogramar Cita', err.message, 'error');
+        appendSqlLog('SQL_REJECTED', `PATCH /api/citas/${idCita}/reprogramar rechazado: ${err.message}`, 'error');
+        return;
+      }
       appendSqlLog('API_FALLBACK', `PATCH /api/citas/${idCita}/reprogramar aplicado localmente.`, 'warn');
     }
 
-    const today = new Date('2024-11-12T00:00:00');
+    const todayDate = new Date(`${getTodayIsoDate()}T00:00:00`);
     const targetDate = new Date(`${newDate}T00:00:00`);
-    const diffDays = Math.max(
-      0,
-      Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-    );
+    const diffDays =
+      updatedWait ??
+      Math.max(0, Math.ceil((targetDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24)));
 
     setOltpAppointments((prev) =>
       prev.map((a) =>
@@ -595,31 +678,35 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               fechaCita: newDate,
               tiempoEspera: diffDays,
               noShow: 'Pendiente',
-              sincronizadoDM: false,
             }
           : a
       )
     );
     appendSqlLog(
       'UPDATE_OLTP',
-      `UPDATE oltp.Citas SET FechaCita = '${newDate} 10:00', NoShow = 'Pendiente' WHERE IdCita = '${idCita}';`,
+      `UPDATE oltp.Citas SET FechaCita = '${newDate}', NoShow = 'Pen' WHERE IdCita = ${idCita};`,
       'cmd'
     );
-    pushToast('Cita Reprogramada', `Nueva fecha ${newDate} guardada para ${idCita}.`);
+    pushToast('Cita Reprogramada', `Nueva fecha ${newDate} guardada para Cita #${idCita}.`);
   };
 
   const deleteOltpAppointment = async (idCita: string) => {
     try {
       await clinicalApi.deleteCita(idCita);
       setApiConnected(true);
-      appendSqlLog('DELETE_API', `DELETE ${FASTAPI_BASE_URL}/api/citas/${idCita} -> 204`, 'success');
-    } catch {
+      appendSqlLog('DELETE_API', `DELETE ${FASTAPI_BASE_URL}/api/citas/${idCita} -> 200 OK`, 'success');
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error al Eliminar Cita', err.message, 'error');
+        return;
+      }
       appendSqlLog('API_FALLBACK', `DELETE /api/citas/${idCita} aplicado localmente.`, 'warn');
     }
 
     setOltpAppointments((prev) => prev.filter((a) => a.idCita !== idCita));
-    appendSqlLog('DELETE_OLTP', `DELETE FROM oltp.Citas WHERE IdCita = '${idCita}';`, 'warn');
-    pushToast('Cita Cancelada', `Registro ${idCita} eliminado de oltp.Citas.`, 'warning');
+    setOltpTotalCount((c) => Math.max(0, c - 1));
+    appendSqlLog('DELETE_OLTP', `DELETE FROM oltp.Citas WHERE IdCita = ${idCita};`, 'warn');
+    pushToast('Cita Cancelada', `Registro #${idCita} eliminado de oltp.Citas.`, 'warning');
   };
 
   const confirmRetentionSmsWriteBack = async (idCita: string) => {
@@ -631,45 +718,55 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     const oldProb = target.probabilidad;
-    let newProb = Math.max(5, oldProb - (Math.floor(Math.random() * 11) + 25));
+    let newProb = Math.max(5, oldProb - 15);
+    let nuevoNivel = target.nivelRiesgo;
 
     try {
       const res = await clinicalApi.confirmarSmsWriteBack(idCita);
       if (typeof res?.probabilidad === 'number') {
         newProb = res.probabilidad;
       }
+      if (res?.nivelRiesgo) {
+        nuevoNivel = res.nivelRiesgo;
+      }
       setApiConnected(true);
       appendSqlLog(
         'POST_API',
-        `POST ${FASTAPI_BASE_URL}/api/retencion/${idCita}/confirmar-sms -> prob=${newProb}%`,
+        `POST ${FASTAPI_BASE_URL}/api/retencion/${idCita}/confirmar-sms -> prob=${newProb}% (RF Recalculado)`,
         'success'
       );
-    } catch {
-      appendSqlLog('API_FALLBACK', `Write-Back /api/retencion/${idCita} aplicado localmente (fallback).`, 'warn');
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error en Write-Back SQL', err.message, 'error');
+        return;
+      }
+      appendSqlLog('API_FALLBACK', `Write-Back /api/retencion/${idCita} aplicado localmente.`, 'warn');
     }
 
-    const reduction = Math.max(0, oldProb - newProb);
+    const reduction = oldProb - newProb;
 
     setRetentionRows((prev) =>
       prev.map((r) =>
-        r.idCita === idCita ? { ...r, smsRecibido: 1, probabilidad: newProb } : r
+        r.idCita === idCita
+          ? { ...r, smsRecibido: 1, probabilidad: newProb, nivelRiesgo: nuevoNivel }
+          : r
       )
     );
 
     appendSqlLog(
       'WRITE-BACK',
-      `UPDATE oltp.Citas SET SMSRecibido = 1, ModificadoEl = GETDATE() WHERE IdCita = '${idCita}';`,
+      `UPDATE oltp.Citas SET SMSRecibido = 1 WHERE IdCita = ${idCita}; UPDATE dm.Fact_Atenciones SET SMSRecibido = 1 WHERE IdCita = ${idCita};`,
       'warn'
     );
     appendSqlLog(
-      'CDC_REPLICATION',
-      `IdCita: ${idCita} sincronizado con dm.Fact_Atenciones. Inferencia IA actualizada: ${oldProb}% -> ${newProb}% (-${reduction}%).`,
+      'RF_RESCORING',
+      `IdCita: ${idCita} sincronizado con dm.Resultados_Prediccion_IA. Inferencia RF actualizada: ${oldProb}% -> ${newProb}%.`,
       'success'
     );
 
     pushToast(
-      'Write-Back Confirmado',
-      `Cita ${idCita} actualizada en SQL Server. Riesgo reducido en -${reduction}%.`
+      'Write-Back & Scoring IA Confirmado',
+      `Cita #${idCita} actualizada en SQL Server. Riesgo recalculado: ${newProb}% (${reduction >= 0 ? `-${reduction}%` : `+${Math.abs(reduction)}%`}).`
     );
   };
 
@@ -677,59 +774,31 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (isSyncingEtl) return;
     setIsSyncingEtl(true);
 
-    const unsynced = oltpAppointments.filter((a) => !a.sincronizadoDM);
     appendSqlLog('ETL_SYNC', `POST ${FASTAPI_BASE_URL}/api/sincronizar-datamart`, 'cmd');
     appendSqlLog(
       'ETL_EXEC',
-      `EXEC dm.usp_ETL_CargarDataMart @Modo = 'DELTA', @Lote = ${pendingDeltasCount};`,
+      `EXEC dm.usp_ETL_CargarDataMart;`,
       'cmd'
     );
 
+    let evaluatedCount = pendingDeltasCount;
     try {
       const res = await clinicalApi.sincronizarDatamart();
       setApiConnected(true);
+      if (typeof res?.syncedRows === 'number') {
+        evaluatedCount = res.syncedRows;
+      }
       if (typeof res?.dmFactCount === 'number') {
         setDmFactCount(res.dmFactCount);
-      } else {
-        setDmFactCount((c) => c + pendingDeltasCount);
       }
       await refreshAllFromApi(true);
-    } catch {
-      setDmFactCount((c) => c + pendingDeltasCount);
-      if (unsynced.length > 0) {
-        setRetentionRows((prev) => {
-          const existingIds = new Set(prev.map((r) => r.idCita));
-          const additions: DataMartRetentionRow[] = unsynced
-            .filter((a) => !existingIds.has(a.idCita))
-            .map((a) => {
-              const p = patients.find((pt) => pt.idPaciente === a.idPaciente);
-              return {
-                idCita: a.idCita,
-                paciente: a.pacienteNombre,
-                skPaciente: `SK-PAC-${a.idPaciente.slice(-4)}`,
-                dni: a.idPaciente,
-                edad: a.edad,
-                genero: p?.genero ?? 'F',
-                distrito: a.distrito,
-                telefono: p?.telefono ?? '+51 987 654 321',
-                medico: a.odontologoNombre,
-                especialidad: a.especialidad,
-                cpms: a.tratamientoCodigo,
-                tratamiento: a.tratamientoNombre,
-                costo: a.costo,
-                tiempoEspera: a.tiempoEspera,
-                smsRecibido: a.smsRecibido,
-                probabilidad: computeNoShowProbability({
-                  diasEspera: a.tiempoEspera,
-                  edad: a.edad,
-                  smsRecibido: a.smsRecibido === 1,
-                }),
-                hora: a.hora,
-              };
-            });
-          return [...additions, ...prev];
-        });
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error ETL Data Mart', err.message, 'error');
+        setIsSyncingEtl(false);
+        return;
       }
+      setDmFactCount((c) => c + pendingDeltasCount);
     }
 
     setOltpAppointments((prev) => prev.map((a) => ({ ...a, sincronizadoDM: true })));
@@ -738,12 +807,12 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     appendSqlLog(
       'SUCCESS',
-      `MERGE exitoso: ${pendingDeltasCount} deltas cargados en [dm].[Fact_Atenciones] y scores guardados en [dm].[Resultados_Prediccion_IA].`,
+      `Sincronización exitosa: [dm].[Fact_Atenciones] actualizado y ${evaluatedCount} pacientes evaluados en [dm].[Resultados_Prediccion_IA].`,
       'success'
     );
     pushToast(
       'Data Mart Sincronizado',
-      `${pendingDeltasCount} registros transferidos a dm.Fact_Atenciones y scoring IA recalculado.`
+      `dm.Fact_Atenciones sincronizado y scoring IA recalculado (${evaluatedCount} nuevos pacientes).`
     );
   };
 
@@ -752,28 +821,30 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsSyncingEtl(true);
     appendSqlLog('EXEC_CALL', `POST ${FASTAPI_BASE_URL}/api/etl/cargar-oltp`, 'warn');
 
-    let processed = stgQueueCount || 420;
+    let processed = stgQueueCount;
     try {
       const res = await clinicalApi.execStagingToOltp();
       setApiConnected(true);
       if (typeof res?.processedRows === 'number') processed = res.processedRows;
       if (typeof res?.oltpTotalCount === 'number') {
         setOltpTotalCount(res.oltpTotalCount);
-      } else {
-        setOltpTotalCount((c) => c + processed);
       }
-    } catch {
-      setOltpTotalCount((c) => c + processed);
+      await refreshAllFromApi(true);
+    } catch (err) {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+        pushToast('Error en Carga OLTP', err.message, 'error');
+        setIsSyncingEtl(false);
+        return;
+      }
     }
 
-    setStgQueueCount(0);
     setIsSyncingEtl(false);
     appendSqlLog(
       'SUCCESS',
-      `EXEC stg.usp_CargarOLTP finalizado (0 errors, ${processed.toLocaleString()} affected rows). COMMIT TRAN;`,
+      `EXEC stg.usp_CargarOLTP finalizado (${processed.toLocaleString()} registros auditados en stg.Rechazos_Ingesta). COMMIT TRAN;`,
       'success'
     );
-    pushToast('Staging Sincronizado', `${processed.toLocaleString()} filas procesadas hacia oltp.Citas.`);
+    pushToast('Staging Sincronizado', `Procedimiento stg.usp_CargarOLTP ejecutado en SQL Server.`);
   };
 
   const retrainAiModel = async () => {
@@ -781,7 +852,7 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsSyncingEtl(true);
     appendSqlLog('PY_AI', `POST ${FASTAPI_BASE_URL}/api/ml/reentrenar`, 'cmd');
 
-    let nextAuc = '0.846';
+    let nextAuc = '0.842';
     try {
       const res = await clinicalApi.retrainModel();
       setApiConnected(true);
@@ -794,10 +865,10 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsSyncingEtl(false);
     appendSqlLog(
       'MODEL_READY',
-      `Reentrenamiento finalizado: Nuevo AUC-ROC: ${nextAuc} | Serialización RandomForest_v2.pkl OK.`,
+      `Validación de modelo finalizada: AUC-ROC: ${nextAuc} | modelo_rf_dental.pkl activo en memoria.`,
       'success'
     );
-    pushToast('Modelo Reentrenado', `RandomForest_v2.pkl actualizado con AUC-ROC ${nextAuc}.`);
+    pushToast('Modelo Verificado', `modelo_rf_dental.pkl activo con AUC-ROC ${nextAuc}.`);
   };
 
   return (
@@ -812,6 +883,9 @@ export const ClinicalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         apiConnected,
         isLoadingData,
         refreshAllFromApi,
+        searchPatientsFromApi,
+        treatments,
+        dentists,
         patients,
         addPatient,
         updatePatient,

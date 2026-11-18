@@ -12,12 +12,10 @@ export type GenderCode = 'F' | 'M';
 export type NoShowStatus = 'Pendiente' | 'No' | 'Yes';
 
 export interface Patient {
-  idPaciente: string; // 8-digit DNI
-  nombre: string;
+  idPaciente: string; // BIGINT PK en oltp.Pacientes
   genero: GenderCode;
   edad: number;
   barrio: string;
-  telefono: string;
   citasCount: number;
   ultimaCita: string;
   estadoClinico: string;
@@ -32,6 +30,7 @@ export interface Dentist {
 }
 
 export interface Treatment {
+  idTratamiento?: number;
   codigo: string;
   nombre: string;
   costo: number;
@@ -42,7 +41,6 @@ export interface Treatment {
 export interface OltpAppointment {
   idCita: string;
   idPaciente: string;
-  pacienteNombre: string;
   distrito: string;
   edad: number;
   odontologoId: number;
@@ -64,13 +62,11 @@ export interface OltpAppointment {
 
 export interface DataMartRetentionRow {
   idCita: string;
-  paciente: string;
   skPaciente: string;
   dni: string;
   edad: number;
   genero: GenderCode;
   distrito: string;
-  telefono: string;
   medico: string;
   especialidad: string;
   cpms: string;
@@ -79,6 +75,7 @@ export interface DataMartRetentionRow {
   tiempoEspera: number;
   smsRecibido: 0 | 1;
   probabilidad: number;
+  nivelRiesgo?: string;
   hora: string;
 }
 
