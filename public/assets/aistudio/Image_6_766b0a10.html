@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-container":"#004f7b","on-tertiary-fixed":"#131b2e","surface-dim":"#cbdbf5","outline-variant":"#bfc7d2","on-error-container":"#93000a","surface":"#f8f9ff","tertiary-fixed-dim":"#bec6e0","on-primary-container":"#fdfcff","on-secondary":"#ffffff","on-secondary-fixed-variant":"#004b74","surface-container":"#e5eeff","surface-variant":"#d3e4fe","error-container":"#ffdad6","on-primary-fixed":"#001d31","primary-fixed":"#cce5ff","secondary":"#006399","surface-bright":"#f8f9ff","inverse-surface":"#213145","on-background":"#0b1c30","on-tertiary":"#ffffff","surface-container-low":"#eff4ff","on-surface":"#0b1c30","inverse-on-surface":"#eaf1ff","error":"#ba1a1a","secondary-fixed-dim":"#94ccff","on-error":"#ffffff","tertiary":"#545c72","primary-fixed-dim":"#93ccff","inverse-primary":"#93ccff","surface-container-lowest":"#ffffff","surface-tint":"#006398","tertiary-fixed":"#dae2fd","on-secondary-fixed":"#001d32","on-surface-variant":"#3f4850","tertiary-container":"#6c748b","surface-container-highest":"#d3e4fe","secondary-container":"#7bc2ff","on-tertiary-container":"#fefcff","surface-container-high":"#dce9ff","on-tertiary-fixed-variant":"#3f465c","primary":"#006194","outline":"#707881","background":"#f8f9ff","on-primary-fixed-variant":"#004b73","on-primary":"#ffffff","secondary-fixed":"#cde5ff","primary-container":"#007bb9"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"space-sm":"0.5rem","space-md":"1rem","space-xl":"2rem","gutter-desktop":"1.5rem",margin:"1rem",gutter:"1rem","space-xs":"0.25rem","space-lg":"1.5rem","margin-desktop":"2rem"},fontFamily:{"headline-sm":["Plus Jakarta Sans"],"code-md":["JetBrains Mono"],"label-md":["Inter"],"label-sm":["Inter"],"body-lg":["Inter"],"display-lg-mobile":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"code-sm":["JetBrains Mono"]},fontSize:{"headline-sm":["16px",{lineHeight:"24px",fontWeight:"600"}],"code-md":["13px",{lineHeight:"18px",fontWeight:"500"}],"label-md":["13px",{lineHeight:"18px",fontWeight:"500"}],"label-sm":["11px",{lineHeight:"16px",fontWeight:"600"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"display-lg-mobile":["24px",{lineHeight:"32px",fontWeight:"700"}],"display-lg":["32px",{lineHeight:"40px",fontWeight:"700"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-md":["20px",{lineHeight:"28px",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"code-sm":["11px",{lineHeight:"16px",fontWeight:"400"}]}}}}</script></head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><img alt="Sonrisa Integral Logotipo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrCJh130EnZCQZW-hUQCxtvkuIyb6HiSx5DfHfGZCI_sR10d4IWCzYVNglBCYnlpUyEGtmvEJG4Bq8jtnDyrDp0jys2GFoYOp32S3JM2lCpIu0Y5D_BzIt8QPtVIjN4VCiccxnGrT7NZPrc9GDduhk5vZRjym4PDIQdhqz0r9Antpb8pjVdVLjoNi1ZXMj0PD6_VUMR_EdPVLMrgt04g_LHKUCckcJbu926llYhkLLw"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight">Sonrisa Integral</span><span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-space-xs">Sistema de Gestión, Predicción &amp; Fidelización <span class="w-1 h-1 rounded-full bg-outline-variant"></span> Sede Central Lima</span></div><div class="hidden xl:flex items-center gap-space-sm pl-space-sm ml-space-xs"><div class="flex items-center bg-surface-container-low p-1 rounded-full shadow-inner"><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-[0_1px_3px_rgba(15,23,42,0.05)] flex items-center gap-1" type="button"><span class="material-symbols-outlined text-[16px]">corporate_fare</span> Vista Dirección General</button><button class="px-space-sm py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors flex items-center gap-1" type="button"><span class="material-symbols-outlined text-[16px]">support_agent</span> Vista Atención al Paciente / Recepción</button></div><div class="flex items-center gap-1.5 px-space-sm py-1 bg-surface-container-low rounded-full font-code-sm text-code-sm text-on-surface-variant"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>DentalCenterDB (SQL Server OLTP)</span></div></div></div><nav class="hidden lg:flex items-center h-full gap-space-md" data-active-classes="text-primary font-bold border-b-2 border-primary"><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="gestion-de-pacientes" href="#">Gestión de Pacientes</a><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="agendamiento-y-control-de-citas" href="#">Agendamiento &amp; Citas IA</a><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="inteligencia-de-negocios" href="#">Power BI &amp; KPIs</a><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="agenda-inteligente-y-retencion" href="#">Agenda Inteligente &amp; Retención</a><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="simulador-prescriptivo-y-pipeline-etl" href="#">Simulador &amp; Pipeline ETL</a></nav><div class="flex items-center gap-space-md shrink-0"><div class="hidden md:flex items-center gap-space-sm bg-surface-container-low px-space-sm py-1.5 rounded-lg font-code-sm text-code-sm text-on-surface"><span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span></span><span class="font-medium text-emerald-800">ETL Sync OK</span><span class="text-outline-variant">|</span><span class="text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 10:42 PET</span></div><button class="flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-sm text-label-sm transition-colors" title="Forzar Sincronización Analítica" type="button"><span class="material-symbols-outlined text-[16px]">sync</span><span class="hidden sm:inline">Sync Analítica</span></button><button class="relative p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-full transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-on-error bg-error rounded-full">3 alertas</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="hidden text-right sm:block"><span class="block font-label-md text-label-md text-on-surface font-semibold">Dra. Elena Vega</span><span class="block font-label-sm text-label-sm text-on-surface-variant">Directora Médica</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><aside class="fixed left-0 top-20 bottom-0 w-64 bg-surface-container-lowest z-40 hidden xl:flex flex-col py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] overflow-y-auto"><div class="px-space-md mb-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Operaciones Clínicas (OLTP)</span></div><nav class="px-space-sm flex flex-col gap-1 mb-space-md" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="gestion-de-pacientes" href="#"><span class="material-symbols-outlined text-[20px]">person_search</span> Pacientes (CRUD)</a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="agendamiento-y-control-de-citas" href="#"><span class="material-symbols-outlined text-[20px]">calendar_clock</span> Citas &amp; Asistente IA</a></nav><div class="px-space-md mb-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Consola Analítica (BI &amp; IA)</span></div><nav class="flex-1 px-space-sm flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="inteligencia-de-negocios" href="#"><span class="material-symbols-outlined text-[20px]">query_stats</span> Power BI &amp; KPIs</a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="agenda-inteligente-y-retencion" href="#"><span class="material-symbols-outlined text-[20px]">smart_toy</span> Matriz Retención IA</a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="simulador-prescriptivo-y-pipeline-etl" href="#"><span class="material-symbols-outlined text-[20px]">account_tree</span> Simulador &amp; ETL Pipeline</a></nav><div class="px-space-md pt-space-sm mt-auto"><div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1"><span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Servidor SQL Local (OLTP)</span><span class="font-code-sm text-code-sm text-primary">LIM-SRV-DATA01:1433</span><span class="font-label-sm text-label-sm text-emerald-700 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Conexión Segura TLS 1.3</span></div></div></aside><div class="w-full xl:pl-64"><main class="relative pt-20 w-full min-h-screen bg-surface px-space-md lg:px-gutter-desktop py-space-lg"><div class="flex flex-col w-full gap-space-lg">
+<!-- CABECERA DE PÁGINA & TELEMETRÍA OLTP -->
+<header class="flex flex-col gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container-high text-primary font-code-sm text-code-sm">
+            Esquema: oltp.Pacientes
+          </span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-on-surface-variant font-code-sm text-code-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+            FK Enforced: ON
+          </span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-code-sm text-code-sm">
+            CHECK (Edad BETWEEN 0 AND 100)
+          </span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">
+          Gestión de Pacientes — Módulo Transaccional OLTP
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+          Padrón maestro clínico en <span class="font-code-sm text-code-sm text-primary">DentalCenterDB</span> con validación directa de esquemas, auditoría relacional para citas de ortodoncia e implantes y conexión transaccional sin retraso ETL.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm self-start lg:self-center shrink-0">
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:opacity-95 transition-all" id="toggle-form-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>+ Registrar Nuevo Paciente</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-surface-container-low text-primary font-label-md text-label-md hover:bg-surface-container transition-colors" id="export-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+<span>Exportar Padrón (CSV)</span>
+</button>
+</div>
+</div>
+<!-- METRICS & CLINICAL QUICK STATS -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-md pt-space-sm">
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Pacientes Activos</span>
+<span class="font-display-lg text-display-lg text-primary tracking-tight font-bold">1,248</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">trending_up</span>
+          +18 registrados esta semana
+        </span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Población Femenina</span>
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight font-bold">684</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">54.8% del padrón total</span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Población Masculina</span>
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight font-bold">564</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">45.2% del padrón total</span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Distrito Prevalente</span>
+<span class="font-display-lg text-display-lg text-secondary tracking-tight font-bold">Surco</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">214 expedientes clínicos</span>
+</div>
+</div>
+</header>
+<!-- FORMULARIO DE REGISTRO / EDICIÓN (COLLAPSIBLE CARD) -->
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm transition-all duration-300" id="patient-form-panel">
+<div class="flex items-center justify-between pb-space-sm mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">assignment_add</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface" id="form-title">
+            Registrar Paciente en oltp.Pacientes
+          </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Inserción atómica con trigger de auditoría y validación de tipos SQL Server.
+          </p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container flex items-center justify-center transition-colors" id="close-form-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md" id="crud-form">
+<!-- IdPaciente / DNI -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="id-paciente">
+            IdPaciente (DNI / HC) *
+          </label>
+<span class="font-code-sm text-code-sm text-on-surface-variant">BIGINT (PK)</span>
+</div>
+<div class="relative">
+<span class="absolute left-3 top-2.5 material-symbols-outlined text-[18px] text-on-surface-variant">badge</span>
+<input class="w-full pl-9 pr-8 py-2 rounded-lg bg-surface-container-low font-code-md text-code-md text-on-surface focus:outline-none focus:bg-surface-container placeholder:text-on-surface-variant/50 transition-colors" id="id-paciente" maxlength="8" name="idPaciente" placeholder="Ej. 45892110" required="" type="text"/>
+<span class="absolute right-2.5 top-2.5 material-symbols-outlined text-[18px] text-emerald-600" title="Verificado con RENIEC">verified</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Documento nacional de 8 dígitos numéricos.</span>
+</div>
+<!-- Nombres y Apellidos -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="nombre-paciente">
+            Nombres y Apellidos *
+          </label>
+<span class="font-code-sm text-code-sm text-on-surface-variant">NVARCHAR(150)</span>
+</div>
+<div class="relative">
+<span class="absolute left-3 top-2.5 material-symbols-outlined text-[18px] text-on-surface-variant">person</span>
+<input class="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container placeholder:text-on-surface-variant/50 transition-colors" id="nombre-paciente" name="nombrePaciente" placeholder="Ej. Mariana Estela Céspedes" required="" type="text"/>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Titular de la historia clínica digital.</span>
+</div>
+<!-- Género & Edad (Row split) -->
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="genero-paciente">Género *</label>
+<select class="w-full py-2 px-3 rounded-lg bg-surface-container-low font-label-md text-label-md text-on-surface focus:outline-none focus:bg-surface-container transition-colors" id="genero-paciente" name="genero" required="">
+<option value="F">Femenino (F)</option>
+<option value="M">Masculino (M)</option>
+</select>
+<span class="font-body-sm text-body-sm text-on-surface-variant">CHAR(1)</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="edad-paciente">Edad *</label>
+<span class="font-code-sm text-code-sm text-on-surface-variant">SMALLINT</span>
+</div>
+<input class="w-full px-3 py-2 rounded-lg bg-surface-container-low font-code-md text-code-md text-on-surface focus:outline-none focus:bg-surface-container placeholder:text-on-surface-variant/50 transition-colors" id="edad-paciente" max="100" min="0" name="edad" placeholder="0-100" required="" type="number"/>
+<span class="hidden font-code-sm text-code-sm text-error font-medium" id="edad-error">CHECK Error: 0 a 100</span>
+</div>
+</div>
+<!-- Barrio / Distrito de Lima -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="barrio-paciente">Barrio / Distrito Lima *</label>
+<span class="font-code-sm text-code-sm text-on-surface-variant">NVARCHAR(80)</span>
+</div>
+<div class="relative">
+<span class="absolute left-3 top-2.5 material-symbols-outlined text-[18px] text-on-surface-variant">location_on</span>
+<select class="w-full pl-9 pr-3 py-2 rounded-lg bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container transition-colors" id="barrio-paciente" name="barrio" required="">
+<option value="Santiago de Surco">Santiago de Surco</option>
+<option value="Miraflores">Miraflores</option>
+<option value="San Isidro">San Isidro</option>
+<option value="San Borja">San Borja</option>
+<option value="La Molina">La Molina</option>
+<option value="San Juan de Lurigancho">San Juan de Lurigancho</option>
+<option value="Los Olivos">Los Olivos</option>
+<option value="Ate">Ate</option>
+<option value="San Martín de Porres">San Martín de Porres</option>
+<option value="Magdalena del Mar">Magdalena del Mar</option>
+<option value="Jesús María">Jesús María</option>
+<option value="Pueblo Libre">Pueblo Libre</option>
+<option value="Chorrillos">Chorrillos</option>
+<option value="San Miguel">San Miguel</option>
+</select>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Utilizado para zonificación de clínicas periféricas.</span>
+</div>
+<!-- Botones de Acción del Formulario -->
+<div class="col-span-1 md:col-span-2 lg:col-span-4 flex items-center justify-end gap-space-sm pt-space-xs">
+<button class="px-space-md py-2 rounded-lg bg-surface-container text-on-surface-variant font-label-md text-label-md hover:text-on-surface transition-colors" id="reset-form-btn" type="reset">
+          Limpiar Campos
+        </button>
+<button class="flex items-center gap-space-xs px-space-lg py-2 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:opacity-95 transition-all" id="submit-form-btn" type="submit">
+<span class="material-symbols-outlined text-[18px]">database</span>
+<span>Guardar en oltp.Pacientes</span>
+</button>
+</div>
+</form>
+</section>
+<!-- BANNER INFORMATIVO / MENSAJE INTERACTIVO -->
+<div class="hidden p-space-md rounded-xl bg-surface-container-high text-on-surface flex items-center justify-between transition-all" id="status-toast">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-primary">check_circle</span>
+<span class="font-body-md text-body-md" id="status-toast-text">Operación ejecutada con éxito en SQL Server.</span>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface" onclick="document.getElementById('status-toast').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- DIRECTORIO Y TABLA OPERATIVA CRUD -->
+<section class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<!-- BARRA DE BÚSQUEDA Y FILTROS -->
+<div class="p-space-md bg-surface-container-lowest flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<!-- Search Input -->
+<div class="relative flex-1 max-w-lg">
+<span class="absolute left-3.5 top-2.5 material-symbols-outlined text-[20px] text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 rounded-xl bg-surface-container-low font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container placeholder:text-on-surface-variant/60 transition-colors" id="table-search" placeholder="Buscar por IdPaciente, DNI o Barrio..." type="search"/>
+</div>
+<!-- Segmented Filters -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Gender Filter -->
+<div class="flex items-center bg-surface-container-low p-1 rounded-xl">
+<button class="gender-btn px-3 py-1 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-sm" data-gender-filter="all" type="button">Todos</button>
+<button class="gender-btn px-3 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors" data-gender-filter="F" type="button">Femenino</button>
+<button class="gender-btn px-3 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors" data-gender-filter="M" type="button">Masculino</button>
+</div>
+<!-- Age Segment Filter -->
+<select class="px-3 py-1.5 rounded-xl bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant focus:outline-none focus:bg-surface-container" id="age-filter">
+<option value="all">Todas las Etapas Etarias</option>
+<option value="pediatric">Pediátrico (0 - 14 años)</option>
+<option value="adult">Adulto (15 - 59 años)</option>
+<option value="senior">Adulto Mayor (60+ años)</option>
+</select>
+<span class="hidden xl:inline text-on-surface-variant font-code-sm text-code-sm pl-2">
+          Mostrando <span class="font-bold text-on-surface" id="visible-count">8</span> de 1,248
+        </span>
+</div>
+</div>
+<!-- TABLA DE PACIENTES -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-3 px-space-md">IdPaciente / DNI</th>
+<th class="py-3 px-space-md">Nombres y Apellidos</th>
+<th class="py-3 px-space-md">Género</th>
+<th class="py-3 px-space-md">Edad</th>
+<th class="py-3 px-space-md">Barrio / Distrito</th>
+<th class="py-3 px-space-md">Historial Citas</th>
+<th class="py-3 px-space-md">Estado Clínico</th>
+<th class="py-3 px-space-md text-right">Acciones Operativas</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low font-body-md text-body-md" id="patient-table-body">
+<!-- Fila 1 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group" data-age="42" data-barrio="San Juan de Lurigancho" data-gender="F" data-id="45892110">
+<td class="py-3 px-space-md font-code-sm text-code-sm text-primary font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+<span>45892110</span>
+</div>
+</td>
+<td class="py-3 px-space-md font-semibold text-on-surface">Mariana Estela Céspedes</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+                F (Fem)
+              </span>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-code-sm text-code-sm font-semibold">42 años</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-medium">Adulto</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>San Juan de Lurigancho</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-medium">6 citas registradas</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Últ: 14 Oct 2024</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> En Ortodoncia
+              </span>
+</td>
+<td class="py-3 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="edit-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors" title="Editar registro" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="agenda-btn px-2.5 py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1" title="Agendar cita en el módulo IA" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_add_on</span>
+<span>+ Cita</span>
+</button>
+<button class="delete-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors" title="Eliminar paciente de la base de datos" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 2 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group" data-age="36" data-barrio="Ate" data-gender="M" data-id="10984321">
+<td class="py-3 px-space-md font-code-sm text-code-sm text-primary font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+<span>10984321</span>
+</div>
+</td>
+<td class="py-3 px-space-md font-semibold text-on-surface">Jorge Luis Benavides</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">
+                M (Masc)
+              </span>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-code-sm text-code-sm font-semibold">36 años</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-medium">Adulto</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Ate</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-medium">3 citas registradas</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Últ: 02 Nov 2024</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span> Control Periódico
+              </span>
+</td>
+<td class="py-3 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="edit-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors" title="Editar registro" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="agenda-btn px-2.5 py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_add_on</span>
+<span>+ Cita</span>
+</button>
+<button class="delete-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 3 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group" data-age="25" data-barrio="San Martín de Porres" data-gender="F" data-id="72190844">
+<td class="py-3 px-space-md font-code-sm text-code-sm text-primary font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+<span>72190844</span>
+</div>
+</td>
+<td class="py-3 px-space-md font-semibold text-on-surface">Valeria Sophia Ramos</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+                F (Fem)
+              </span>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-code-sm text-code-sm font-semibold">25 años</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-medium">Adulto</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>San Martín de Porres</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-medium">8 citas registradas</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Últ: 19 Nov 2024</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Blanqueamiento
+              </span>
+</td>
+<td class="py-3 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="edit-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="agenda-btn px-2.5 py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_add_on</span>
+<span>+ Cita</span>
+</button>
+<button class="delete-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 4 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group" data-age="51" data-barrio="Los Olivos" data-gender="M" data-id="41982300">
+<td class="py-3 px-space-md font-code-sm text-code-sm text-primary font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+<span>41982300</span>
+</div>
+</td>
+<td class="py-3 px-space-md font-semibold text-on-surface">Diego Alonso Mendoza</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">
+                M (Masc)
+              </span>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-code-sm text-code-sm font-semibold">51 años</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-medium">Adulto</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Los Olivos</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-medium">2 citas registradas</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Últ: 05 Ago 2024</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Implante Fase 1
+              </span>
+</td>
+<td class="py-3 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="edit-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="agenda-btn px-2.5 py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_add_on</span>
+<span>+ Cita</span>
+</button>
+<button class="delete-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 5 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group" data-age="29" data-barrio="Santiago de Surco" data-gender="F" data-id="47812903">
+<td class="py-3 px-space-md font-code-sm text-code-sm text-primary font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+<span>47812903</span>
+</div>
+</td>
+<td class="py-3 px-space-md font-semibold text-on-surface">Luciana Gabriela Wong</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+                F (Fem)
+              </span>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-code-sm text-code-sm font-semibold">29 años</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-medium">Adulto</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Santiago de Surco</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-medium">11 citas registradas</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Últ: 28 Nov 2024</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Ortodoncia Invisible
+              </span>
+</td>
+<td class="py-3 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="edit-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="agenda-btn px-2.5 py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_add_on</span>
+<span>+ Cita</span>
+</button>
+<button class="delete-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 6 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group" data-age="34" data-barrio="La Molina" data-gender="M" data-id="70221940">
+<td class="py-3 px-space-md font-code-sm text-code-sm text-primary font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+<span>70221940</span>
+</div>
+</td>
+<td class="py-3 px-space-md font-semibold text-on-surface">Mateo Fernando Solís</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">
+                M (Masc)
+              </span>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-code-sm text-code-sm font-semibold">34 años</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-medium">Adulto</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>La Molina</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-medium">4 citas registradas</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Últ: 01 Dic 2024</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span> Odontología Integral
+              </span>
+</td>
+<td class="py-3 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="edit-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="agenda-btn px-2.5 py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_add_on</span>
+<span>+ Cita</span>
+</button>
+<button class="delete-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 7 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group" data-age="31" data-barrio="San Isidro" data-gender="F" data-id="44890123">
+<td class="py-3 px-space-md font-code-sm text-code-sm text-primary font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+<span>44890123</span>
+</div>
+</td>
+<td class="py-3 px-space-md font-semibold text-on-surface">Camila Alessandra Huamán</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+                F (Fem)
+              </span>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-code-sm text-code-sm font-semibold">31 años</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-medium">Adulto</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>San Isidro</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-medium">5 citas registradas</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Últ: 11 Nov 2024</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Periodoncia
+              </span>
+</td>
+<td class="py-3 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="edit-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="agenda-btn px-2.5 py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_add_on</span>
+<span>+ Cita</span>
+</button>
+<button class="delete-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 8 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group" data-age="48" data-barrio="Santiago de Surco" data-gender="M" data-id="09823412">
+<td class="py-3 px-space-md font-code-sm text-code-sm text-primary font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+<span>09823412</span>
+</div>
+</td>
+<td class="py-3 px-space-md font-semibold text-on-surface">Renzo Gabriel Barrenechea</td>
+<td class="py-3 px-space-md">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">
+                M (Masc)
+              </span>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1.5">
+<span class="font-code-sm text-code-sm font-semibold">48 años</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-medium">Adulto</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span>Santiago de Surco</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface font-medium">9 citas registradas</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Últ: 03 Dic 2024</span>
+</div>
+</td>
+<td class="py-3 px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Rehabilitación Oral
+              </span>
+</td>
+<td class="py-3 px-space-md text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="edit-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="agenda-btn px-2.5 py-1 rounded-lg bg-surface-container-low text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">calendar_add_on</span>
+<span>+ Cita</span>
+</button>
+<button class="delete-btn p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- PIE DE TABLA / PAGINACIÓN -->
+<div class="p-space-md bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+        Padrón indexado por clave primaria <code class="font-code-sm text-code-sm bg-surface-container px-1 py-0.5 rounded">PK_Pacientes_IdPaciente</code>.
+      </span>
+<div class="flex items-center gap-1">
+<button class="px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container" type="button">Anterior</button>
+<button class="px-3 py-1 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold" type="button">1</button>
+<button class="px-3 py-1 rounded-lg text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container" type="button">2</button>
+<button class="px-3 py-1 rounded-lg text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container" type="button">3</button>
+<span class="text-on-surface-variant px-1 font-body-sm text-body-sm">...</span>
+<button class="px-3 py-1 rounded-lg text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container" type="button">156</button>
+<button class="px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container" type="button">Siguiente</button>
+</div>
+</div>
+</section>
+<!-- PANEL INFERIOR TÉCNICO DE METADATOS OLTP & AUDITORÍA -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
+<!-- Card 1: Reglas de Calidad de Datos ETL -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[20px]">fact_check</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Reglas de Calidad ETL</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        Validaciones activas durante el flujo de ingesta desde el Data Lake hacia la base relacional:
+      </p>
+<ul class="flex flex-col gap-2 font-body-sm text-body-sm text-on-surface">
+<li class="flex items-start gap-2 bg-surface-container-low p-2 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-emerald-600 mt-0.5 shrink-0">check</span>
+<span><strong>Control de Nulos:</strong> Barrio / Distrito sustituido por 'Desconocido' si viene null en staging.</span>
+</li>
+<li class="flex items-start gap-2 bg-surface-container-low p-2 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-emerald-600 mt-0.5 shrink-0">check</span>
+<span><strong>Rango Etario:</strong> Registros con edad &lt; 0 o &gt; 100 son aislados a tabla de rechazos err.Pacientes.</span>
+</li>
+</ul>
+</div>
+<!-- Card 2: Índices Activos y Rendimiento -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Índices &amp; Optimización</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        Estructuras B-Tree configuradas en la instancia SQL Server para respuesta sub-milisegundo:
+      </p>
+<div class="flex flex-col gap-2 font-code-sm text-code-sm">
+<div class="p-2 rounded-lg bg-surface-container-low text-on-surface flex items-center justify-between">
+<span class="font-medium text-primary">PK_Pacientes_IdPaciente</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px]">Clustered</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-low text-on-surface flex items-center justify-between">
+<span class="font-medium text-secondary">IX_Pacientes_Barrio</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px]">Non-Clustered</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-low text-on-surface flex items-center justify-between">
+<span class="font-medium text-tertiary">IX_Pacientes_Edad_Genero</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px]">Composite</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Auditoría Transaccional en Vivo -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-on-surface">
+<span class="material-symbols-outlined text-[20px] text-primary">history_edu</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Auditoría en Tiempo Real</h3>
+</div>
+<span class="font-code-sm text-code-sm text-emerald-700 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> CDC Active
+        </span>
+</div>
+<div class="flex flex-col gap-2 font-code-sm text-code-sm">
+<div class="p-2 rounded-lg bg-surface-container-low text-on-surface-variant flex flex-col">
+<div class="flex justify-between items-center text-[11px] text-on-surface-variant/80">
+<span>[10:41:02 PET] INSERT</span>
+<span>sp_RegistrarPaciente</span>
+</div>
+<span class="text-on-surface font-medium">Id: 44890123 — San Isidro (OK)</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-low text-on-surface-variant flex flex-col">
+<div class="flex justify-between items-center text-[11px] text-on-surface-variant/80">
+<span>[10:39:15 PET] UPDATE</span>
+<span>sp_ActualizarBarrio</span>
+</div>
+<span class="text-on-surface font-medium">Id: 09823412 — Santiago de Surco</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-low text-on-surface-variant flex flex-col">
+<div class="flex justify-between items-center text-[11px] text-on-surface-variant/80">
+<span>[10:35:48 PET] VERIFY CHECK</span>
+<span>CK_Pacientes_Edad</span>
+</div>
+<span class="text-emerald-700 font-medium">Passed: (Edad &gt;= 0 AND Edad &lt;= 100)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- MODAL DE CONFIRMACIÓN DE RESTRICCIÓN DE INTEGRIDAD (ELIMINAR PACIENTE) -->
+<div class="fixed inset-0 z-50 hidden bg-inverse-surface/40 backdrop-blur-sm flex items-center justify-center p-4" id="delete-modal">
+<div class="w-full max-w-md bg-surface-container-lowest p-space-lg rounded-xl shadow-xl flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm text-error">
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">gavel</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Validación de Clave Foránea</h4>
+<span class="font-code-sm text-code-sm text-on-surface-variant">FK_Citas_Pacientes</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-1">
+<p class="font-body-md text-body-md text-on-surface">
+          ¿Confirma la eliminación del paciente con ID <span class="font-code-sm text-code-sm font-bold text-primary" id="modal-patient-id"></span>?
+        </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Si el paciente registra citas históricas asociadas en <span class="font-code-sm text-code-sm text-on-surface">oltp.Citas</span>, SQL Server impedirá la acción respetando la regla <code class="font-code-sm text-code-sm">ON DELETE NO ACTION</code>.
+        </p>
+</div>
+<div class="flex items-center justify-end gap-space-sm">
+<button class="px-space-md py-2 rounded-lg bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors" id="cancel-delete-btn" type="button">
+          Cancelar
+        </button>
+<button class="px-space-md py-2 rounded-lg bg-error text-on-error font-label-md text-label-md hover:opacity-95 transition-opacity" id="confirm-delete-btn" type="button">
+          Ejecutar DELETE
+        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- SCRIPT DE MICRO-INTERACCIONES CRUD Y FILTRADO CLÍNICO -->
+<script>
+  (function initPatientCrud() {
+    const tableSearch = document.getElementById('table-search');
+    const tableRows = document.querySelectorAll('#patient-table-body tr');
+    const visibleCountEl = document.getElementById('visible-count');
+    const genderButtons = document.querySelectorAll('.gender-btn');
+    const ageFilter = document.getElementById('age-filter');
+
+    const formPanel = document.getElementById('patient-form-panel');
+    const toggleFormBtn = document.getElementById('toggle-form-btn');
+    const closeFormBtn = document.getElementById('close-form-btn');
+    const crudForm = document.getElementById('crud-form');
+    const formTitle = document.getElementById('form-title');
+    const submitFormBtn = document.getElementById('submit-form-btn');
+
+    const idInput = document.getElementById('id-paciente');
+    const nombreInput = document.getElementById('nombre-paciente');
+    const generoInput = document.getElementById('genero-paciente');
+    const edadInput = document.getElementById('edad-paciente');
+    const edadError = document.getElementById('edad-error');
+    const barrioInput = document.getElementById('barrio-paciente');
+
+    const toast = document.getElementById('status-toast');
+    const toastText = document.getElementById('status-toast-text');
+
+    const deleteModal = document.getElementById('delete-modal');
+    const modalPatientId = document.getElementById('modal-patient-id');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+    let currentDeleteRow = null;
+    let selectedGender = 'all';
+
+    // Show message toast
+    function showToast(msg) {
+      toastText.textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4000);
+    }
+
+    // Age validation (CHECK Constraint Simulation)
+    edadInput.addEventListener('input', () => {
+      const val = parseInt(edadInput.value, 10);
+      if (isNaN(val) || val < 0 || val > 100) {
+        edadError.classList.remove('hidden');
+        submitFormBtn.disabled = true;
+        submitFormBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        edadError.classList.add('hidden');
+        submitFormBtn.disabled = false;
+        submitFormBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    });
+
+    // Form Toggle
+    toggleFormBtn.addEventListener('click', () => {
+      formPanel.classList.remove('hidden');
+      formTitle.textContent = 'Registrar Paciente en oltp.Pacientes';
+      submitFormBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">database</span><span>Guardar en oltp.Pacientes</span>';
+      formPanel.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    closeFormBtn.addEventListener('click', () => {
+      formPanel.classList.add('hidden');
+    });
+
+    // Filtering logic
+    function applyFilters() {
+      const term = tableSearch.value.trim().toLowerCase();
+      const ageVal = ageFilter.value;
+      let count = 0;
+
+      tableRows.forEach(row => {
+        const id = row.getAttribute('data-id') || '';
+        const gender = row.getAttribute('data-gender') || '';
+        const age = parseInt(row.getAttribute('data-age') || '0', 10);
+        const barrio = (row.getAttribute('data-barrio') || '').toLowerCase();
+        const textContent = row.textContent.toLowerCase();
+
+        const matchesSearch = !term || textContent.includes(term) || id.includes(term) || barrio.includes(term);
+        const matchesGender = selectedGender === 'all' || gender === selectedGender;
+
+        let matchesAge = true;
+        if (ageVal === 'pediatric') matchesAge = age <= 14;
+        else if (ageVal === 'adult') matchesAge = age >= 15 && age <= 59;
+        else if (ageVal === 'senior') matchesAge = age >= 60;
+
+        if (matchesSearch && matchesGender && matchesAge) {
+          row.classList.remove('hidden');
+          count++;
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+
+      visibleCountEl.textContent = count;
+    }
+
+    tableSearch.addEventListener('input', applyFilters);
+    ageFilter.addEventListener('change', applyFilters);
+
+    genderButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        genderButtons.forEach(b => {
+          b.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+          b.classList.add('text-on-surface-variant');
+        });
+        btn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        btn.classList.remove('text-on-surface-variant');
+
+        selectedGender = btn.getAttribute('data-gender-filter');
+        applyFilters();
+      });
+    });
+
+    // Edit Row Action
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const row = e.target.closest('tr');
+        if (!row) return;
+
+        formPanel.classList.remove('hidden');
+        formTitle.textContent = 'Editar Registro Clínico: ' + row.getAttribute('data-id');
+        submitFormBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">sync</span><span>Actualizar en oltp.Pacientes</span>';
+
+        idInput.value = row.getAttribute('data-id');
+        idInput.readOnly = true;
+        nombreInput.value = row.querySelector('td:nth-child(2)').textContent.trim();
+        generoInput.value = row.getAttribute('data-gender');
+        edadInput.value = row.getAttribute('data-age');
+        barrioInput.value = row.getAttribute('data-barrio');
+
+        formPanel.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Save/Update Form Submit
+    crudForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const idVal = idInput.value;
+      const isEdit = idInput.readOnly;
+
+      if (isEdit) {
+        showToast('Registro ' + idVal + ' actualizado correctamente en oltp.Pacientes.');
+      } else {
+        showToast('Nuevo paciente ' + idVal + ' insertado con éxito en DentalCenterDB.');
+      }
+
+      idInput.readOnly = false;
+      crudForm.reset();
+      formPanel.classList.add('hidden');
+    });
+
+    // Reset Form
+    document.getElementById('reset-form-btn').addEventListener('click', () => {
+      idInput.readOnly = false;
+      formTitle.textContent = 'Registrar Paciente en oltp.Pacientes';
+      submitFormBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">database</span><span>Guardar en oltp.Pacientes</span>';
+      edadError.classList.add('hidden');
+      submitFormBtn.disabled = false;
+      submitFormBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    });
+
+    // Delete Modal
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        currentDeleteRow = e.target.closest('tr');
+        if (!currentDeleteRow) return;
+
+        const pid = currentDeleteRow.getAttribute('data-id');
+        modalPatientId.textContent = pid;
+        deleteModal.classList.remove('hidden');
+      });
+    });
+
+    cancelDeleteBtn.addEventListener('click', () => {
+      deleteModal.classList.add('hidden');
+      currentDeleteRow = null;
+    });
+
+    confirmDeleteBtn.addEventListener('click', () => {
+      if (currentDeleteRow) {
+        const pid = currentDeleteRow.getAttribute('data-id');
+        currentDeleteRow.remove();
+        deleteModal.classList.add('hidden');
+        showToast('Registro ' + pid + ' eliminado de oltp.Pacientes (Integridad FK validada).');
+        applyFilters();
+      }
+    });
+
+    // Schedule Action Shortcut
+    document.querySelectorAll('.agenda-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const row = e.target.closest('tr');
+        const pid = row ? row.getAttribute('data-id') : '';
+        showToast('Redirigiendo a módulo de citas con paciente ID: ' + pid);
+      });
+    });
+
+    // Export Action
+    document.getElementById('export-btn').addEventListener('click', () => {
+      showToast('Padrón maestro exportado: padron_pacientes_oltp_' + new Date().toISOString().slice(0, 10) + '.csv');
+    });
+
+  })();
+</script></main></div></body></html>

@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-container":"#004f7b","on-tertiary-fixed":"#131b2e","surface-dim":"#cbdbf5","outline-variant":"#bfc7d2","on-error-container":"#93000a","surface":"#f8f9ff","tertiary-fixed-dim":"#bec6e0","on-primary-container":"#fdfcff","on-secondary":"#ffffff","on-secondary-fixed-variant":"#004b74","surface-container":"#e5eeff","surface-variant":"#d3e4fe","error-container":"#ffdad6","on-primary-fixed":"#001d31","primary-fixed":"#cce5ff","secondary":"#006399","surface-bright":"#f8f9ff","inverse-surface":"#213145","on-background":"#0b1c30","on-tertiary":"#ffffff","surface-container-low":"#eff4ff","on-surface":"#0b1c30","inverse-on-surface":"#eaf1ff","error":"#ba1a1a","secondary-fixed-dim":"#94ccff","on-error":"#ffffff","tertiary":"#545c72","primary-fixed-dim":"#93ccff","inverse-primary":"#93ccff","surface-container-lowest":"#ffffff","surface-tint":"#006398","tertiary-fixed":"#dae2fd","on-secondary-fixed":"#001d32","on-surface-variant":"#3f4850","tertiary-container":"#6c748b","surface-container-highest":"#d3e4fe","secondary-container":"#7bc2ff","on-tertiary-container":"#fefcff","surface-container-high":"#dce9ff","on-tertiary-fixed-variant":"#3f465c","primary":"#006194","outline":"#707881","background":"#f8f9ff","on-primary-fixed-variant":"#004b73","on-primary":"#ffffff","secondary-fixed":"#cde5ff","primary-container":"#007bb9"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"space-sm":"0.5rem","space-md":"1rem","space-xl":"2rem","gutter-desktop":"1.5rem",margin:"1rem",gutter:"1rem","space-xs":"0.25rem","space-lg":"1.5rem","margin-desktop":"2rem"},fontFamily:{"headline-sm":["Plus Jakarta Sans"],"code-md":["JetBrains Mono"],"label-md":["Inter"],"label-sm":["Inter"],"body-lg":["Inter"],"display-lg-mobile":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"code-sm":["JetBrains Mono"]},fontSize:{"headline-sm":["16px",{lineHeight:"24px",fontWeight:"600"}],"code-md":["13px",{lineHeight:"18px",fontWeight:"500"}],"label-md":["13px",{lineHeight:"18px",fontWeight:"500"}],"label-sm":["11px",{lineHeight:"16px",fontWeight:"600"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"display-lg-mobile":["24px",{lineHeight:"32px",fontWeight:"700"}],"display-lg":["32px",{lineHeight:"40px",fontWeight:"700"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-md":["20px",{lineHeight:"28px",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"code-sm":["11px",{lineHeight:"16px",fontWeight:"400"}]}}}}</script></head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><img alt="Sonrisa Integral Logotipo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrCJh130EnZCQZW-hUQCxtvkuIyb6HiSx5DfHfGZCI_sR10d4IWCzYVNglBCYnlpUyEGtmvEJG4Bq8jtnDyrDp0jys2GFoYOp32S3JM2lCpIu0Y5D_BzIt8QPtVIjN4VCiccxnGrT7NZPrc9GDduhk5vZRjym4PDIQdhqz0r9Antpb8pjVdVLjoNi1ZXMj0PD6_VUMR_EdPVLMrgt04g_LHKUCckcJbu926llYhkLLw"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight">Sonrisa Integral</span><span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-space-xs">Sistema de Gestión, Predicción &amp; Fidelización <span class="w-1 h-1 rounded-full bg-outline-variant"></span> Sede Central Lima</span></div><div class="hidden xl:flex items-center gap-space-sm pl-space-sm ml-space-xs"><div class="flex items-center bg-surface-container-low p-1 rounded-full shadow-inner"><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-[0_1px_3px_rgba(15,23,42,0.05)] flex items-center gap-1" type="button"><span class="material-symbols-outlined text-[16px]">corporate_fare</span> Vista Dirección General</button><button class="px-space-sm py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors flex items-center gap-1" type="button"><span class="material-symbols-outlined text-[16px]">support_agent</span> Vista Atención al Paciente / Recepción</button></div><div class="flex items-center gap-1.5 px-space-sm py-1 bg-surface-container-low rounded-full font-code-sm text-code-sm text-on-surface-variant"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>DentalCenterDB (SQL Server OLTP)</span></div></div></div><nav class="hidden lg:flex items-center h-full gap-space-md" data-active-classes="text-primary font-bold border-b-2 border-primary"><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="gestion-de-pacientes" href="#">Gestión de Pacientes</a><a aria-current="page" class="h-full flex items-center px-2 transition-colors text-primary font-bold border-b-2 border-primary" data-path="agendamiento-y-control-de-citas" href="#">Agendamiento &amp; Citas IA</a><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="inteligencia-de-negocios" href="#">Power BI &amp; KPIs</a><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="agenda-inteligente-y-retencion" href="#">Agenda Inteligente &amp; Retención</a><a class="h-full flex items-center px-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="simulador-prescriptivo-y-pipeline-etl" href="#">Simulador &amp; Pipeline ETL</a></nav><div class="flex items-center gap-space-md shrink-0"><div class="hidden md:flex items-center gap-space-sm bg-surface-container-low px-space-sm py-1.5 rounded-lg font-code-sm text-code-sm text-on-surface"><span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span></span><span class="font-medium text-emerald-800">ETL Sync OK</span><span class="text-outline-variant">|</span><span class="text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 10:42 PET</span></div><button class="flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-sm text-label-sm transition-colors" title="Forzar Sincronización Analítica" type="button"><span class="material-symbols-outlined text-[16px]">sync</span><span class="hidden sm:inline">Sync Analítica</span></button><button class="relative p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-full transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-on-error bg-error rounded-full">3 alertas</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="hidden text-right sm:block"><span class="block font-label-md text-label-md text-on-surface font-semibold">Dra. Elena Vega</span><span class="block font-label-sm text-label-sm text-on-surface-variant">Directora Médica</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><aside class="fixed left-0 top-20 bottom-0 w-64 bg-surface-container-lowest z-40 hidden xl:flex flex-col py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] overflow-y-auto"><div class="px-space-md mb-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Operaciones Clínicas (OLTP)</span></div><nav class="px-space-sm flex flex-col gap-1 mb-space-md" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="gestion-de-pacientes" href="#"><span class="material-symbols-outlined text-[20px]">person_search</span> Pacientes (CRUD)</a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-2.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-lg" data-path="agendamiento-y-control-de-citas" href="#"><span class="material-symbols-outlined text-[20px]">calendar_clock</span> Citas &amp; Asistente IA</a></nav><div class="px-space-md mb-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Consola Analítica (BI &amp; IA)</span></div><nav class="flex-1 px-space-sm flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="inteligencia-de-negocios" href="#"><span class="material-symbols-outlined text-[20px]">query_stats</span> Power BI &amp; KPIs</a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="agenda-inteligente-y-retencion" href="#"><span class="material-symbols-outlined text-[20px]">smart_toy</span> Matriz Retención IA</a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="simulador-prescriptivo-y-pipeline-etl" href="#"><span class="material-symbols-outlined text-[20px]">account_tree</span> Simulador &amp; ETL Pipeline</a></nav><div class="px-space-md pt-space-sm mt-auto"><div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1"><span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Servidor SQL Local (OLTP)</span><span class="font-code-sm text-code-sm text-primary">LIM-SRV-DATA01:1433</span><span class="font-label-sm text-label-sm text-emerald-700 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Conexión Segura TLS 1.3</span></div></div></aside><div class="w-full xl:pl-64"><main class="relative pt-20 w-full min-h-screen bg-surface px-space-md lg:px-gutter-desktop py-space-lg"><div class="flex flex-col w-full space-y-space-lg">
+<!-- CABECERA DEL MÓDULO CON CTA CRÍTICO DE SINCRONIZACIÓN ETL -->
+<section class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm relative overflow-hidden">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex flex-col gap-1 min-w-0 z-10">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-surface-container text-primary font-label-sm text-label-sm uppercase tracking-wider font-semibold">
+<span class="material-symbols-outlined text-[14px]">bolt</span> Inferencia Activa v2.4
+        </span>
+<span class="text-on-surface-variant font-code-sm text-code-sm">oltp.Citas → dm.Fact_Atenciones</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+        Agendamiento y Control de Citas — oltp.Citas con Inferencia IA
+      </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+        Recepción operativa y control de inasistencia en tiempo real conectado al pipeline transaccional y dimensional.
+      </p>
+</div>
+<!-- BOTÓN CRÍTICO ETL WRITE-BACK -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-space-sm z-10 shrink-0">
+<div class="flex items-center gap-2 px-space-sm py-2 rounded-xl bg-surface-container-low text-on-surface-variant font-code-sm text-code-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+<span class="font-medium text-on-surface">14 deltas OLTP en cola</span>
+</div>
+<button class="relative group flex items-center justify-center gap-space-sm px-space-lg py-3 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md shadow-md hover:shadow-lg transition-all transform active:scale-95 text-left" id="btn-sync-etl" onclick="runETLPipelineSync()">
+<div class="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container-lowest/15 text-on-primary">
+<span class="material-symbols-outlined text-[20px] transition-transform" id="sync-icon">cloud_sync</span>
+</div>
+<div class="flex flex-col leading-tight">
+<span class="font-semibold tracking-wide flex items-center gap-1">
+            Sincronizar con Data Mart
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[10px]">Ejecutar</span>
+</span>
+<span class="font-label-sm text-[11px] text-surface-container-high opacity-90">ETL usp_ETL_CargarDataMart + Scoring IA</span>
+</div>
+</button>
+</div>
+</section>
+<!-- SECCIÓN SUPERIOR: FORMULARIO OLTP (60%) + ASISTENTE PREDICTIVO IA (40%) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- COLUMNA IZQUIERDA: FORMULARIO CRUD OLTP.CITAS (7 COLUMNS / ~58%) -->
+<div class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">calendar_add_on</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Registro de Cita Odontológica</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Inserción atómica directa en tabla oltp.Citas</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Identificador Cita</span>
+<span class="font-code-md text-code-md text-primary font-bold px-2 py-0.5 bg-surface-container rounded-lg" id="field-idcita">CT-2024-1104</span>
+</div>
+</div>
+<form class="flex flex-col gap-space-md" id="appointment-form" onsubmit="handleCitaSubmit(event)">
+<!-- PACIENTE SELECTOR CON BÚSQUEDA -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold flex items-center justify-between">
+<span>Paciente (oltp.Pacientes)</span>
+<span class="text-primary font-code-sm text-[11px] font-normal cursor-pointer hover:underline" onclick="document.getElementById('paciente-select').selectedIndex=1; recalcularRiesgo();">Cargar Paciente Demo</span>
+</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-on-surface-variant">person_search</span>
+<select class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" id="paciente-select" onchange="onPacienteChange()" required="">
+<option disabled="" selected="" value="">Seleccione o busque por DNI / Apellidos...</option>
+<option data-asistencias="4/6" data-distrito="Surco" data-edad="29" data-score-previo="0.42" value="47812903">47812903 — Luciana Gabriela Wong (29 años, Surco)</option>
+<option data-asistencias="12/12" data-distrito="San Borja" data-edad="45" data-score-previo="0.18" value="10928374">10928374 — Marcos Aurelio Benavides (45 años, San Borja)</option>
+<option data-asistencias="1/3" data-distrito="Comas" data-edad="19" data-score-previo="0.64" value="73829104">73829104 — Sofía Camila Ramírez (19 años, Comas)</option>
+<option data-asistencias="8/9" data-distrito="Miraflores" data-edad="61" data-score-previo="0.22" value="09281726">09281726 — Roberto Carlos Villanueva (61 años, Miraflores)</option>
+</select>
+</div>
+</div>
+<!-- ODONTÓLOGO Y TRATAMIENTO (2 COLUMNAS) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- ODONTÓLOGO -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Odontólogo Especialista</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-on-surface-variant">stethoscope</span>
+<select class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" id="odontologo-select" required="">
+<option data-sillon="Sillón 1" value="1">1 — Dr. Carlos Mendoza (Odontología General)</option>
+<option data-sillon="Sillón 3" selected="" value="2">2 — Dra. Lucía Paredes (Endodoncia)</option>
+<option data-sillon="Sillón 2" value="3">3 — Dr. Jorge Salas (Ortodoncia)</option>
+</select>
+</div>
+</div>
+<!-- TRATAMIENTO CON PRECIO CPMS VINCULADO -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Tratamiento CPMS (oltp.Tratamientos)</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-on-surface-variant">medical_services</span>
+<select class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" id="tratamiento-select" onchange="onTratamientoChange()" required="">
+<option data-costo="30.00" value="D0120">D0120 — Examen estomatológico (S/ 30.00)</option>
+<option data-costo="50.00" value="D1110">D1110 — Profilaxis dental adulto (S/ 50.00)</option>
+<option data-costo="80.00" value="D2330">D2330 — Restauración con resina (S/ 80.00)</option>
+<option data-costo="250.00" selected="" value="D3310">D3310 — Endodoncia / Conducto (S/ 250.00)</option>
+<option data-costo="70.00" value="D7140">D7140 — Extracción dental simple (S/ 70.00)</option>
+</select>
+</div>
+</div>
+</div>
+<!-- COSTO Y FECHAS (3 CAMPOS) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- COSTO APLICADO -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Costo Aplicado (DECIMAL)</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 font-code-md text-code-md text-on-surface-variant font-bold">S/</span>
+<input class="w-full pl-9 pr-3 py-2 bg-surface-container font-code-md text-code-md text-on-surface rounded-lg font-bold focus:ring-2 focus:ring-primary focus:outline-none" id="costo-aplicado" step="0.50" type="number" value="250.00"/>
+</div>
+<span class="font-label-sm text-[10px] text-on-surface-variant">Catálogo CPMS actualizado</span>
+</div>
+<!-- FECHA PROGRAMACIÓN (HOY FIJO) -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Fecha Programación</label>
+<input class="w-full px-3 py-2 bg-surface-container-low font-code-sm text-code-sm text-on-surface-variant rounded-lg cursor-not-allowed select-none" id="fecha-programacion" readonly="" type="text" value="2024-11-12 10:30"/>
+<span class="font-label-sm text-[10px] text-on-surface-variant">DATETIME2 (Captura de sistema)</span>
+</div>
+<!-- FECHA CITA CON VALIDACIÓN -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold flex items-center justify-between">
+<span>Fecha de la Cita</span>
+<span class="text-error font-label-sm text-[10px] hidden" id="fecha-warning">Invalida</span>
+</label>
+<input class="w-full px-3 py-2 bg-surface-container-low font-code-md text-code-md text-on-surface rounded-lg focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none" id="fecha-cita" min="2024-11-12" onchange="onFechaCitaChange()" required="" type="date" value="2024-11-30"/>
+<span class="font-label-sm text-[11px] text-primary font-semibold" id="dias-espera-label">Espera proyectada: 18 días</span>
+</div>
+</div>
+<!-- TOGGLES OPERATIVOS: SMS Y NOSHOW -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md p-space-md bg-surface-container-low rounded-xl">
+<!-- SWITCH SMS RECIBIDO -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">sms</span>
+                SMS Notificación (BIT)
+              </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Dispara recordatorio automatizado</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="switch-sms" onchange="recalcularRiesgo()" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- ESTADO DE ASISTENCIA (NOSHOW) -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">event_available</span>
+                Estado Inicial NoShow
+              </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Default: Pendiente de asistencia</span>
+</div>
+<select class="px-3 py-1.5 bg-surface-container-lowest rounded-lg font-label-md text-label-md text-on-surface focus:ring-1 focus:ring-primary focus:outline-none font-medium" id="noshow-select">
+<option selected="" value="Pendiente">Pendiente</option>
+<option value="No">No (Asistió)</option>
+<option value="Yes">Yes (Faltó)</option>
+</select>
+</div>
+</div>
+<!-- BOTONES DE ACCIÓN -->
+<div class="flex items-center justify-end gap-space-sm pt-space-xs">
+<button class="px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md" onclick="limpiarFormulario()" type="button">
+            Limpiar Formulario
+          </button>
+<button class="flex items-center gap-2 px-space-lg py-2.5 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md shadow transition-all active:scale-98" type="submit">
+<span class="material-symbols-outlined text-[18px]">save</span>
+            Registrar Cita en oltp.Citas
+          </button>
+</div>
+</form>
+</div>
+<!-- COLUMNA DERECHA: ASISTENTE PREDICTIVO EN VIVO (5 COLUMNS / ~42%) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<!-- TARJETA DEL MODELO IA RANDOM FOREST -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm relative overflow-hidden flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-secondary-container text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Asistente Predictivo No-Show</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Random Forest v2.4 (F1: 0.84)</p>
+</div>
+</div>
+<span class="font-code-sm text-code-sm px-2 py-0.5 rounded-full bg-surface-container text-primary font-medium">Inferencia &lt;12ms</span>
+</div>
+<!-- GAUGE / VELOCÍMETRO CIRCULAR SVG -->
+<div class="flex flex-col items-center justify-center p-space-sm bg-surface-container-low rounded-xl relative">
+<div class="relative w-44 h-28 flex items-end justify-center overflow-hidden">
+<svg class="w-44 h-44 transform -rotate-90 origin-center" viewbox="0 0 160 160">
+<!-- Círculo de fondo (semicírculo) -->
+<circle cx="80" cy="80" fill="none" r="64" stroke="#dce9ff" stroke-dasharray="201 400" stroke-linecap="round" stroke-width="14"></circle>
+<!-- Círculo de riesgo dinámico -->
+<circle class="transition-all duration-700" cx="80" cy="80" fill="none" id="gauge-circle" r="64" stroke="#ba1a1a" stroke-dasharray="116 400" stroke-linecap="round" stroke-width="14"></circle>
+</svg>
+<div class="absolute bottom-1 flex flex-col items-center">
+<span class="font-display-lg text-display-lg text-on-surface leading-none tracking-tight" id="score-text">58%</span>
+<span class="font-label-sm text-label-sm text-error uppercase font-bold tracking-wider mt-1" id="score-badge">RIESGO ALTO</span>
+</div>
+</div>
+<div class="w-full flex items-center justify-between px-space-md pt-space-xs text-on-surface-variant font-label-sm text-[11px]">
+<span>0% (Óptimo)</span>
+<span>Umbral Crítico: 38%</span>
+<span>100% (Abandono)</span>
+</div>
+</div>
+<!-- BANNER DE ALERTA PREVENTIVA DINÁMICA -->
+<div class="p-space-md rounded-xl bg-error-container/40 text-on-surface flex flex-col gap-space-xs" id="alert-banner">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-error">warning</span>
+<span class="font-headline-sm text-label-md text-error font-bold">Alerta: Espera Crítica (18 días)</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            La espera supera los 15 días calendario. Estadísticamente triplica la deserción sin confirmación multicanal previa.
+          </p>
+<div class="mt-space-xs flex flex-col gap-1.5 pt-space-xs">
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface">Recomendaciones Prescriptivas IA:</span>
+<div class="flex items-start gap-2 text-on-surface-variant font-body-sm text-body-sm bg-surface-container-lowest/80 p-2 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-primary mt-0.5">event_repeat</span>
+<div class="flex-1">
+<span>Adelantar fecha a cupo cancelado:</span>
+<button class="font-semibold text-primary underline ml-1 hover:text-primary-container" onclick="aplicarFechaPrescrita('2024-11-14')" type="button">Jueves 14 Nov (11:00 AM)</button>
+</div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm bg-surface-container-lowest/80 p-2 rounded-lg">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">mark_chat_read</span>
+<span>Activar SMS Inmediato (-15% riesgo)</span>
+</span>
+<button class="px-2 py-0.5 rounded bg-primary text-on-primary font-label-sm text-label-sm" onclick="activarSmsRecomendado()" type="button">Activar</button>
+</div>
+</div>
+</div>
+<!-- MINI EXPLICABILIDAD SHAP LOCAL -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider font-semibold text-on-surface-variant">Explicabilidad SHAP (Aportes Locales)</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Base: 19.4%</span>
+</div>
+<div class="space-y-2">
+<div>
+<div class="flex justify-between font-label-sm text-[11px] text-on-surface mb-0.5">
+<span>Tiempo de Espera (18 días)</span>
+<span class="text-error font-bold font-code-sm">+32.4%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-error h-1.5 rounded-full" id="shap-espera" style="width: 70%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-sm text-[11px] text-on-surface mb-0.5">
+<span>Edad del Paciente (29 años)</span>
+<span class="text-amber-600 font-bold font-code-sm">+6.8%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-amber-500 h-1.5 rounded-full" style="width: 25%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-sm text-[11px] text-on-surface mb-0.5">
+<span id="shap-sms-label">SMS Recordatorio (No enviado)</span>
+<span class="text-error font-bold font-code-sm" id="shap-sms-val">+18.8%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-error h-1.5 rounded-full" id="shap-sms-bar" style="width: 40%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- MINI TARJETA DE CONEXIÓN OLTP -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Transacción Atómica OLTP Lista</span>
+</div>
+<span class="font-code-sm text-code-sm text-primary font-semibold">ISOLATION: READ COMMITTED</span>
+</div>
+</div>
+</section>
+<!-- SECCIÓN BANDEJA DIARIA: CRUD READ / UPDATE / DELETE EN OLTP.CITAS -->
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<!-- BARRA SUPERIOR DE LA BANDEJA CON FILTROS -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pb-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Bandeja Operativa de Citas (oltp.Citas)</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container font-label-sm text-label-sm font-bold text-primary" id="total-citas-badge">7 Citas en Vista</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Gestión directa de estado de asistencia y despacho SMS en tiempo real</span>
+</div>
+<!-- CONTROLES Y FILTROS SEGMENTADOS -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<!-- FILTRO DE TIEMPO -->
+<div class="flex items-center bg-surface-container-low p-1 rounded-xl">
+<button class="filter-time-btn px-3 py-1 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-sm font-semibold" onclick="filtrarTiempo('hoy', this)" type="button">Hoy</button>
+<button class="filter-time-btn px-3 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors" onclick="filtrarTiempo('manana', this)" type="button">Mañana</button>
+<button class="filter-time-btn px-3 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors" onclick="filtrarTiempo('semana', this)" type="button">Esta Semana</button>
+<button class="filter-time-btn px-3 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors" onclick="filtrarTiempo('todos', this)" type="button">Todas</button>
+</div>
+<!-- FILTRO ODONTÓLOGO -->
+<select class="px-3 py-1.5 bg-surface-container-low rounded-xl font-label-sm text-label-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary" id="filtro-odontologo" onchange="aplicarFiltrosTabla()">
+<option value="todos">Todos los Odontólogos</option>
+<option value="Dr. Carlos Mendoza">Dr. Carlos Mendoza</option>
+<option value="Dra. Lucía Paredes">Dra. Lucía Paredes</option>
+<option value="Dr. Jorge Salas">Dr. Jorge Salas</option>
+</select>
+<!-- FILTRO NOSHOW -->
+<select class="px-3 py-1.5 bg-surface-container-low rounded-xl font-label-sm text-label-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary" id="filtro-noshow" onchange="aplicarFiltrosTabla()">
+<option value="todos">Estado: Todos</option>
+<option value="Pendiente">Solo Pendientes</option>
+<option value="No">Asistieron (No)</option>
+<option value="Yes">Faltaron (Yes)</option>
+</select>
+</div>
+</div>
+<!-- TABLA CLÍNICA DE ALTA DENSIDAD -->
+<div class="w-full overflow-x-auto rounded-xl">
+<table class="w-full text-left border-collapse" id="citas-table">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-[11px] uppercase tracking-wider">
+<th class="py-3 px-3">IdCita</th>
+<th class="py-3 px-3">Paciente (DNI &amp; Distrito)</th>
+<th class="py-3 px-3">Odontólogo / Sillón</th>
+<th class="py-3 px-3">Tratamiento CPMS</th>
+<th class="py-3 px-3">Fecha &amp; Hora</th>
+<th class="py-3 px-3 text-center">Espera</th>
+<th class="py-3 px-3 text-center">SMS Notif.</th>
+<th class="py-3 px-3 text-center">Estado Asistencia</th>
+<th class="py-3 px-3 text-right">Acciones Rápidas (OLTP)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container font-body-sm text-body-sm text-on-surface" id="citas-table-body">
+<!-- FILA 1 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-id="CT-2024-1098" data-noshow="Pendiente" data-odo="Dra. Lucía Paredes" data-tiempo="hoy">
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-0.5 bg-surface-container rounded">CT-2024-1098</span>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Valeria Soto Morales</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">41892019 • Miraflores (34a)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium">Dra. Lucía Paredes</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Sillón 3 (Endodoncia)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">D3310 — Endodoncia</span>
+<span class="font-code-sm text-code-sm text-primary font-bold">S/ 250.00</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm">2024-11-12 11:00</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded-full font-code-sm text-code-sm bg-error-container text-on-error-container font-semibold">19d</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all" onclick="toggleSMS(this, 'CT-2024-1098')" title="Click para alternar BIT">
+<span class="material-symbols-outlined text-[14px]">sms_failed</span>
+<span>0 Pendiente</span>
+</button>
+</td>
+<td class="py-2.5 px-3 text-center">
+<select class="px-2 py-1 rounded-lg bg-surface-container font-label-sm text-label-sm text-on-surface focus:outline-none" onchange="updateNoShow(this, 'CT-2024-1098')">
+<option selected="" value="Pendiente">⏳ Pendiente</option>
+<option value="No">✅ No (Asistió)</option>
+<option value="Yes">❌ Yes (Faltó)</option>
+</select>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-primary" onclick="confirmarSmsDirecto('CT-2024-1098', this)" title="Enviar y Confirmar SMS">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant" onclick="reprogramarCita('CT-2024-1098')" title="Reprogramar Fecha (Update)">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+<button class="p-1 rounded hover:bg-error-container text-error" onclick="eliminarCita('CT-2024-1098', this)" title="Cancelar Cita (Delete)">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- FILA 2 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-id="CT-2024-1099" data-noshow="No" data-odo="Dr. Carlos Mendoza" data-tiempo="hoy">
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-0.5 bg-surface-container rounded">CT-2024-1099</span>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Esteban Reyna Gómez</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">08392102 • San Isidro (52a)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium">Dr. Carlos Mendoza</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Sillón 1 (General)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">D1110 — Profilaxis adulto</span>
+<span class="font-code-sm text-code-sm text-primary font-bold">S/ 50.00</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm">2024-11-12 09:00</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded-full font-code-sm text-code-sm bg-surface-container text-on-surface-variant">3d</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-emerald-100 text-emerald-800">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+<span>1 Enviado</span>
+</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-emerald-100 text-emerald-800 font-medium">
+                ✅ No (Asistió)
+              </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant" onclick="reprogramarCita('CT-2024-1099')" title="Reprogramar">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+<button class="p-1 rounded hover:bg-error-container text-error" onclick="eliminarCita('CT-2024-1099', this)" title="Cancelar">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- FILA 3 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-id="CT-2024-1100" data-noshow="Yes" data-odo="Dr. Jorge Salas" data-tiempo="hoy">
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-0.5 bg-surface-container rounded">CT-2024-1100</span>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Alonso Delgado Paz</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">72910482 • San Borja (24a)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium">Dr. Jorge Salas</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Sillón 2 (Ortodoncia)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">D2330 — Restauración resina</span>
+<span class="font-code-sm text-code-sm text-primary font-bold">S/ 80.00</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm">2024-11-12 10:00</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded-full font-code-sm text-code-sm bg-error-container text-on-error-container font-semibold">22d</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all" onclick="toggleSMS(this, 'CT-2024-1100')">
+<span class="material-symbols-outlined text-[14px]">sms_failed</span>
+<span>0 Pendiente</span>
+</button>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container font-medium">
+                ❌ Yes (Faltó)
+              </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-primary font-label-sm text-label-sm flex items-center gap-1" onclick="reprogramarCita('CT-2024-1100')">
+<span class="material-symbols-outlined text-[16px]">sync_saved_locally</span> Recontactar
+                </button>
+</div>
+</td>
+</tr>
+<!-- FILA 4 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-id="CT-2024-1101" data-noshow="Pendiente" data-odo="Dr. Carlos Mendoza" data-tiempo="hoy">
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-0.5 bg-surface-container rounded">CT-2024-1101</span>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Beatriz Carranza Loza</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">45102948 • Surquillo (41a)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium">Dr. Carlos Mendoza</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Sillón 1 (General)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">D0120 — Examen estomatol.</span>
+<span class="font-code-sm text-code-sm text-primary font-bold">S/ 30.00</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm">2024-11-12 15:30</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded-full font-code-sm text-code-sm bg-surface-container text-on-surface">6d</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-emerald-100 text-emerald-800">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+<span>1 Enviado</span>
+</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<select class="px-2 py-1 rounded-lg bg-surface-container font-label-sm text-label-sm text-on-surface focus:outline-none" onchange="updateNoShow(this, 'CT-2024-1101')">
+<option selected="" value="Pendiente">⏳ Pendiente</option>
+<option value="No">✅ No (Asistió)</option>
+<option value="Yes">❌ Yes (Faltó)</option>
+</select>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant" onclick="reprogramarCita('CT-2024-1101')" title="Reprogramar">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+<button class="p-1 rounded hover:bg-error-container text-error" onclick="eliminarCita('CT-2024-1101', this)" title="Cancelar">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- FILA 5 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-id="CT-2024-1102" data-noshow="Pendiente" data-odo="Dra. Lucía Paredes" data-tiempo="manana">
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-0.5 bg-surface-container rounded">CT-2024-1102</span>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Guillermo Rivas Plaza</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">09281144 • Santiago de Surco (38a)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium">Dra. Lucía Paredes</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Sillón 3 (Endodoncia)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">D3310 — Endodoncia</span>
+<span class="font-code-sm text-code-sm text-primary font-bold">S/ 250.00</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm">2024-11-13 09:30</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded-full font-code-sm text-code-sm bg-surface-container text-on-surface">4d</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-emerald-100 text-emerald-800">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+<span>1 Enviado</span>
+</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<select class="px-2 py-1 rounded-lg bg-surface-container font-label-sm text-label-sm text-on-surface focus:outline-none" onchange="updateNoShow(this, 'CT-2024-1102')">
+<option selected="" value="Pendiente">⏳ Pendiente</option>
+<option value="No">✅ No (Asistió)</option>
+<option value="Yes">❌ Yes (Faltó)</option>
+</select>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant" onclick="reprogramarCita('CT-2024-1102')" title="Reprogramar">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+<button class="p-1 rounded hover:bg-error-container text-error" onclick="eliminarCita('CT-2024-1102', this)" title="Cancelar">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- FILA 6 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-id="CT-2024-1103" data-noshow="Pendiente" data-odo="Dr. Carlos Mendoza" data-tiempo="semana">
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-0.5 bg-surface-container rounded">CT-2024-1103</span>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Mónica Cáceres Vera</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">71928301 • San Miguel (27a)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium">Dr. Carlos Mendoza</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Sillón 1 (General)</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">D7140 — Extracción simple</span>
+<span class="font-code-sm text-code-sm text-primary font-bold">S/ 70.00</span>
+</div>
+</td>
+<td class="py-2.5 px-3">
+<span class="font-code-sm text-code-sm">2024-11-15 16:00</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded-full font-code-sm text-code-sm bg-error-container text-on-error-container font-semibold">16d</span>
+</td>
+<td class="py-2.5 px-3 text-center">
+<button class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all" onclick="toggleSMS(this, 'CT-2024-1103')">
+<span class="material-symbols-outlined text-[14px]">sms_failed</span>
+<span>0 Pendiente</span>
+</button>
+</td>
+<td class="py-2.5 px-3 text-center">
+<select class="px-2 py-1 rounded-lg bg-surface-container font-label-sm text-label-sm text-on-surface focus:outline-none" onchange="updateNoShow(this, 'CT-2024-1103')">
+<option selected="" value="Pendiente">⏳ Pendiente</option>
+<option value="No">✅ No (Asistió)</option>
+<option value="Yes">❌ Yes (Faltó)</option>
+</select>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-primary" onclick="confirmarSmsDirecto('CT-2024-1103', this)" title="Enviar SMS">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant" onclick="reprogramarCita('CT-2024-1103')" title="Reprogramar">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+<button class="p-1 rounded hover:bg-error-container text-error" onclick="eliminarCita('CT-2024-1103', this)" title="Cancelar">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- SECCIÓN TELEMETRÍA T-SQL WRITE-BACK Y CONSOLA DE SINCRONIZACIÓN -->
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary">terminal</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Consola de Telemetría Write-Back &amp; Pipeline T-SQL</h3>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-code-sm text-code-sm text-on-surface-variant">Conexión: <span class="text-primary font-bold">SQL Server 2022 Developer (Localhost:1433)</span></span>
+<button class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface underline" onclick="limpiarConsola()">Limpiar Log</button>
+</div>
+</div>
+<!-- TERMINAL SHELL SLATE OSCURO -->
+<div class="w-full bg-[#0b1329] p-space-md rounded-xl font-code-sm text-code-sm text-emerald-400 overflow-y-auto max-h-48 space-y-1 shadow-inner selection:bg-primary selection:text-white" id="sql-console">
+<div class="text-slate-400">[2024-11-12 10:30:00.104] Connected to instance 'LIM-SRV-DATA01\MSSQLSERVER'. Database context set to [DentalCenterDB].</div>
+<div class="text-slate-400">[2024-11-12 10:30:01.002] Monitoring triggers active: [oltp].[trg_Citas_AfterUpdate_CDC] enabled.</div>
+<div class="text-cyan-300">[2024-11-12 10:30:12.441] EXEC sys.sp_cdc_enable_table @source_schema = N'oltp', @source_name = N'Citas', @role_name = NULL;</div>
+<div class="text-emerald-400">[2024-11-12 10:30:15.912] Ready for transactional inserts and micro-batch ETL trigger.</div>
+</div>
+</section>
+</div>
+<script>
+  let contadorCitas = 1104;
+
+  // FUNCIÓN SINCRONIZAR CON DATA MART (EJECUTAR ETL + SCORING IA)
+  function runETLPipelineSync() {
+    const btn = document.getElementById('btn-sync-etl');
+    const icon = document.getElementById('sync-icon');
+    
+    // Feedback visual animado
+    icon.classList.add('animate-spin');
+    btn.classList.add('opacity-80', 'pointer-events-none');
+    
+    logSQL("info", "DISPARANDO PIPELINE: Sincronización a Data Mart solicitada por Operador...");
+    logSQL("cmd", "BEGIN TRANSACTION ETL_SYNC_TRAN;");
+    logSQL("cmd", "EXEC dm.usp_ETL_CargarDataMart @Modo = 'DELTA', @Lote = 14;");
+
+    setTimeout(() => {
+      logSQL("cmd", "MERGE INTO dm.Fact_Atenciones AS T USING oltp.Citas AS S ON T.IdCita = S.IdCita ...");
+      logSQL("cmd", "EXEC ml.usp_CalcularScoresPredictivos @Algoritmo = 'RandomForest_v2.4';");
+    }, 700);
+
+    setTimeout(() => {
+      logSQL("success", "MERGE exitoso: 14 registros cargados en [dm].[Fact_Atenciones].");
+      logSQL("success", "Inferencia completada: 14 filas guardadas en [dm].[Resultados_Prediccion_IA].");
+      logSQL("cmd", "COMMIT TRANSACTION ETL_SYNC_TRAN; -- Proceso finalizado en 1,420 ms");
+
+      icon.classList.remove('animate-spin');
+      btn.classList.remove('opacity-80', 'pointer-events-none');
+
+      // Notificación amigable
+      mostrarNotificacionToast("¡Data Mart Sincronizado!", "14 citas transferidas a dm.Fact_Atenciones y scoring IA recalculado.");
+    }, 1500);
+  }
+
+  // AUTOCOMPLETADO DE COSTO AL CAMBIAR TRATAMIENTO
+  function onTratamientoChange() {
+    const select = document.getElementById('tratamiento-select');
+    const selectedOption = select.options[select.selectedIndex];
+    const costo = selectedOption.getAttribute('data-costo');
+    document.getElementById('costo-aplicado').value = costo;
+    logSQL("info", `Catálogo CPMS seleccionado: ${selectedOption.value} &rarr; Costo establecido a S/ ${costo}`);
+  }
+
+  // VALIDACIÓN DE FECHA CITA Y CÁLCULO DE ESPERA
+  function onFechaCitaChange() {
+    const fProg = new Date("2024-11-12");
+    const fCitaVal = document.getElementById('fecha-cita').value;
+    const fCita = new Date(fCitaVal);
+    const diffTime = fCita - fProg;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const label = document.getElementById('dias-espera-label');
+    const warning = document.getElementById('fecha-warning');
+
+    if (diffDays < 0) {
+      warning.classList.remove('hidden');
+      label.innerText = "Error: Fecha anterior a la emisión";
+      label.className = "font-label-sm text-[11px] text-error font-semibold";
+      return;
+    } else {
+      warning.classList.add('hidden');
+      label.innerText = `Espera proyectada: ${diffDays} días corridos`;
+      label.className = "font-label-sm text-[11px] text-primary font-semibold";
+    }
+
+    recalcularRiesgo();
+  }
+
+  function onPacienteChange() {
+    recalcularRiesgo();
+  }
+
+  // MODELO DE INFERENCIA PREDICTIVA RANDOM FOREST SIMULADA EN TIEMPO REAL
+  function recalcularRiesgo() {
+    const pacSelect = document.getElementById('paciente-select');
+    const selectedPac = pacSelect.options[pacSelect.selectedIndex];
+    
+    let edad = 30;
+    if (selectedPac && selectedPac.hasAttribute('data-edad')) {
+      edad = parseInt(selectedPac.getAttribute('data-edad'));
+    }
+
+    const fProg = new Date("2024-11-12");
+    const fCitaVal = document.getElementById('fecha-cita').value;
+    const fCita = new Date(fCitaVal);
+    let diffDays = Math.max(0, Math.ceil((fCita - fProg) / (1000 * 60 * 60 * 24)));
+
+    const smsEnviado = document.getElementById('switch-sms').checked;
+
+    // Reglas del modelo Random Forest
+    // Base 15% + (Espera * 2.2%) + (SMS ? -18% : +15%) + (Edad < 25 ? +10% : -5%)
+    let score = 15 + (diffDays * 2.2);
+    if (smsEnviado) {
+      score -= 18;
+    } else {
+      score += 12;
+    }
+
+    if (edad < 25) score += 10;
+    else if (edad > 55) score -= 8;
+
+    score = Math.min(96, Math.max(4, Math.round(score)));
+
+    // Actualizar Gauge
+    const gauge = document.getElementById('gauge-circle');
+    const scoreText = document.getElementById('score-text');
+    const scoreBadge = document.getElementById('score-badge');
+    const alertBanner = document.getElementById('alert-banner');
+    
+    // Perímetro semicírculo = 201. Longitud proporcional:
+    const dashOffset = Math.round(201 - (score / 100 * 201));
+    gauge.style.strokeDashoffset = dashOffset;
+    scoreText.innerText = `${score}%`;
+
+    // Mini SHAP update
+    const shapSmsBar = document.getElementById('shap-sms-bar');
+    const shapSmsVal = document.getElementById('shap-sms-val');
+    const shapSmsLabel = document.getElementById('shap-sms-label');
+
+    if (smsEnviado) {
+      shapSmsBar.className = "bg-emerald-500 h-1.5 rounded-full";
+      shapSmsBar.style.width = "30%";
+      shapSmsVal.className = "text-emerald-700 font-bold font-code-sm";
+      shapSmsVal.innerText = "-18.0%";
+      shapSmsLabel.innerText = "SMS Recordatorio (Activo)";
+    } else {
+      shapSmsBar.className = "bg-error h-1.5 rounded-full";
+      shapSmsBar.style.width = "40%";
+      shapSmsVal.className = "text-error font-bold font-code-sm";
+      shapSmsVal.innerText = "+18.8%";
+      shapSmsLabel.innerText = "SMS Recordatorio (No enviado)";
+    }
+
+    if (score >= 45) {
+      gauge.setAttribute('stroke', '#ba1a1a'); // error
+      scoreBadge.innerText = 'RIESGO ALTO';
+      scoreBadge.className = 'font-label-sm text-label-sm text-error uppercase font-bold tracking-wider mt-1';
+      alertBanner.classList.remove('hidden');
+    } else if (score >= 25) {
+      gauge.setAttribute('stroke', '#d97706'); // amber
+      scoreBadge.innerText = 'RIESGO MODERADO';
+      scoreBadge.className = 'font-label-sm text-label-sm text-amber-600 uppercase font-bold tracking-wider mt-1';
+      alertBanner.classList.remove('hidden');
+    } else {
+      gauge.setAttribute('stroke', '#059669'); // emerald
+      scoreBadge.innerText = 'RIESGO BAJO';
+      scoreBadge.className = 'font-label-sm text-label-sm text-emerald-600 uppercase font-bold tracking-wider mt-1';
+      alertBanner.classList.add('hidden');
+    }
+  }
+
+  function aplicarFechaPrescrita(nuevaFecha) {
+    document.getElementById('fecha-cita').value = nuevaFecha;
+    onFechaCitaChange();
+    logSQL("info", `Prescripción IA aplicada: FechaCita adelantada a ${nuevaFecha}`);
+  }
+
+  function activarSmsRecomendado() {
+    document.getElementById('switch-sms').checked = true;
+    recalcularRiesgo();
+    logSQL("info", "Prescripción IA aplicada: Switch SMSRecibido forzado a BIT 1.");
+  }
+
+  // SUBMIT DEL FORMULARIO: ATOMIC INSERT EN OLTP.CITAS
+  function handleCitaSubmit(e) {
+    e.preventDefault();
+    const idCita = document.getElementById('field-idcita').innerText;
+    const pacSelect = document.getElementById('paciente-select');
+    const pacText = pacSelect.options[pacSelect.selectedIndex].text;
+    const pacDni = pacSelect.value;
+    
+    const odoSelect = document.getElementById('odontologo-select');
+    const odoText = odoSelect.options[odoSelect.selectedIndex].text.split('—')[1].trim();
+    const odoSillon = odoSelect.options[odoSelect.selectedIndex].getAttribute('data-sillon');
+
+    const tratSelect = document.getElementById('tratamiento-select');
+    const tratText = tratSelect.options[tratSelect.selectedIndex].text.split('(')[0].trim();
+    const costo = document.getElementById('costo-aplicado').value;
+    const fechaCita = document.getElementById('fecha-cita').value + " 10:00";
+    const sms = document.getElementById('switch-sms').checked;
+    const noShow = document.getElementById('noshow-select').value;
+
+    const fProg = new Date("2024-11-12");
+    const diffDays = Math.max(0, Math.ceil((new Date(document.getElementById('fecha-cita').value) - fProg) / (1000 * 60 * 60 * 24)));
+
+    // Insertar fila en la tabla dinámica
+    const tbody = document.getElementById('citas-table-body');
+    const row = document.createElement('tr');
+    row.className = "hover:bg-surface-container-low/60 transition-colors animate-pulse";
+    row.setAttribute('data-id', idCita);
+    row.setAttribute('data-odo', odoText);
+    row.setAttribute('data-noshow', noShow);
+    row.setAttribute('data-tiempo', 'semana');
+
+    row.innerHTML = `
+      <td class="py-2.5 px-3">
+        <span class="font-code-sm text-code-sm text-primary font-bold px-2 py-0.5 bg-surface-container rounded">${idCita}</span>
+      </td>
+      <td class="py-2.5 px-3">
+        <div class="flex flex-col">
+          <span class="font-semibold text-on-surface">${pacText.split('—')[1].split('(')[0].trim()}</span>
+          <span class="font-code-sm text-code-sm text-on-surface-variant">${pacDni} &bull; Agendado recién</span>
+        </div>
+      </td>
+      <td class="py-2.5 px-3">
+        <div class="flex flex-col">
+          <span class="font-medium">${odoText.split('(')[0].trim()}</span>
+          <span class="font-label-sm text-[11px] text-on-surface-variant">${odoSillon}</span>
+        </div>
+      </td>
+      <td class="py-2.5 px-3">
+        <div class="flex flex-col">
+          <span class="font-medium text-on-surface">${tratText}</span>
+          <span class="font-code-sm text-code-sm text-primary font-bold">S/ ${parseFloat(costo).toFixed(2)}</span>
+        </div>
+      </td>
+      <td class="py-2.5 px-3">
+        <span class="font-code-sm text-code-sm">${fechaCita}</span>
+      </td>
+      <td class="py-2.5 px-3 text-center">
+        <span class="px-2 py-0.5 rounded-full font-code-sm text-code-sm ${diffDays > 14 ? 'bg-error-container text-on-error-container font-semibold' : 'bg-surface-container text-on-surface'}">${diffDays}d</span>
+      </td>
+      <td class="py-2.5 px-3 text-center">
+        ${sms ? `
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-emerald-100 text-emerald-800">
+            <span class="material-symbols-outlined text-[14px]">done_all</span> 1 Enviado
+          </span>
+        ` : `
+          <button onclick="toggleSMS(this, '${idCita}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all">
+            <span class="material-symbols-outlined text-[14px]">sms_failed</span> 0 Pendiente
+          </button>
+        `}
+      </td>
+      <td class="py-2.5 px-3 text-center">
+        <select onchange="updateNoShow(this, '${idCita}')" class="px-2 py-1 rounded-lg bg-surface-container font-label-sm text-label-sm text-on-surface focus:outline-none">
+          <option value="Pendiente" ${noShow === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+          <option value="No" ${noShow === 'No' ? 'selected' : ''}>✅ No (Asistió)</option>
+          <option value="Yes" ${noShow === 'Yes' ? 'selected' : ''}>❌ Yes (Faltó)</option>
+        </select>
+      </td>
+      <td class="py-2.5 px-3 text-right">
+        <div class="inline-flex items-center gap-1">
+          <button onclick="confirmarSmsDirecto('${idCita}', this)" class="p-1 rounded hover:bg-surface-container text-primary" title="Enviar SMS">
+            <span class="material-symbols-outlined text-[18px]">send</span>
+          </button>
+          <button onclick="reprogramarCita('${idCita}')" class="p-1 rounded hover:bg-surface-container text-on-surface-variant" title="Reprogramar">
+            <span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+          </button>
+          <button onclick="eliminarCita('${idCita}', this)" class="p-1 rounded hover:bg-error-container text-error" title="Cancelar">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+          </button>
+        </div>
+      </td>
+    `;
+
+    tbody.insertBefore(row, tbody.firstChild);
+    setTimeout(() => row.classList.remove('animate-pulse'), 1000);
+
+    // Logging T-SQL
+    logSQL("cmd", `INSERT INTO oltp.Citas (IdCita, IdPaciente, IdOdontologo, IdTratamiento, FechaProgramacion, FechaCita, CostoAplicado, SMSRecibido, NoShow) VALUES ('${idCita}', '${pacDni}', ${odoSelect.value}, '${tratSelect.value}', '2024-11-12 10:30', '${fechaCita}', ${costo}, ${sms ? 1 : 0}, '${noShow}');`);
+    logSQL("success", `1 fila afectada en oltp.Citas. Registro ${idCita} confirmado.`);
+
+    mostrarNotificacionToast("Cita Agendada", `Cita ${idCita} insertada exitosamente en la base de datos.`);
+
+    // Avanzar correlativo
+    contadorCitas++;
+    document.getElementById('field-idcita').innerText = `CT-2024-${contadorCitas}`;
+    limpiarFormulario();
+  }
+
+  function limpiarFormulario() {
+    document.getElementById('appointment-form').reset();
+    document.getElementById('costo-aplicado').value = "250.00";
+    document.getElementById('tratamiento-select').value = "D3310";
+    document.getElementById('fecha-cita').value = "2024-11-30";
+    recalcularRiesgo();
+  }
+
+  // INTERACCIONES RÁPIDAS DE TABLA: TOGGLE SMS
+  function toggleSMS(btn, idCita) {
+    const isEnviado = btn.innerText.includes('1');
+    const newBit = isEnviado ? 0 : 1;
+    
+    if (newBit === 1) {
+      btn.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-emerald-100 text-emerald-800";
+      btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">done_all</span> 1 Enviado`;
+    } else {
+      btn.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all";
+      btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">sms_failed</span> 0 Pendiente`;
+    }
+
+    logSQL("cmd", `UPDATE oltp.Citas SET SMSRecibido = ${newBit} WHERE IdCita = '${idCita}';`);
+    logSQL("success", `Status SMS actualizado a BIT ${newBit} para ${idCita}.`);
+  }
+
+  function confirmarSmsDirecto(idCita, el) {
+    logSQL("cmd", `EXEC oltp.usp_EnviarConfirmacionSMS @IdCita = '${idCita}';`);
+    logSQL("success", `Notificación push/SMS transmitida a la pasarela de mensajería.`);
+    mostrarNotificacionToast("SMS Enviado", `Recordatorio emitido al paciente para la cita ${idCita}.`);
+  }
+
+  function updateNoShow(selectEl, idCita) {
+    const val = selectEl.value;
+    logSQL("cmd", `UPDATE oltp.Citas SET NoShow = '${val}' WHERE IdCita = '${idCita}';`);
+    logSQL("success", `Estado NoShow actualizado a '${val}' en oltp.Citas.`);
+  }
+
+  function reprogramarCita(idCita) {
+    const nuevaFecha = prompt(`Reprogramar Cita ${idCita} - Ingrese nueva fecha (YYYY-MM-DD):`, "2024-11-18");
+    if (nuevaFecha) {
+      logSQL("cmd", `UPDATE oltp.Citas SET FechaCita = '${nuevaFecha} 10:00' WHERE IdCita = '${idCita}';`);
+      logSQL("success", `Fecha de cita actualizada a ${nuevaFecha} para ${idCita}.`);
+      mostrarNotificacionToast("Cita Reprogramada", `Nueva fecha registrada para ${idCita}.`);
+    }
+  }
+
+  function eliminarCita(idCita, btn) {
+    if (confirm(`¿Confirma la cancelación física de la cita ${idCita} en oltp.Citas?`)) {
+      const row = btn.closest('tr');
+      row.remove();
+      logSQL("cmd", `DELETE FROM oltp.Citas WHERE IdCita = '${idCita}';`);
+      logSQL("success", `Registro ${idCita} eliminado de oltp.Citas.`);
+      mostrarNotificacionToast("Cita Cancelada", `Cita eliminada de la base operativa.`);
+    }
+  }
+
+  // FILTROS DE TABLA
+  function filtrarTiempo(tipo, btn) {
+    document.querySelectorAll('.filter-time-btn').forEach(b => {
+      b.className = "filter-time-btn px-3 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors";
+    });
+    btn.className = "filter-time-btn px-3 py-1 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-sm font-semibold";
+    
+    const rows = document.querySelectorAll('#citas-table-body tr');
+    rows.forEach(r => {
+      if (tipo === 'todos') {
+        r.classList.remove('hidden');
+      } else {
+        const rowTime = r.getAttribute('data-tiempo');
+        if (rowTime === tipo || (tipo === 'semana')) {
+          r.classList.remove('hidden');
+        } else {
+          r.classList.add('hidden');
+        }
+      }
+    });
+  }
+
+  function aplicarFiltrosTabla() {
+    const selOdo = document.getElementById('filtro-odontologo').value;
+    const selNoShow = document.getElementById('filtro-noshow').value;
+
+    const rows = document.querySelectorAll('#citas-table-body tr');
+    let visibleCount = 0;
+
+    rows.forEach(r => {
+      const odo = r.getAttribute('data-odo');
+      const noshow = r.getAttribute('data-noshow');
+
+      const matchesOdo = (selOdo === 'todos' || odo.includes(selOdo));
+      const matchesNoShow = (selNoShow === 'todos' || noshow === selNoShow);
+
+      if (matchesOdo && matchesNoShow) {
+        r.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        r.classList.add('hidden');
+      }
+    });
+
+    document.getElementById('total-citas-badge').innerText = `${visibleCount} Citas en Vista`;
+  }
+
+  // CONSOLA T-SQL LOGS
+  function logSQL(tipo, mensaje) {
+    const consoleEl = document.getElementById('sql-console');
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 23);
+    const div = document.createElement('div');
+
+    if (tipo === 'cmd') {
+      div.className = "text-cyan-300 font-mono";
+      div.innerText = `[${now}] ${mensaje}`;
+    } else if (tipo === 'success') {
+      div.className = "text-emerald-400 font-mono";
+      div.innerText = `[${now}] >> ${mensaje}`;
+    } else {
+      div.className = "text-slate-400 font-mono";
+      div.innerText = `[${now}] ${mensaje}`;
+    }
+
+    consoleEl.appendChild(div);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+  }
+
+  function limpiarConsola() {
+    document.getElementById('sql-console').innerHTML = `<div class="text-slate-400">[Consola limpiada por operador]</div>`;
+  }
+
+  // TOAST NOTIFIER
+  function mostrarNotificacionToast(titulo, desc) {
+    const toast = document.createElement('div');
+    toast.className = "fixed bottom-5 right-5 z-50 bg-inverse-surface text-inverse-on-surface p-space-md rounded-xl shadow-xl flex items-center gap-space-sm transform transition-all duration-300 translate-y-4 opacity-0";
+    toast.innerHTML = `
+      <span class="material-symbols-outlined text-secondary-fixed text-[24px]">verified</span>
+      <div class="flex flex-col">
+        <span class="font-label-md text-label-md font-bold text-inverse-on-surface">${titulo}</span>
+        <span class="font-body-sm text-body-sm text-surface-dim">${desc}</span>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.remove('translate-y-4', 'opacity-0');
+    }, 50);
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-y-2');
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+
+  // INICIALIZACIÓN
+  document.addEventListener('DOMContentLoaded', () => {
+    recalcularRiesgo();
+  });
+</script></main></div></body></html>

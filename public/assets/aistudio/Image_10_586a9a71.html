@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-container":"#004f7b","on-tertiary-fixed":"#131b2e","surface-dim":"#cbdbf5","outline-variant":"#bfc7d2","on-error-container":"#93000a","surface":"#f8f9ff","tertiary-fixed-dim":"#bec6e0","on-primary-container":"#fdfcff","on-secondary":"#ffffff","on-secondary-fixed-variant":"#004b74","surface-container":"#e5eeff","surface-variant":"#d3e4fe","error-container":"#ffdad6","on-primary-fixed":"#001d31","primary-fixed":"#cce5ff","secondary":"#006399","surface-bright":"#f8f9ff","inverse-surface":"#213145","on-background":"#0b1c30","on-tertiary":"#ffffff","surface-container-low":"#eff4ff","on-surface":"#0b1c30","inverse-on-surface":"#eaf1ff","error":"#ba1a1a","secondary-fixed-dim":"#94ccff","on-error":"#ffffff","tertiary":"#545c72","primary-fixed-dim":"#93ccff","inverse-primary":"#93ccff","surface-container-lowest":"#ffffff","surface-tint":"#006398","tertiary-fixed":"#dae2fd","on-secondary-fixed":"#001d32","on-surface-variant":"#3f4850","tertiary-container":"#6c748b","surface-container-highest":"#d3e4fe","secondary-container":"#7bc2ff","on-tertiary-container":"#fefcff","surface-container-high":"#dce9ff","on-tertiary-fixed-variant":"#3f465c","primary":"#006194","outline":"#707881","background":"#f8f9ff","on-primary-fixed-variant":"#004b73","on-primary":"#ffffff","secondary-fixed":"#cde5ff","primary-container":"#007bb9"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"space-sm":"0.5rem","space-md":"1rem","space-xl":"2rem","gutter-desktop":"1.5rem",margin:"1rem",gutter:"1rem","space-xs":"0.25rem","space-lg":"1.5rem","margin-desktop":"2rem"},fontFamily:{"headline-sm":["Plus Jakarta Sans"],"code-md":["JetBrains Mono"],"label-md":["Inter"],"label-sm":["Inter"],"body-lg":["Inter"],"display-lg-mobile":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"body-md":["Inter"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"code-sm":["JetBrains Mono"]},fontSize:{"headline-sm":["16px",{lineHeight:"24px",fontWeight:"600"}],"code-md":["13px",{lineHeight:"18px",fontWeight:"500"}],"label-md":["13px",{lineHeight:"18px",fontWeight:"500"}],"label-sm":["11px",{lineHeight:"16px",fontWeight:"600"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"display-lg-mobile":["24px",{lineHeight:"32px",fontWeight:"700"}],"display-lg":["32px",{lineHeight:"40px",fontWeight:"700"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"headline-md":["20px",{lineHeight:"28px",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"code-sm":["11px",{lineHeight:"16px",fontWeight:"400"}]}}}}</script></head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><img alt="Sonrisa Integral Logotipo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrCJh130EnZCQZW-hUQCxtvkuIyb6HiSx5DfHfGZCI_sR10d4IWCzYVNglBCYnlpUyEGtmvEJG4Bq8jtnDyrDp0jys2GFoYOp32S3JM2lCpIu0Y5D_BzIt8QPtVIjN4VCiccxnGrT7NZPrc9GDduhk5vZRjym4PDIQdhqz0r9Antpb8pjVdVLjoNi1ZXMj0PD6_VUMR_EdPVLMrgt04g_LHKUCckcJbu926llYhkLLw"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight">Sonrisa Integral</span><span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-space-xs">Centro de Comando BI &amp; IA <span class="w-1 h-1 rounded-full bg-outline-variant"></span> Sede Central Lima</span></div><div class="hidden xl:flex items-center gap-space-sm pl-space-sm ml-space-xs"><div class="flex items-center bg-surface-container-low p-1 rounded-full shadow-inner"><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-[0_1px_3px_rgba(15,23,42,0.05)] flex items-center gap-1" type="button"><span class="material-symbols-outlined text-[16px]">corporate_fare</span> Vista Dirección General</button><button class="px-space-sm py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors flex items-center gap-1" type="button"><span class="material-symbols-outlined text-[16px]">group</span> Atención al Paciente</button></div><div class="flex items-center gap-1.5 px-space-sm py-1 bg-surface-container-low rounded-full font-code-sm text-code-sm text-on-surface-variant"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>DentalCenterDB (SQL Server)</span></div></div></div><nav class="hidden lg:flex items-center h-full gap-space-lg" data-active-classes="text-primary font-bold border-b-2 border-primary"><a aria-current="page" class="h-full flex items-center px-1 transition-colors text-primary font-bold border-b-2 border-primary" data-path="inteligencia-de-negocios" href="#">Inteligencia de Negocios (Power BI &amp; KPIs)</a><a class="h-full flex items-center px-1 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="agenda-inteligente-y-retencion" href="#">Agenda Inteligente &amp; Retención (Data Mart + Scoring IA)</a><a class="h-full flex items-center px-1 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="simulador-prescriptivo-y-pipeline-etl" href="#">Simulador Prescriptivo &amp; Pipeline ETL</a></nav><div class="flex items-center gap-space-md shrink-0"><div class="hidden md:flex items-center gap-space-sm bg-surface-container-low px-space-sm py-1.5 rounded-lg font-code-sm text-code-sm text-on-surface"><span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span></span><span class="font-medium text-emerald-800">ETL Sync OK</span><span class="text-outline-variant">|</span><span class="text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 10:42 PET (Lima)</span></div><button class="relative p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-full transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-on-error bg-error rounded-full">3 alertas</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="hidden text-right sm:block"><span class="block font-label-md text-label-md text-on-surface font-semibold">Dra. Elena Vega</span><span class="block font-label-sm text-label-sm text-on-surface-variant">Directora Médica</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><aside class="fixed left-0 top-20 bottom-0 w-64 bg-surface-container-lowest z-40 hidden xl:flex flex-col py-space-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="px-space-md mb-space-sm"><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Consola Analítica</span></div><nav class="flex-1 px-space-sm flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-2.5 transition-all bg-primary-container text-on-primary-container font-semibold rounded-lg" data-path="inteligencia-de-negocios" href="#"><span class="material-symbols-outlined text-[20px]">query_stats</span> Cuadro de Mando Integral</a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="agenda-inteligente-y-retencion" href="#"><span class="material-symbols-outlined text-[20px]">smart_toy</span> Matriz IA de Pacientes</a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-body-sm text-body-sm" data-path="simulador-prescriptivo-y-pipeline-etl" href="#"><span class="material-symbols-outlined text-[20px]">account_tree</span> Pipeline ETL &amp; Telemetría</a></nav><div class="px-space-md pt-space-sm mt-auto"><div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1"><span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Servidor SQL Local</span><span class="font-code-sm text-code-sm text-primary">LIM-SRV-DATA01:1433</span><span class="font-label-sm text-label-sm text-emerald-700 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Conexión Segura TLS</span></div></div></aside><div class="w-full xl:pl-64"><main class="relative pt-20 w-full min-h-screen bg-surface px-space-md lg:px-gutter-desktop py-space-lg"><div class="flex flex-col w-full gap-space-lg">
+<!-- BANNER DE CONTEXTO SUPERIOR -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md p-space-lg bg-surface-container-lowest rounded-xl shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-code-sm text-code-sm px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-semibold tracking-wide uppercase">Power BI Enterprise • DirectQuery</span>
+<span class="font-label-sm text-label-sm text-tertiary flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Última sincronización ETL: Hoy, 08:30 AM
+        </span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">Inteligencia de Negocios y Rendimiento Clínico</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Monitoreo predictivo de inasistencias (No-Show), optimización de agenda médica y análisis de retorno clínico en tiempo real.</p>
+</div>
+<!-- Filtros de período y sede -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center bg-surface-container-low p-1 rounded-lg">
+<button class="px-space-sm py-1 rounded bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-sm transition-all" onclick="cambiarPeriodo(this, '30d')" type="button">Últimos 30 días</button>
+<button class="px-space-sm py-1 rounded text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all" onclick="cambiarPeriodo(this, 'q3')" type="button">Trimestre Q3 2024</button>
+<button class="px-space-sm py-1 rounded text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all" onclick="cambiarPeriodo(this, 'y2024')" type="button">Año 2024</button>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-low font-label-sm text-label-sm text-on-surface py-2 pl-3 pr-8 rounded-lg outline-none cursor-pointer hover:bg-surface-container" id="select-sede">
+<option value="miraflores-san-isidro">Sede Miraflores / San Isidro</option>
+<option value="surco">Sede Santiago de Surco</option>
+<option value="todas">Todas las Sedes (Consolidado)</option>
+</select>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
+</div>
+<button class="flex items-center gap-1.5 px-space-md py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md shadow-sm transition-all" id="btn-sync-telemetria" onclick="simularRefresco()" type="button">
+<span class="material-symbols-outlined text-[18px]" id="icono-refresh">autorenew</span>
+<span>Actualizar Métricas Power BI</span>
+</button>
+</div>
+</div>
+<!-- TARJETAS KPI SUPERIORES (4 métricas clave) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- KPI 1: Tasa de Inasistencia -->
+<div class="flex flex-col justify-between p-space-lg bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center justify-between gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Tasa de Inasistencia (%)</span>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="font-label-sm text-label-sm font-semibold">Salud Clínica Óptima</span>
+</div>
+</div>
+<div class="my-space-md flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight" id="kpi-inasistencia">24.8%</span>
+<span class="font-label-sm text-label-sm font-semibold text-emerald-700 flex items-center">
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span> 3.2%
+        </span>
+</div>
+<div class="pt-space-sm border-t border-transparent bg-surface-container-low -mx-space-lg -mb-space-lg p-space-md rounded-b-xl flex flex-col gap-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant">vs. mes anterior (4,230 turnos analizados)</span>
+<span class="font-code-sm text-code-sm text-primary font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">psychology</span> Reducción con Random Forest v3.2
+        </span>
+</div>
+</div>
+<!-- KPI 2: Total Citas Programadas -->
+<div class="flex flex-col justify-between p-space-lg bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center justify-between gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Citas Programadas Activas</span>
+<span class="font-code-sm text-code-sm px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-semibold">Mensual</span>
+</div>
+<div class="my-space-md flex flex-col">
+<div class="flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight" id="kpi-citas">1,420</span>
+<span class="font-label-md text-label-md text-on-surface-variant">citas</span>
+</div>
+<span class="font-body-sm text-body-sm text-primary font-semibold flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">event_upcoming</span> 128 citas agendadas para hoy
+        </span>
+</div>
+<div class="pt-space-sm -mx-space-lg -mb-space-lg p-space-md bg-surface-container-low rounded-b-xl flex items-center justify-between font-code-sm text-code-sm text-on-surface-variant">
+<span title="General">Gen: <strong class="text-on-surface font-semibold">620</strong></span>
+<span>•</span>
+<span title="Endodoncia">Endo: <strong class="text-on-surface font-semibold">480</strong></span>
+<span>•</span>
+<span title="Ortodoncia">Orto: <strong class="text-on-surface font-semibold">320</strong></span>
+</div>
+</div>
+<!-- KPI 3: Ingresos en Riesgo -->
+<div class="flex flex-col justify-between p-space-lg bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center justify-between gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Ingresos en Riesgo (No-Show)</span>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 text-rose-800">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+<span class="font-label-sm text-label-sm font-semibold">Alerta Financiera</span>
+</div>
+</div>
+<div class="my-space-md flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-rose-700 tracking-tight" id="kpi-riesgo">S/ 38,450.00</span>
+</div>
+<div class="pt-space-sm -mx-space-lg -mb-space-lg p-space-md bg-rose-50/70 rounded-b-xl flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-rose-900 font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">report_problem</span> Impacto estimado sin intervención
+        </span>
+<span class="font-body-sm text-body-sm text-rose-800/80">Valor promedio hora-sillón: S/ 115.00</span>
+</div>
+</div>
+<!-- KPI 4: Tiempo Medio de Espera -->
+<div class="flex flex-col justify-between p-space-lg bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center justify-between gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Tiempo Medio de Espera</span>
+<span class="font-code-sm text-code-sm px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-semibold">Lag Cita</span>
+</div>
+<div class="my-space-md flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight" id="kpi-espera">14.2</span>
+<span class="font-label-md text-label-md text-on-surface-variant">días corridos</span>
+</div>
+<div class="pt-space-sm -mx-space-lg -mb-space-lg p-space-md bg-surface-container-low rounded-b-xl flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-amber-600">crisis_alert</span> Factor de Máxima Sensibilidad
+        </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Explicabilidad SHAP: ~70% de peso predictivo</span>
+</div>
+</div>
+</div>
+<!-- CONTENEDOR CENTRAL DE POWER BI CON BARRA DE CONTROL -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<!-- Barra superior de integración Power BI -->
+<div class="p-space-md bg-surface-container-high flex flex-col gap-space-sm">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<!-- Input URL embebible -->
+<div class="flex-1 flex items-center bg-surface-container-lowest rounded-lg px-3 py-1.5 shadow-inner">
+<span class="material-symbols-outlined text-[20px] text-primary shrink-0 mr-2">link</span>
+<input class="w-full bg-transparent font-code-sm text-code-sm text-on-surface outline-none placeholder:text-outline-variant" id="input-pbi-url" placeholder="Pegue aquí la URL de inserción (iframe) de su reporte Power BI (ej. https://app.powerbi.com/reportEmbed?...)" type="text" value="https://app.powerbi.com/reportEmbed?reportId=d3fa8901-cl1n-4bb2-901f-sonrisaintegral&amp;autoAuth=true&amp;ctid=dental-corp"/>
+<button class="text-on-surface-variant hover:text-on-surface p-1" onclick="limpiarUrl()" title="Limpiar URL" type="button">
+<span class="material-symbols-outlined text-[18px]">clear</span>
+</button>
+</div>
+<!-- Botones de acción del frame -->
+<div class="flex items-center gap-space-xs shrink-0 flex-wrap">
+<button class="flex items-center gap-1 px-space-md py-1.5 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md transition-all shadow-sm" onclick="cargarReportePowerBI()" type="button">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>Cargar Reporte</span>
+</button>
+<button class="flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" onclick="restablecerDemo()" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span>Restablecer Demo</span>
+</button>
+<button class="flex items-center gap-1 px-space-sm py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" onclick="togglePantallaCompleta()" title="Pantalla Completa" type="button">
+<span class="material-symbols-outlined text-[16px]">fullscreen</span>
+<span>Pantalla Completa</span>
+</button>
+</div>
+</div>
+<!-- Segmented Tabs / Selectores de vista analítica Power BI -->
+<div class="flex items-center justify-between gap-space-md pt-space-xs flex-wrap">
+<div class="flex items-center gap-space-xs bg-surface-container-low p-1 rounded-lg">
+<button class="view-tab flex items-center gap-1.5 px-space-md py-1.5 rounded bg-surface-container-lowest text-primary font-label-md text-label-md font-semibold shadow-sm transition-all" data-view="ejecutiva" onclick="seleccionarVista(this, 'ejecutiva')" type="button">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Vista Ejecutiva / Dirección</span>
+<span class="ml-1 px-1.5 py-0.2 rounded-full bg-secondary-fixed text-on-secondary-fixed font-code-sm text-[10px]">KPIs Activos</span>
+</button>
+<button class="view-tab flex items-center gap-1.5 px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-view="olap" onclick="seleccionarVista(this, 'olap')" type="button">
+<span class="material-symbols-outlined text-[18px]">view_in_ar</span>
+<span>Cubo Multidimensional OLAP</span>
+</button>
+<button class="view-tab flex items-center gap-1.5 px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-view="whatif" onclick="seleccionarVista(this, 'whatif')" type="button">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Simulador What-If de Citas</span>
+</button>
+</div>
+<div class="flex items-center gap-space-md text-on-surface-variant font-code-sm text-code-sm">
+<span class="flex items-center gap-1 text-emerald-700">
+<span class="material-symbols-outlined text-[16px]">verified_user</span> RLS Dental Role: Director_Lima
+          </span>
+<span class="hidden md:inline">|</span>
+<span class="hidden md:flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">memory</span> DirectQuery Latencia: 18ms
+          </span>
+</div>
+</div>
+</div>
+<!-- Área de Visualización 16:9 (Marco Interactivo de Alta Fidelidad Power BI) -->
+<div class="relative w-full aspect-[16/9] min-h-[560px] bg-slate-900 text-slate-100 flex flex-col justify-between overflow-hidden" id="pbi-embed-container">
+<!-- Barra superior embed corporativo de Power BI -->
+<div class="h-10 bg-slate-950 px-space-md flex items-center justify-between shrink-0 border-b border-slate-800">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-sm bg-amber-400 flex items-center justify-center font-bold text-[9px] text-slate-950">PB</span>
+<span class="font-label-md text-label-md text-slate-200 font-semibold" id="embed-view-title">Dashboard Clínico Ejecutivo • DentalCenter Power BI v2024.11</span>
+</div>
+<div class="flex items-center gap-3 text-slate-400 font-code-sm text-code-sm">
+<span>Página 1 de 3</span>
+<button class="hover:text-white" title="Exportar a PDF" type="button"><span class="material-symbols-outlined text-[18px]">picture_as_pdf</span></button>
+<button class="hover:text-white" title="Ver Datos Subyacentes" type="button"><span class="material-symbols-outlined text-[18px]">table_rows</span></button>
+<button class="hover:text-white" title="Restablecer Filtros" type="button"><span class="material-symbols-outlined text-[18px]">filter_alt_off</span></button>
+</div>
+</div>
+<!-- Lienzo dinámico del reporte interactivo -->
+<div class="flex-1 p-space-md lg:p-space-lg overflow-y-auto bg-slate-900 flex flex-col gap-space-md" id="lienzo-powerbi">
+<!-- Vista 1: EJECUTIVA (Por defecto) -->
+<div class="flex flex-col gap-space-md" id="vista-ejecutiva">
+<!-- Banner interno de métricas calculadas DAX -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<div class="bg-slate-800/80 rounded-lg p-space-sm flex items-center justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-slate-400 uppercase">Impacto Global del Modelo IA</span>
+<p class="font-headline-md text-headline-md text-emerald-400 font-bold">186 Turnos Salvados</p>
+</div>
+<span class="material-symbols-outlined text-[32px] text-emerald-500/40">health_and_safety</span>
+</div>
+<div class="bg-slate-800/80 rounded-lg p-space-sm flex items-center justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-slate-400 uppercase">Ingresos Recuperados Directos</span>
+<p class="font-headline-md text-headline-md text-sky-400 font-bold">S/ 18,200.00</p>
+</div>
+<span class="material-symbols-outlined text-[32px] text-sky-500/40">payments</span>
+</div>
+<div class="bg-slate-800/80 rounded-lg p-space-sm flex items-center justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-slate-400 uppercase">Eficiencia Ocupacional Sillón</span>
+<p class="font-headline-md text-headline-md text-amber-300 font-bold">87.4% <span class="font-label-sm text-label-sm text-slate-400 font-normal">(Obj: 85%)</span></p>
+</div>
+<span class="material-symbols-outlined text-[32px] text-amber-500/40">chair</span>
+</div>
+</div>
+<!-- Dos columnas gráficas principales: Gráfico 1 y Gráfico 3 -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- Gráfico 1: Curva de inasistencia por tiempo de espera (7 cols) -->
+<div class="lg:col-span-7 bg-slate-800/90 rounded-xl p-space-md flex flex-col justify-between shadow-lg">
+<div class="flex items-center justify-between mb-2">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-white font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-sky-400">trending_up</span>
+                    Curva de Inasistencia según Tiempo de Espera (Días corridos de espera)
+                  </span>
+<span class="font-code-sm text-code-sm text-slate-400">DAX: CALCULATE([TasaNoShow], ALLEXCEPT(Dim_Citas, Dim_Citas[DiasEspera]))</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-rose-950/80 text-rose-300 font-code-sm text-code-sm border border-rose-800/50">Umbral Crítico &gt; 15 días: 54.2%</span>
+</div>
+<!-- SVG Chart: Curva empírica dental -->
+<div class="w-full h-56 relative flex items-end pt-6 pb-2">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 600 200">
+<!-- Grid horizontal -->
+<line stroke="#334155" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="600" y1="40" y2="40"></line>
+<line stroke="#334155" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="600" y1="90" y2="90"></line>
+<line stroke="#334155" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="600" y1="140" y2="140"></line>
+<line stroke="#475569" stroke-width="1.5" x1="0" x2="600" y1="190" y2="190"></line>
+<!-- Zona crítica sombreada (días 15+) -->
+<rect fill="#f43f5e" fill-opacity="0.08" height="170" width="250" x="350" y="20"></rect>
+<text fill="#fda4af" font-family="JetBrains Mono" font-size="11" font-weight="600" x="360" y="35">ZONA DE RIESGO SEVERO (&gt;50% No-Show)</text>
+<!-- Curva suave con gradiente -->
+<defs>
+<lineargradient id="curvaGrad" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#38bdf8"></stop>
+<stop offset="60%" stop-color="#fbbf24"></stop>
+<stop offset="100%" stop-color="#f43f5e"></stop>
+</lineargradient>
+<lineargradient id="areaGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#0f172a" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Área bajo curva -->
+<path d="M 30 180 Q 150 170, 260 145 T 380 95 T 520 45 L 570 32 L 570 190 L 30 190 Z" fill="url(#areaGrad)"></path>
+<!-- Línea trazada -->
+<path d="M 30 180 Q 150 170, 260 145 T 380 95 T 520 45 L 570 32" fill="none" stroke="url(#curvaGrad)" stroke-width="3.5"></path>
+<!-- Nodos de muestreo de días -->
+<!-- 0-3 días -->
+<circle cx="30" cy="180" fill="#38bdf8" r="4.5"></circle>
+<text fill="#cbd5e1" font-family="JetBrains Mono" font-size="10" x="20" y="170">8.2%</text>
+<!-- 7 días -->
+<circle cx="160" cy="165" fill="#38bdf8" r="4.5"></circle>
+<text fill="#cbd5e1" font-family="JetBrains Mono" font-size="10" x="150" y="155">14.1%</text>
+<!-- 15 días (Inflección) -->
+<circle cx="360" cy="105" fill="#fbbf24" r="6" stroke="#ffffff" stroke-width="1.5"></circle>
+<text fill="#fde047" font-family="JetBrains Mono" font-size="11" font-weight="bold" x="330" y="90">15d: 38.6%</text>
+<!-- 25 días -->
+<circle cx="490" cy="55" fill="#f43f5e" r="5"></circle>
+<text fill="#fda4af" font-family="JetBrains Mono" font-size="11" font-weight="bold" x="470" y="45">52.8%</text>
+<!-- 30 días+ -->
+<circle cx="570" cy="32" fill="#f43f5e" r="6" stroke="#ffffff" stroke-width="1.5"></circle>
+<text fill="#f43f5e" font-family="JetBrains Mono" font-size="12" font-weight="bold" x="535" y="25">61.4%</text>
+</svg>
+</div>
+<!-- Eje X etiquetas -->
+<div class="flex justify-between px-4 font-code-sm text-[11px] text-slate-400 mt-1">
+<span>0-2 días</span>
+<span>5-7 días</span>
+<span>10-12 días</span>
+<span class="text-amber-300 font-semibold">15 días</span>
+<span>20-22 días</span>
+<span class="text-rose-400 font-semibold">28-35+ días</span>
+</div>
+</div>
+<!-- Gráfico 3: Comparativo Efecto Protector SMS (5 cols) -->
+<div class="lg:col-span-5 bg-slate-800/90 rounded-xl p-space-md flex flex-col justify-between shadow-lg">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-white font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-emerald-400">sms</span>
+                  Efecto Protector de Recordatorio SMS Automatizado
+                </span>
+<span class="font-code-sm text-code-sm text-slate-400">Muestra: 1,420 citas programadas</span>
+</div>
+<!-- Barras comparativas -->
+<div class="my-space-md flex flex-col gap-space-md">
+<!-- Con SMS -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between text-label-md">
+<span class="font-medium text-slate-200 flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Con Recordatorio SMS Confirmado
+                    </span>
+<span class="font-display-lg text-[22px] font-bold text-emerald-400">88.4% Asistencia</span>
+</div>
+<div class="w-full h-6 rounded-lg bg-slate-950 p-1 flex items-center">
+<div class="h-full rounded-md bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-700" style="width: 88.4%"></div>
+</div>
+<span class="font-code-sm text-code-sm text-slate-400 text-right">Inasistencia controlada: solo 11.6%</span>
+</div>
+<!-- Sin SMS -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between text-label-md">
+<span class="font-medium text-slate-200 flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Sin Recordatorio SMS (Canal Tradicional)
+                    </span>
+<span class="font-display-lg text-[22px] font-bold text-rose-400">58.1% Asistencia</span>
+</div>
+<div class="w-full h-6 rounded-lg bg-slate-950 p-1 flex items-center">
+<div class="h-full rounded-md bg-gradient-to-r from-rose-700 to-rose-500 transition-all duration-700" style="width: 58.1%"></div>
+</div>
+<span class="font-code-sm text-code-sm text-rose-300 font-semibold text-right">Inasistencia elevada: 41.9%</span>
+</div>
+</div>
+<!-- Conclusión DAX -->
+<div class="p-2.5 rounded-lg bg-slate-950/70 border border-slate-700/50 flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-sky-400 shrink-0">insights</span>
+<span class="font-body-sm text-body-sm text-slate-300">
+<strong class="text-white">+30.3 puntos porcentuales</strong> de retención cuando se envía SMS predictivo 48h antes.
+                </span>
+</div>
+</div>
+</div>
+<!-- Gráfico 2: Matriz de Calor Geográfica por Distritos de Lima -->
+<div class="bg-slate-800/90 rounded-xl p-space-md shadow-lg flex flex-col gap-space-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div>
+<span class="font-label-md text-label-md text-white font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-amber-400">location_on</span>
+                  Matriz de Distribución de Inasistencias por Distrito / Área Metropolitana de Lima
+                </span>
+<span class="font-code-sm text-code-sm text-slate-400">Dim_Paciente[Distrito] cruzado con Fact_Atenciones</span>
+</div>
+<span class="font-code-sm text-code-sm px-2.5 py-1 rounded bg-slate-700/60 text-slate-200">Segmentación Georreferenciada</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-sm mt-2">
+<!-- San Juan de Lurigancho -->
+<div class="p-space-sm rounded-lg bg-slate-950/80 border-l-4 border-rose-500 flex flex-col justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-slate-400">S.J. Lurigancho</span>
+<p class="font-headline-md text-headline-md text-rose-400 font-bold mt-1">34.2%</p>
+<span class="font-body-sm text-body-sm text-rose-300">No-Show Muy Alto</span>
+</div>
+<div class="mt-3 pt-2 border-t border-slate-800 font-code-sm text-[11px] text-slate-400">
+                  Volumen: 340 citas<br/>Distancia: &gt;18 km
+                </div>
+</div>
+<!-- Los Olivos -->
+<div class="p-space-sm rounded-lg bg-slate-950/80 border-l-4 border-rose-400 flex flex-col justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-slate-400">Los Olivos</span>
+<p class="font-headline-md text-headline-md text-rose-300 font-bold mt-1">29.6%</p>
+<span class="font-body-sm text-body-sm text-rose-300">No-Show Moderado</span>
+</div>
+<div class="mt-3 pt-2 border-t border-slate-800 font-code-sm text-[11px] text-slate-400">
+                  Volumen: 260 citas<br/>Distancia: &gt;14 km
+                </div>
+</div>
+<!-- Santiago de Surco -->
+<div class="p-space-sm rounded-lg bg-slate-950/80 border-l-4 border-amber-400 flex flex-col justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-slate-400">Santiago de Surco</span>
+<p class="font-headline-md text-headline-md text-amber-300 font-bold mt-1">21.4%</p>
+<span class="font-body-sm text-body-sm text-amber-200">No-Show Controlado</span>
+</div>
+<div class="mt-3 pt-2 border-t border-slate-800 font-code-sm text-[11px] text-slate-400">
+                  Volumen: 310 citas<br/>Distancia: ~6 km
+                </div>
+</div>
+<!-- Miraflores -->
+<div class="p-space-sm rounded-lg bg-slate-950/80 border-l-4 border-emerald-400 flex flex-col justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-slate-400">Miraflores (Local)</span>
+<p class="font-headline-md text-headline-md text-emerald-400 font-bold mt-1">14.8%</p>
+<span class="font-body-sm text-body-sm text-emerald-300">Alta Adherencia</span>
+</div>
+<div class="mt-3 pt-2 border-t border-slate-800 font-code-sm text-[11px] text-slate-400">
+                  Volumen: 290 citas<br/>Distancia: &lt;2 km
+                </div>
+</div>
+<!-- San Isidro -->
+<div class="p-space-sm rounded-lg bg-slate-950/80 border-l-4 border-emerald-400 flex flex-col justify-between">
+<div>
+<span class="font-code-sm text-code-sm text-slate-400">San Isidro (Local)</span>
+<p class="font-headline-md text-headline-md text-emerald-400 font-bold mt-1">12.1%</p>
+<span class="font-body-sm text-body-sm text-emerald-300">Máxima Adherencia</span>
+</div>
+<div class="mt-3 pt-2 border-t border-slate-800 font-code-sm text-[11px] text-slate-400">
+                  Volumen: 220 citas<br/>Distancia: &lt;1.5 km
+                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Vista 2: CUBO MULTIDIMENSIONAL OLAP (Oculta por defecto) -->
+<div class="hidden flex flex-col gap-space-md" id="vista-olap">
+<div class="p-space-md bg-slate-800/90 rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md text-white">Explorador de Cubo OLAP • DentalCenter_SSAS</h3>
+<span class="font-code-sm text-code-sm text-slate-400">Medidas MDX: [Measures].[Citas], [Measures].[Costo_NoShow], [Measures].[Tasa_Cumplimiento]</span>
+</div>
+<span class="px-2.5 py-1 rounded bg-sky-900 text-sky-200 font-code-sm text-code-sm">Motor VertiPaq en Memoria</span>
+</div>
+<!-- Tabla Pivot OLAP simulada -->
+<div class="overflow-x-auto mt-2">
+<table class="w-full text-left font-code-sm text-code-sm">
+<thead>
+<tr class="bg-slate-950 text-slate-300">
+<th class="p-2.5">Especialidad Clínica</th>
+<th class="p-2.5">Canal de Agendamiento</th>
+<th class="p-2.5 text-right">Total Turnos</th>
+<th class="p-2.5 text-right">No-Show Registrado</th>
+<th class="p-2.5 text-right">Costo Estimado</th>
+<th class="p-2.5 text-center">Score Severidad</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-800 text-slate-200">
+<tr class="hover:bg-slate-700/40">
+<td class="p-2.5 font-medium text-white flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span> Ortodoncia Inicial</td>
+<td class="p-2.5">WhatsApp Bot</td>
+<td class="p-2.5 text-right">320</td>
+<td class="p-2.5 text-right font-bold text-rose-400">29.1% (93)</td>
+<td class="p-2.5 text-right text-rose-300">S/ 11,160.00</td>
+<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded bg-rose-900/60 text-rose-200 text-[10px]">CRÍTICO</span></td>
+</tr>
+<tr class="hover:bg-slate-700/40">
+<td class="p-2.5 font-medium text-white flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Endodoncia Multirradicular</td>
+<td class="p-2.5">Call Center Central</td>
+<td class="p-2.5 text-right">480</td>
+<td class="p-2.5 text-right font-bold text-amber-300">25.0% (120)</td>
+<td class="p-2.5 text-right text-amber-200">S/ 16,800.00</td>
+<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded bg-amber-900/60 text-amber-200 text-[10px]">MEDIO</span></td>
+</tr>
+<tr class="hover:bg-slate-700/40">
+<td class="p-2.5 font-medium text-white flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Odontología General &amp; Profilaxis</td>
+<td class="p-2.5">Presencial / Counter</td>
+<td class="p-2.5 text-right">620</td>
+<td class="p-2.5 text-right font-bold text-emerald-400">20.2% (125)</td>
+<td class="p-2.5 text-right text-emerald-200">S/ 10,490.00</td>
+<td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded bg-emerald-900/60 text-emerald-200 text-[10px]">BAJO</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Vista 3: SIMULADOR WHAT-IF (Oculta por defecto) -->
+<div class="hidden flex flex-col gap-space-md" id="vista-whatif">
+<div class="p-space-md bg-slate-800/90 rounded-xl flex flex-col gap-space-md">
+<div>
+<h3 class="font-headline-md text-headline-md text-white">Simulador DAX What-If: Optimización de Parámetros de Agenda</h3>
+<p class="font-body-sm text-body-sm text-slate-300">Mueva los controles deslizantes para proyectar el impacto económico y clínico según políticas de agenda restrictivas.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<!-- Controles Slider -->
+<div class="flex flex-col gap-space-md bg-slate-950/70 p-space-md rounded-lg">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-md text-slate-200">
+<span>Reducción de Tiempo de Espera Máximo (Días):</span>
+<span class="font-code-sm text-sky-400 font-bold" id="slider-espera-val">10 días</span>
+</div>
+<input class="w-full accent-sky-400 cursor-pointer" id="slider-espera" max="25" min="3" oninput="actualizarWhatIf()" type="range" value="10"/>
+<div class="flex justify-between font-code-sm text-[10px] text-slate-500">
+<span>3 días (Inmediata)</span>
+<span>15 días (Actual)</span>
+<span>25 días (Saturada)</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-md text-slate-200">
+<span>Cobertura de Recordatorio SMS Inteligente:</span>
+<span class="font-code-sm text-emerald-400 font-bold" id="slider-sms-val">95%</span>
+</div>
+<input class="w-full accent-emerald-400 cursor-pointer" id="slider-sms" max="100" min="50" oninput="actualizarWhatIf()" type="range" value="95"/>
+<div class="flex justify-between font-code-sm text-[10px] text-slate-500">
+<span>50%</span>
+<span>75%</span>
+<span>100% (Automatización Total)</span>
+</div>
+</div>
+</div>
+<!-- Resultados What-If Calculados -->
+<div class="flex flex-col justify-between p-space-md bg-slate-950/90 rounded-lg border border-slate-700/60">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-slate-400 font-semibold">Proyección Predictiva Estimada</span>
+<div class="my-space-sm flex flex-col gap-2">
+<div class="flex items-baseline justify-between">
+<span class="font-body-md text-body-md text-slate-300">Nueva Tasa de Inasistencia:</span>
+<span class="font-display-lg text-[28px] font-bold text-emerald-400" id="whatif-tasa">16.4%</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="font-body-md text-body-md text-slate-300">Ingresos Mensuales Rescatados:</span>
+<span class="font-headline-md text-headline-md font-bold text-sky-400" id="whatif-ingreso">+S/ 14,850.00</span>
+</div>
+</div>
+<div class="text-[11px] font-code-sm text-slate-400 bg-slate-900 p-2 rounded">
+                  Fórmula: CALCULATE([IngresoRecuperado], FILTER(Dim_Citas, [DiasEspera] &lt;= SelectedVal &amp;&amp; [SmsSent] = 1))
+                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Barra de estado inferior del iframe de Power BI -->
+<div class="h-8 bg-slate-950 px-space-md flex items-center justify-between shrink-0 border-t border-slate-800 text-slate-400 font-code-sm text-code-sm">
+<div class="flex items-center gap-space-md">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Conectado a DentalCenterDB.dm</span>
+<span class="hidden sm:inline">•</span>
+<span class="hidden sm:inline">Visualizaciones: 14 objetos activos</span>
+</div>
+<div class="flex items-center gap-2">
+<span>Microsoft Power BI Embedded</span>
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+</div>
+</div>
+</div>
+</div>
+<!-- NOTAS TÉCNICAS Y CONECTIVIDAD DEL DATA MART -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<!-- Encabezado colapsable del panel técnico -->
+<button class="p-space-md bg-surface-container-low hover:bg-surface-container flex items-center justify-between w-full text-left transition-colors" onclick="toggleMetadataTecnica()" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[22px] text-primary">data_object</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Arquitectura de Datos Subyacente &amp; Conectividad del Pipeline</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">SQL Server 2022 • Esquema Dimensional Estrella (Data Mart dm.*)</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-code-sm text-code-sm px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Gateway Online
+        </span>
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant transition-transform" id="icono-chevron-metadata">expand_more</span>
+</div>
+</button>
+<!-- Contenido colapsable -->
+<div class="p-space-lg grid grid-cols-1 md:grid-cols-3 gap-space-lg border-t border-surface-container" id="panel-metadata-tecnica">
+<!-- Columna 1: Base de datos y Tablas -->
+<div class="flex flex-col gap-space-xs font-body-sm text-body-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">1. Fuentes Tabulares SQL</span>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 font-code-sm text-code-sm text-on-surface">
+<div><strong class="text-on-surface">Instancia:</strong> LIM-SRV-DATA01\DENTALSQL</div>
+<div><strong class="text-on-surface">Base de Datos:</strong> DentalCenterDB</div>
+<div><strong class="text-on-surface">Tabla de Hechos:</strong> <span class="text-primary font-semibold">dm.Fact_Atenciones</span></div>
+<div><strong class="text-on-surface">Dimensiones:</strong> Dim_Paciente, Dim_Odontologo, Dim_Especialidad, Dim_Tiempo</div>
+</div>
+<p class="text-on-surface-variant text-[11px] leading-relaxed">
+          La granularidad del modelo reside a nivel de cita médica única (ID_Turno). Cada registro contiene bandera de asistencia (0: Asistió, 1: No-Show).
+        </p>
+</div>
+<!-- Columna 2: Pipeline y Refresh -->
+<div class="flex flex-col gap-space-xs font-body-sm text-body-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">2. Pasarela &amp; Modos de Consulta</span>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 font-code-sm text-code-sm text-on-surface">
+<div><strong class="text-on-surface">Modo:</strong> Dual (DirectQuery + Import Cache)</div>
+<div><strong class="text-on-surface">Gateway:</strong> Enterprise On-Premises (v3000.182)</div>
+<div><strong class="text-on-surface">Frecuencia ETL:</strong> Cada 30 min (SQL Server Agent)</div>
+<div><strong class="text-on-surface">Seguridad:</strong> Row-Level Security (RLS) habilitado</div>
+</div>
+<p class="text-on-surface-variant text-[11px] leading-relaxed">
+          Los filtros de directores de sede restringen la visualización médica para cumplir con las normativas locales de privacidad de datos de salud (MINSA).
+        </p>
+</div>
+<!-- Columna 3: Modelos IA Vinculados -->
+<div class="flex flex-col gap-space-xs font-body-sm text-body-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">3. Integración con Machine Learning</span>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 font-code-sm text-code-sm text-on-surface">
+<div><strong class="text-on-surface">Algoritmo:</strong> Random Forest Classifier (Scikit-Learn)</div>
+<div><strong class="text-on-surface">AUC-ROC:</strong> <span class="text-emerald-700 font-bold">0.834</span> (Validado k-fold)</div>
+<div><strong class="text-on-surface">Feature Primaria:</strong> Dias_Espera_Cita (~70% Gini)</div>
+<div><strong class="text-on-surface">Salida en Fact:</strong> Probabilidad_Inasistencia (FLOAT)</div>
+</div>
+<p class="text-on-surface-variant text-[11px] leading-relaxed">
+          Las probabilidades mayores al 0.45 activan en automático el trigger prescriptivo para disparar recordatorios por WhatsApp y SMS prioritarios.
+        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- SCRIPT DE INTERACTIVIDAD PARA LA PÁGINA -->
+<script>
+  // Manejo de cambio de período
+  function cambiarPeriodo(button, periodo) {
+    const contenedor = button.parentElement;
+    const botones = contenedor.querySelectorAll('button');
+    botones.forEach(btn => {
+      btn.className = 'px-space-sm py-1 rounded text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all';
+    });
+    button.className = 'px-space-sm py-1 rounded bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-sm transition-all';
+
+    // Simular variación numérica según período
+    const kpiInasistencia = document.getElementById('kpi-inasistencia');
+    const kpiCitas = document.getElementById('kpi-citas');
+    const kpiRiesgo = document.getElementById('kpi-riesgo');
+
+    if (periodo === '30d') {
+      kpiInasistencia.innerText = '24.8%';
+      kpiCitas.innerText = '1,420';
+      kpiRiesgo.innerText = 'S/ 38,450.00';
+    } else if (periodo === 'q3') {
+      kpiInasistencia.innerText = '26.1%';
+      kpiCitas.innerText = '4,180';
+      kpiRiesgo.innerText = 'S/ 114,200.00';
+    } else if (periodo === 'y2024') {
+      kpiInasistencia.innerText = '25.4%';
+      kpiCitas.innerText = '12,950';
+      kpiRiesgo.innerText = 'S/ 342,800.00';
+    }
+  }
+
+  // Simular botón de refresco Power BI
+  function simularRefresco() {
+    const icono = document.getElementById('icono-refresh');
+    const btn = document.getElementById('btn-sync-telemetria');
+    icono.classList.add('animate-spin');
+    btn.disabled = true;
+
+    setTimeout(() => {
+      icono.classList.remove('animate-spin');
+      btn.disabled = false;
+      alert('Sincronización completada con éxito. Consulta DirectQuery ejecutada contra SQL Server DentalCenterDB.');
+    }, 1200);
+  }
+
+  // Control de URLs del Frame Power BI
+  function limpiarUrl() {
+    document.getElementById('input-pbi-url').value = '';
+    document.getElementById('input-pbi-url').focus();
+  }
+
+  function restablecerDemo() {
+    document.getElementById('input-pbi-url').value = 'https://app.powerbi.com/reportEmbed?reportId=d3fa8901-cl1n-4bb2-901f-sonrisaintegral&autoAuth=true&ctid=dental-corp';
+    const firstTab = document.querySelector('[data-view="ejecutiva"]');
+    if (firstTab) seleccionarVista(firstTab, 'ejecutiva');
+  }
+
+  function cargarReportePowerBI() {
+    const url = document.getElementById('input-pbi-url').value.trim();
+    if (!url) {
+      alert('Por favor ingrese una URL válida de Power BI Embed (iframe).');
+      return;
+    }
+    const container = document.getElementById('pbi-embed-container');
+    const lienzo = document.getElementById('lienzo-powerbi');
+
+    // Feedback visual de recarga
+    lienzo.classList.add('opacity-40');
+    setTimeout(() => {
+      lienzo.classList.remove('opacity-40');
+      document.getElementById('embed-view-title').innerText = 'Reporte Embebido Dinámico • ' + (url.length > 50 ? url.substring(0, 48) + '...' : url);
+    }, 700);
+  }
+
+  function togglePantallaCompleta() {
+    const elem = document.getElementById('pbi-embed-container');
+    if (!document.fullscreenElement) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }
+
+  // Cambio de pestañas de vistas Power BI
+  function seleccionarVista(btn, vista) {
+    const tabs = document.querySelectorAll('.view-tab');
+    tabs.forEach(tab => {
+      tab.className = 'view-tab flex items-center gap-1.5 px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all';
+    });
+    btn.className = 'view-tab flex items-center gap-1.5 px-space-md py-1.5 rounded bg-surface-container-lowest text-primary font-label-md text-label-md font-semibold shadow-sm transition-all';
+
+    document.getElementById('vista-ejecutiva').classList.add('hidden');
+    document.getElementById('vista-olap').classList.add('hidden');
+    document.getElementById('vista-whatif').classList.add('hidden');
+
+    const titleElem = document.getElementById('embed-view-title');
+
+    if (vista === 'ejecutiva') {
+      document.getElementById('vista-ejecutiva').classList.remove('hidden');
+      titleElem.innerText = 'Dashboard Clínico Ejecutivo • DentalCenter Power BI v2024.11';
+    } else if (vista === 'olap') {
+      document.getElementById('vista-olap').classList.remove('hidden');
+      titleElem.innerText = 'Cubo Multidimensional OLAP • Análisis Ad-Hoc de Citas por Especialidad';
+    } else if (vista === 'whatif') {
+      document.getElementById('vista-whatif').classList.remove('hidden');
+      titleElem.innerText = 'Simulador What-If de Capacidad y Reducción de Ausentismo';
+      actualizarWhatIf();
+    }
+  }
+
+  // Lógica interactiva del Simulador What-If
+  function actualizarWhatIf() {
+    const dias = parseInt(document.getElementById('slider-espera').value, 10);
+    const sms = parseInt(document.getElementById('slider-sms').value, 10);
+
+    document.getElementById('slider-espera-val').innerText = dias + ' días';
+    document.getElementById('slider-sms-val').innerText = sms + '%';
+
+    // Estimación matemática DAX aproximada
+    // Base 24.8% -> dias reduce/aumenta en base a 14 dias; sms reduce en base al % de cobertura
+    const efectoDias = (dias - 14) * 0.85;
+    const efectoSms = (sms - 70) * -0.22;
+    let nuevaTasa = 24.8 + efectoDias + efectoSms;
+    if (nuevaTasa < 9.5) nuevaTasa = 9.5;
+    if (nuevaTasa > 48.0) nuevaTasa = 48.0;
+
+    document.getElementById('whatif-tasa').innerText = nuevaTasa.toFixed(1) + '%';
+
+    // Cálculo de ahorro
+    const citasRecuperadas = Math.round(1420 * ((24.8 - nuevaTasa) / 100));
+    const ingresoTotal = citasRecuperadas * 115;
+    const signo = ingresoTotal >= 0 ? '+' : '';
+    document.getElementById('whatif-ingreso').innerText = signo + 'S/ ' + Math.abs(ingresoTotal).toLocaleString('es-PE', { minimumFractionDigits: 2 });
+  }
+
+  // Toggle de panel de metadata técnica
+  function toggleMetadataTecnica() {
+    const panel = document.getElementById('panel-metadata-tecnica');
+    const chevron = document.getElementById('icono-chevron-metadata');
+    panel.classList.toggle('hidden');
+    if (panel.classList.contains('hidden')) {
+      chevron.style.transform = 'rotate(0deg)';
+    } else {
+      chevron.style.transform = 'rotate(180deg)';
+    }
+  }
+</script></main></div></body></html>
